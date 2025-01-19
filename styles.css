@@ -99,6 +99,12 @@ button {
   max-width: 550px;
 }
 
+.card img {
+  max-width: 50%;
+  border-radius: 15px;
+  height: auto;
+}
+
 .card-author {
   background: linear-gradient(
     135deg,
