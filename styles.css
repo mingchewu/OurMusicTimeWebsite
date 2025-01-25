@@ -378,7 +378,10 @@ h1 {
 }
 
 #faq {
-  padding: 100px;
+  padding-top: 100px;
+  padding-left: 250px;
+  padding-right: 250px;
+  padding-bottom: 100px;
   color: #faf5f5;
 }
 
