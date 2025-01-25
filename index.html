@@ -72,17 +72,71 @@
     </section>
 
     <section id="events">
+      <div class="popup-2022">
+        <div class="popup-2022-content">
+          <span
+            class="close"
+            onclick="document.querySelector('.popup-2022').classList.remove('open')">
+            Close
+          </span>
+          <h2>2022 Events</h2>
+          <div class="image-viewer">
+            <div class="arrow left" onclick="prevImage()">&#9664;</div>
+            <img
+              class="active"
+              id="current-image"
+              src="media/events/2022/main.jpg"
+              alt="Event Image" />
+            <div class="arrow right" onclick="nextImage()">&#9654;</div>
+          </div>
+          <p>
+            Lorem ipsum dolor sit amet, consectetur adipisicing elit. Illo,
+            inventore.
+          </p>
+        </div>
+      </div>
+      <div class="popup-2023">
+        <div class="popup-2023-content">
+          <span
+            class="close"
+            onclick="document.querySelector('.popup-2023').classList.remove('open')">
+            Close
+          </span>
+          <h2>Popup Title</h2>
+          <div class="image-viewer2">
+            <div class="arrow left" onclick="prevImage2()">&#9664;</div>
+            <img
+              class="active2"
+              id="current-image2"
+              src="media/events/2023/main.jpg"
+              alt="Event Image" />
+            <div class="arrow right" onclick="nextImage2()">&#9654;</div>
+          </div>
+          <p>
+            Lorem ipsum dolor sit amet, consectetur adipisicing elit. Illo,
+            inventore.
+          </p>
+        </div>
+      </div>
       <h1>Past Events</h1>
       <div class="card-container">
         <div class="card">
           <img src="media/events/2022/main.jpg" alt="2021" />
           <h2>2022 Events Photos</h2>
-          <button id="2022-btn">Learn More</button>
+          <button
+            id="2022-btn"
+            onclick="document.querySelector('.popup-2022').classList.toggle('open')">
+            Learn More
+          </button>
         </div>
         <div class="card">
           <img src="media/events/2023/main.jpg" alt="2021" />
           <h2>2023 Events Photos</h2>
-          <button id="2023-btn">Learn More</button>
+          <button
+            id="2023-btn"
+            onclick="document.querySelector('.popup-2023').classList.toggle('open')">
+            Learn More
+          </button>
         </div>
       </div>
     </section>
