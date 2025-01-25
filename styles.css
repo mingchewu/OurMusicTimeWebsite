@@ -446,3 +446,9 @@ h1 {
 .faq-icon.open {
   transform: rotate(180deg);
 }
+
+#footer-link {
+  text-decoration: none;
+  color: #faf5f5;
+  transition: color 0.3s ease;
+}
