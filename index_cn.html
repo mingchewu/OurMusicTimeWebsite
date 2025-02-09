@@ -65,10 +65,50 @@
     </section>
 
     <section id="events">
+      <div class="popup-2022">
+        <div class="popup-2022-content">
+          <span
+            class="close"
+            onclick="document.querySelector('.popup-2022').classList.remove('open')">
+            关闭
+          </span>
+          <h2>2022年活动</h2>
+          <div class="image-viewer">
+            <div class="arrow left" onclick="prevImage()">&#9664;</div>
+            <img
+              class="active"
+              id="current-image"
+              src="media/events/2022/main.jpg"
+              alt="活动图片" />
+            <div class="arrow right" onclick="nextImage()">&#9654;</div>
+          </div>
+          <p>2022年活动图片</p>
+        </div>
+      </div>
+      <div class="popup-2023">
+        <div class="popup-2023-content">
+          <span
+            class="close"
+            onclick="document.querySelector('.popup-2023').classList.remove('open')">
+            关闭
+          </span>
+          <h2>弹出标题</h2>
+          <div class="image-viewer2">
+            <div class="arrow left" onclick="prevImage2()">&#9664;</div>
+            <img
+              class="active2"
+              id="current-image2"
+              src="media/events/2023/main.jpg"
+              alt="活动图片" />
+            <div class="arrow right" onclick="nextImage2()">&#9654;</div>
+          </div>
+          <p>2022年活动图片</p>
+        </div>
+      </div>
       <h1>往期活动</h1>
       <div class="card-container">
         <div class="card">
-          <img src="media/events/2022/main.jpg" alt="2022年" />
+          <img src="media/events/2022/main.jpg" alt="2021" />
           <h2>2022年活动照片</h2>
           <button
             id="2022-btn"
@@ -77,7 +117,7 @@
           </button>
         </div>
         <div class="card">
-          <img src="media/events/2023/main.jpg" alt="2023年" />
+          <img src="media/events/2023/main.jpg" alt="2021" />
           <h2>2023年活动照片</h2>
           <button
             id="2023-btn"
