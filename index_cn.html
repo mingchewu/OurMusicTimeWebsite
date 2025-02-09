@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="zh">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Our Music Time</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div id="navbar">
+      <img src="media/logo.png" alt="logo" id="logo" />
+      <div id="navbar-links">
+        <a href="#main">首页</a>
+        <a href="#about">关于</a>
+        <a href="#events">活动</a>
+        <a href="#faq">常见问题</a>
+        <a href="index.html">英文网站</a>
+        <button id="signup-btn">注册！</button>
+      </div>
+    </div>
+
+    <section id="main">
+      <div id="noflex">
+        <h1 id="title">欢迎来到 Our Music Time</h1>
+        <p>激励新一代的音乐教育者和表演者。</p>
+        <br />
+        <button onclick="window.location.href='#about'">了解更多</button>
+      </div>
+    </section>
+
+    <section id="about">
+      <h1>关于 Our Music Time</h1>
+      <div class="card-container">
+        <div class="card">
+          <h2>什么是 Our Music Time ？</h2>
+          <p>
+            Our Music Time
+            是一门双语且受柯达伊教学法启发的课程，结合灵活的课程规划和歌曲教学结构，适用于普通音乐课堂和私人乐器课程，尤其是钢琴教学。
+          </p>
+        </div>
+
+        <div class="card">
+          <h2>教师培训</h2>
+          <p>
+            热爱音乐教育？加入我们的教师培训团队，与我们一起成长，共创音乐教育的美好未来。
+          </p>
+          <button onclick="alert('联系我们获取培训详情！')">加入我们</button>
+        </div>
+      </div>
+
+      <div class="card-author">
+        <div id="left">
+          <img src="media/chiunglien.JPEG" alt="刘琼莲" id="author" />
+        </div>
+        <div id="right">
+          <h2>关于创始人</h2>
+          <p>
+            刘琼莲融合东西方文化，凭借数十年的教学经验和教育研究，为儿童学习音乐提供坚实的基础。
+          </p>
+          <button onclick="alert('探索更多关于刘琼莲的信息！')">
+            阅读更多
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <section id="events">
+      <h1>往期活动</h1>
+      <div class="card-container">
+        <div class="card">
+          <img src="media/events/2022/main.jpg" alt="2022年" />
+          <h2>2022年活动照片</h2>
+          <button
+            id="2022-btn"
+            onclick="document.querySelector('.popup-2022').classList.toggle('open')">
+            了解更多
+          </button>
+        </div>
+        <div class="card">
+          <img src="media/events/2023/main.jpg" alt="2023年" />
+          <h2>2023年活动照片</h2>
+          <button
+            id="2023-btn"
+            onclick="document.querySelector('.popup-2023').classList.toggle('open')">
+            了解更多
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <section id="faq">
+      <h1>常见问题</h1>
+      <div class="faq-item">
+        <div class="faq-question">
+          Our Music Time
+          课程材料中的英文歌曲对台湾的儿童和教师来说较难学习。如何克服这一问题？
+          <span class="faq-icon">▼</span>
+        </div>
+        <div class="faq-answer">
+          <p>
+            佐尔坦·柯达伊（Zoltán
+            Kodály）一直倡导用母语学习音乐，尤其是世代相传的民歌。如果孩子们学习这些民歌，他们应该使用原始语言来学习音乐的精髓；相反，当孩子们在国外学习中文民歌时，也应当使用中文学习。
+          </p>
+        </div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-question">
+          教师可以将英文民歌翻译成中文来教孩子们吗？
+          <span class="faq-icon">▼</span>
+        </div>
+        <div class="faq-answer">
+          <p>
+            我的建议是不翻译。如上所述，目的是让学生感受歌词的原始含义。教师可以在教学前提前翻译，以便学生理解歌词含义，但学习时应使用原文。
+          </p>
+        </div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-question">
+          如何高效地将 Our Music Time 课程融入个人钢琴课程？
+          <span class="faq-icon">▼</span>
+        </div>
+        <div class="faq-answer">
+          <p>
+            柯达伊教学法（Kodály
+            Method）一直强调学习新知识需经过三个步骤（3P）：准备（Prepare）、呈现（Present）和练习（Practice）。教师需要注意，课程计划中的活动之一包含“呈现”环节，因此必须将这一主题引入个人钢琴课程。通过这三个步骤学习的主题，有助于学生认知理解音乐内容。
+          </p>
+        </div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-question">
+          Our Music Time 课程计划只适用于钢琴吗？
+          <span class="faq-icon">▼</span>
+        </div>
+        <div class="faq-answer">
+          <p>
+            不是。所有乐器，例如长笛、小提琴和打击乐器，都可以结合该课程使用。
+          </p>
+        </div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-question">
+          如何同时规划私人课程，并将《My First Piano Adventure》与 Our Music
+          Time 课程计划相结合？
+          <span class="faq-icon">▼</span>
+        </div>
+        <div class="faq-answer">
+          <p>
+            Our Music Time
+            课程计划中乐器课程的比例可以根据儿童的学习能力增加。例如，针对初学者或五岁以下的孩子，每周钢琴课为
+            60 分钟，其中 10-20 分钟用于钢琴学习，其余 40-50 分钟专注于 Our
+            Music Time 课程。
+          </p>
+        </div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-question">
+          教师可以使用其他钢琴教材吗？
+          <span class="faq-icon">▼</span>
+        </div>
+        <div class="faq-answer">
+          <p>
+            当然可以！如果教师希望继续使用现有学生的钢琴教材，他们可以根据每位学生的需求，适时适当地融入
+            Our Music Time 课程计划。
+          </p>
+        </div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-question">
+          Our Music Time 课程是否仅适用于学前儿童或初学者？
+          <span class="faq-icon">▼</span>
+        </div>
+        <div class="faq-answer">
+          <p>
+            当然不是！该课程适用于不同年龄和水平的学习者。如果音乐教师掌握更多的教学方法来辅助学生学习乐器，他们的学生将更容易理解和克服学习难题。
+          </p>
+        </div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-question">
+          学生完成初级、中级和高级课程需要多长时间？
+          <span class="faq-icon">▼</span>
+        </div>
+        <div class="faq-answer">
+          <p>
+            每本书包含五个主题，每个主题有 1 到 7 节课。其中第 6 和 7
+            节课用于综合复习和为下一个单元做准备。每个级别的课程大约需要 6
+            个月到 1 年完成。学生通常可以在不到 3 年的时间内完成所有 3
+            个级别的课程，具体取决于学生的年龄和学习能力。
+          </p>
+        </div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-question">
+          如何向家长解释“慢学”比“快学”更好？
+          <span class="faq-icon">▼</span>
+        </div>
+        <div class="faq-answer">
+          <p>
+            现在的家长希望孩子们快速学习乐器。然而，“慢学”能为孩子们奠定良好的音乐基础，关注音乐的三大基本要素：节拍、节奏和音准。孩子们应该先通过唱歌和听音乐建立音乐感知，然后再学习乐器，这样才能从复杂到简单，更全面地掌握音乐。
+          </p>
+        </div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-question">
+          Our Music Time 课程除了训练孩子的听觉听写外，还有其他内容吗？
+          <span class="faq-icon">▼</span>
+        </div>
+        <div class="faq-answer">
+          <p>
+            我们的核心理念一直是全面学习音乐。通过唱歌、拍节奏和打拍子来训练孩子们的大脑整合能力，使左脑控制右半身，右脑控制左半身，从而利用大脑的整合能力学习乐器。例如，演奏速度的稳定性不必依赖节拍器，而是通过大脑控制，实现全面的音乐学习。
+          </p>
+        </div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-question">
+          是否有学习所有歌曲的链接？
+          <span class="faq-icon">▼</span>
+        </div>
+        <div class="faq-answer">
+          <p>
+            参加 Our Music Time 在线培训课程的所有教师将收到由我们可爱的歌手
+            Aurelia 录制的 Google 链接，她的声音最为纯净。
+          </p>
+        </div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-question">
+          教师在培训课程中使用的白板尺寸是多少？
+          <span class="faq-icon">▼</span>
+        </div>
+        <div class="faq-answer">
+          <p>
+            Chiunglien 使用三种尺寸的双面磁性白板。白板尺寸如下： 小号：长 12 x
+            宽 16 英寸 中号：长 24 x 宽 18 英寸 大号：长 24 x 宽 68 英寸
+          </p>
+        </div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-question">
+          Our Music Time 2023 年在线 15 周课程包括哪些内容？
+          <span class="faq-icon">▼</span>
+        </div>
+        <div class="faq-answer">
+          <p>
+            每周都有作业。教师需录制短视频并讨论，以取得最佳教学效果。每个课程级别结束后，需提交
+            10-20 分钟的完整单元视频，以符合 Our Music Time
+            认证标准。所有参与课程的教师，每周有 10-20
+            分钟的个人时间与导师进行分析和讨论。此讨论时间需提前预约。请联系我们了解课程和学费信息，支持分期付款。
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <p>
+        &copy; 2025 Our Music Time 。版权所有。
+        <a id="footer-link" href="https://chainedtears.dev">
+          <b>网站设计：江Arthur</b>
+        </a>
+      </p>
+    </footer>
+    <script src="script.js"></script>
+  </body>
+</html>
