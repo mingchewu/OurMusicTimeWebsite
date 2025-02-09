@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh">
+<html lang="zh-Hant">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -10,55 +10,55 @@
     <div id="navbar">
       <img src="media/logo.png" alt="logo" id="logo" />
       <div id="navbar-links">
-        <a href="#main">首页</a>
-        <a href="#about">关于</a>
-        <a href="#events">活动</a>
-        <a href="#faq">常见问题</a>
-        <a href="index.html">英文网站</a>
-        <button id="signup-btn">注册！</button>
+        <a href="#main">首頁</a>
+        <a href="#about">關於</a>
+        <a href="#events">活動</a>
+        <a href="#faq">常見問題</a>
+        <a href="index.html">英文網站</a>
+        <button id="signup-btn">註冊！</button>
       </div>
     </div>
 
     <section id="main">
       <div id="noflex">
-        <h1 id="title">欢迎来到 Our Music Time</h1>
-        <p>激励新一代的音乐教育者和表演者。</p>
+        <h1 id="title">歡迎來到 Our Music Time</h1>
+        <p>激勵新一代的音樂教育者和表演者。</p>
         <br />
-        <button onclick="window.location.href='#about'">了解更多</button>
+        <button onclick="window.location.href='#about'">瞭解更多</button>
       </div>
     </section>
 
     <section id="about">
-      <h1>关于 Our Music Time</h1>
+      <h1>關於 Our Music Time</h1>
       <div class="card-container">
         <div class="card">
-          <h2>什么是 Our Music Time ？</h2>
+          <h2>什麼是 Our Music Time ？</h2>
           <p>
             Our Music Time
-            是一门双语且受柯达伊教学法启发的课程，结合灵活的课程规划和歌曲教学结构，适用于普通音乐课堂和私人乐器课程，尤其是钢琴教学。
+            是一門雙語且受柯達伊教學法啟發的課程，結合靈活的課程規劃和歌曲教學結構，適用於普通音樂課堂和私人樂器課程，尤其是鋼琴教學。
           </p>
         </div>
 
         <div class="card">
-          <h2>教师培训</h2>
+          <h2>教師培訓</h2>
           <p>
-            热爱音乐教育？加入我们的教师培训团队，与我们一起成长，共创音乐教育的美好未来。
+            熱愛音樂教育？加入我們的教師培訓團隊，與我們一起成長，共創音樂教育的美好未來。
           </p>
-          <button onclick="alert('联系我们获取培训详情！')">加入我们</button>
+          <button onclick="alert('聯繫我們獲取培訓詳情！')">加入我們</button>
         </div>
       </div>
 
       <div class="card-author">
         <div id="left">
-          <img src="media/chiunglien.JPEG" alt="刘琼莲" id="author" />
+          <img src="media/chiunglien.JPEG" alt="劉瓊蓮" id="author" />
         </div>
         <div id="right">
-          <h2>关于创始人</h2>
+          <h2>關於創始人</h2>
           <p>
-            刘琼莲融合东西方文化，凭借数十年的教学经验和教育研究，为儿童学习音乐提供坚实的基础。
+            劉瓊蓮融合東西方文化，憑藉數十年的教學經驗和教育研究，為兒童學習音樂提供堅實的基礎。
           </p>
-          <button onclick="alert('探索更多关于刘琼莲的信息！')">
-            阅读更多
+          <button onclick="alert('探索更多關於劉瓊蓮的資訊！')">
+            閱讀更多
           </button>
         </div>
       </div>
@@ -70,19 +70,19 @@
           <span
             class="close"
             onclick="document.querySelector('.popup-2022').classList.remove('open')">
-            关闭
+            關閉
           </span>
-          <h2>2022年活动</h2>
+          <h2>2022年活動</h2>
           <div class="image-viewer">
             <div class="arrow left" onclick="prevImage()">&#9664;</div>
             <img
               class="active"
               id="current-image"
               src="media/events/2022/main.jpg"
-              alt="活动图片" />
+              alt="活動圖片" />
             <div class="arrow right" onclick="nextImage()">&#9654;</div>
           </div>
-          <p>2022年活动图片</p>
+          <p>2022年活動圖片</p>
         </div>
       </div>
       <div class="popup-2023">
@@ -90,202 +90,201 @@
           <span
             class="close"
             onclick="document.querySelector('.popup-2023').classList.remove('open')">
-            关闭
+            關閉
           </span>
-          <h2>弹出标题</h2>
+          <h2>彈出標題</h2>
           <div class="image-viewer2">
             <div class="arrow left" onclick="prevImage2()">&#9664;</div>
             <img
               class="active2"
               id="current-image2"
               src="media/events/2023/main.jpg"
-              alt="活动图片" />
+              alt="活動圖片" />
             <div class="arrow right" onclick="nextImage2()">&#9654;</div>
           </div>
-          <p>2022年活动图片</p>
+          <p>2022年活動圖片</p>
         </div>
       </div>
-      <h1>往期活动</h1>
+      <h1>往期活動</h1>
       <div class="card-container">
         <div class="card">
           <img src="media/events/2022/main.jpg" alt="2021" />
-          <h2>2022年活动照片</h2>
+          <h2>2022年活動照片</h2>
           <button
             id="2022-btn"
             onclick="document.querySelector('.popup-2022').classList.toggle('open')">
-            了解更多
+            瞭解更多
           </button>
         </div>
         <div class="card">
           <img src="media/events/2023/main.jpg" alt="2021" />
-          <h2>2023年活动照片</h2>
+          <h2>2023年活動照片</h2>
           <button
             id="2023-btn"
             onclick="document.querySelector('.popup-2023').classList.toggle('open')">
-            了解更多
+            瞭解更多
           </button>
         </div>
       </div>
     </section>
 
     <section id="faq">
-      <h1>常见问题</h1>
+      <h1>常見問題</h1>
       <div class="faq-item">
         <div class="faq-question">
           Our Music Time
-          课程材料中的英文歌曲对台湾的儿童和教师来说较难学习。如何克服这一问题？
+          課程材料中的英文歌曲對臺灣的兒童和教師來說較難學習。如何克服這一問題？
           <span class="faq-icon">▼</span>
         </div>
         <div class="faq-answer">
           <p>
-            佐尔坦·柯达伊（Zoltán
-            Kodály）一直倡导用母语学习音乐，尤其是世代相传的民歌。如果孩子们学习这些民歌，他们应该使用原始语言来学习音乐的精髓；相反，当孩子们在国外学习中文民歌时，也应当使用中文学习。
+            佐爾坦·柯達伊（Zoltán
+            Kodály）一直倡導用母語學習音樂，尤其是世代相傳的民歌。如果孩子們學習這些民歌，他們應該使用原始語言來學習音樂的精髓；相反，當孩子們在國外學習中文民歌時，也應當使用中文學習。
           </p>
         </div>
       </div>
       <div class="faq-item">
         <div class="faq-question">
-          教师可以将英文民歌翻译成中文来教孩子们吗？
+          教師可以將英文民歌翻譯成中文來教孩子們嗎？
           <span class="faq-icon">▼</span>
         </div>
         <div class="faq-answer">
           <p>
-            我的建议是不翻译。如上所述，目的是让学生感受歌词的原始含义。教师可以在教学前提前翻译，以便学生理解歌词含义，但学习时应使用原文。
+            我的建議是不翻譯。如上所述，目的是讓學生感受歌詞的原始含義。教師可以在教學前提前翻譯，以便學生理解歌詞含義，但學習時應使用原文。
           </p>
         </div>
       </div>
       <div class="faq-item">
         <div class="faq-question">
-          如何高效地将 Our Music Time 课程融入个人钢琴课程？
+          如何高效地將 Our Music Time 課程融入個人鋼琴課程？
           <span class="faq-icon">▼</span>
         </div>
         <div class="faq-answer">
           <p>
-            柯达伊教学法（Kodály
-            Method）一直强调学习新知识需经过三个步骤（3P）：准备（Prepare）、呈现（Present）和练习（Practice）。教师需要注意，课程计划中的活动之一包含“呈现”环节，因此必须将这一主题引入个人钢琴课程。通过这三个步骤学习的主题，有助于学生认知理解音乐内容。
+            柯達伊教學法一直強調學習新知識需經過三個步驟（3P）：準備（Prepare）、呈現（Present）和練習（Practice）。教師需要注意，課程計劃中的活動之一包含“呈現”環節，因此必須將這一主題引入個人鋼琴課程。通過這三個步驟學習的主題，有助於學生認知理解音樂內容。
           </p>
         </div>
       </div>
       <div class="faq-item">
         <div class="faq-question">
-          Our Music Time 课程计划只适用于钢琴吗？
+          Our Music Time 課程計劃只適用於鋼琴嗎？
           <span class="faq-icon">▼</span>
         </div>
         <div class="faq-answer">
           <p>
-            不是。所有乐器，例如长笛、小提琴和打击乐器，都可以结合该课程使用。
+            不是。所有樂器，例如長笛、小提琴和打擊樂器，都可以結合該課程使用。
           </p>
         </div>
       </div>
       <div class="faq-item">
         <div class="faq-question">
-          如何同时规划私人课程，并将《My First Piano Adventure》与 Our Music
-          Time 课程计划相结合？
+          如何同時規劃私人課程，並將《My First Piano Adventure》與 Our Music
+          Time 課程計劃相結合？
           <span class="faq-icon">▼</span>
         </div>
         <div class="faq-answer">
           <p>
             Our Music Time
-            课程计划中乐器课程的比例可以根据儿童的学习能力增加。例如，针对初学者或五岁以下的孩子，每周钢琴课为
-            60 分钟，其中 10-20 分钟用于钢琴学习，其余 40-50 分钟专注于 Our
-            Music Time 课程。
+            課程計劃中樂器課程的比例可以根據兒童的學習能力增加。例如，針對初學者或五歲以下的孩子，每週鋼琴課為
+            60 分鐘，其中 10-20 分鐘用於鋼琴學習，其餘 40-50 分鐘專注於 Our
+            Music Time 課程。
           </p>
         </div>
       </div>
       <div class="faq-item">
         <div class="faq-question">
-          教师可以使用其他钢琴教材吗？
+          教師可以使用其他鋼琴教材嗎？
           <span class="faq-icon">▼</span>
         </div>
         <div class="faq-answer">
           <p>
-            当然可以！如果教师希望继续使用现有学生的钢琴教材，他们可以根据每位学生的需求，适时适当地融入
-            Our Music Time 课程计划。
+            當然可以！如果教師希望繼續使用現有學生的鋼琴教材，他們可以根據每位學生的需求，適時適當地融入
+            Our Music Time 課程計劃。
           </p>
         </div>
       </div>
       <div class="faq-item">
         <div class="faq-question">
-          Our Music Time 课程是否仅适用于学前儿童或初学者？
+          Our Music Time 課程是否僅適用於學前兒童或初學者？
           <span class="faq-icon">▼</span>
         </div>
         <div class="faq-answer">
           <p>
-            当然不是！该课程适用于不同年龄和水平的学习者。如果音乐教师掌握更多的教学方法来辅助学生学习乐器，他们的学生将更容易理解和克服学习难题。
+            當然不是！該課程適用於不同年齡和水平的學習者。如果音樂教師掌握更多的教學方法來輔助學生學習樂器，他們的學生將更容易理解和克服學習難題。
           </p>
         </div>
       </div>
       <div class="faq-item">
         <div class="faq-question">
-          学生完成初级、中级和高级课程需要多长时间？
+          學生完成初級、中級和高級課程需要多長時間？
           <span class="faq-icon">▼</span>
         </div>
         <div class="faq-answer">
           <p>
-            每本书包含五个主题，每个主题有 1 到 7 节课。其中第 6 和 7
-            节课用于综合复习和为下一个单元做准备。每个级别的课程大约需要 6
-            个月到 1 年完成。学生通常可以在不到 3 年的时间内完成所有 3
-            个级别的课程，具体取决于学生的年龄和学习能力。
+            每本書包含五個主題，每個主題有 1 到 7 節課。其中第 6 和 7
+            節課用於綜合複習和為下一個單元做準備。每個級別的課程大約需要 6
+            個月到 1 年完成。學生通常可以在不到 3 年的時間內完成所有 3
+            個級別的課程，具體取決於學生的年齡和學習能力。
           </p>
         </div>
       </div>
       <div class="faq-item">
         <div class="faq-question">
-          如何向家长解释“慢学”比“快学”更好？
+          如何向家長解釋“慢學”比“快學”更好？
           <span class="faq-icon">▼</span>
         </div>
         <div class="faq-answer">
           <p>
-            现在的家长希望孩子们快速学习乐器。然而，“慢学”能为孩子们奠定良好的音乐基础，关注音乐的三大基本要素：节拍、节奏和音准。孩子们应该先通过唱歌和听音乐建立音乐感知，然后再学习乐器，这样才能从复杂到简单，更全面地掌握音乐。
+            現在的家長希望孩子們快速學習樂器。然而，「慢學」能為孩子們奠定良好的音樂基礎，關注音樂的三大基本要素：節拍、節奏和音準。孩子們應該先通過唱歌和聽音樂建立音樂感知，然後再學習樂器，這樣才能從複雜到簡單，更全面地掌握音樂。
           </p>
         </div>
       </div>
       <div class="faq-item">
         <div class="faq-question">
-          Our Music Time 课程除了训练孩子的听觉听写外，还有其他内容吗？
+          Our Music Time 課程除了訓練孩子的聽覺聽寫外，還有其他內容嗎？
           <span class="faq-icon">▼</span>
         </div>
         <div class="faq-answer">
           <p>
-            我们的核心理念一直是全面学习音乐。通过唱歌、拍节奏和打拍子来训练孩子们的大脑整合能力，使左脑控制右半身，右脑控制左半身，从而利用大脑的整合能力学习乐器。例如，演奏速度的稳定性不必依赖节拍器，而是通过大脑控制，实现全面的音乐学习。
+            我們的核心理念一直是全面學習音樂。通過唱歌、拍節奏和打拍子來訓練孩子們的大腦整合能力，使左腦控制右半身，右腦控制左半身，從而利用大腦的整合能力學習樂器。例如，演奏速度的穩定性不必依賴節拍器，而是通過大腦控制，實現全面的音樂學習。
           </p>
         </div>
       </div>
       <div class="faq-item">
         <div class="faq-question">
-          是否有学习所有歌曲的链接？
+          是否有學習所有歌曲的鏈接？
           <span class="faq-icon">▼</span>
         </div>
         <div class="faq-answer">
           <p>
-            参加 Our Music Time 在线培训课程的所有教师将收到由我们可爱的歌手
-            Aurelia 录制的 Google 链接，她的声音最为纯净。
+            參加 Our Music Time 線上培訓課程的所有教師將收到由我們可愛的歌手
+            Aurelia 錄製的 Google 鏈接，她的聲音最為純淨。
           </p>
         </div>
       </div>
       <div class="faq-item">
         <div class="faq-question">
-          教师在培训课程中使用的白板尺寸是多少？
+          教師在培訓課程中使用的白板尺寸是多少？
           <span class="faq-icon">▼</span>
         </div>
         <div class="faq-answer">
           <p>
-            Chiunglien 使用三种尺寸的双面磁性白板。白板尺寸如下： 小号：长 12 x
-            宽 16 英寸 中号：长 24 x 宽 18 英寸 大号：长 24 x 宽 68 英寸
+            Chiunglien 使用三種尺寸的雙面磁性白板。白板尺寸如下： 小號：長 12 x
+            寬 16 英吋 中號：長 24 x 寬 18 英吋 大號：長 24 x 寬 68 英吋
           </p>
         </div>
       </div>
       <div class="faq-item">
         <div class="faq-question">
-          Our Music Time 2023 年在线 15 周课程包括哪些内容？
+          Our Music Time 2023 年線上 15 週課程包括哪些內容？
           <span class="faq-icon">▼</span>
         </div>
         <div class="faq-answer">
           <p>
-            每周都有作业。教师需录制短视频并讨论，以取得最佳教学效果。每个课程级别结束后，需提交
-            10-20 分钟的完整单元视频，以符合 Our Music Time
-            认证标准。所有参与课程的教师，每周有 10-20
-            分钟的个人时间与导师进行分析和讨论。此讨论时间需提前预约。请联系我们了解课程和学费信息，支持分期付款。
+            每週都有作業。教師需錄製短視頻並討論，以取得最佳教學效果。每個課程級別結束後，需提交
+            10-20 分鐘的完整單元視頻，以符合 Our Music Time
+            認證標準。所有參與課程的教師，每週有 10-20
+            分鐘的個人時間與導師進行分析和討論。此討論時間需提前預約。請與我們聯繫了解課程和學費資訊，支持分期付款。
           </p>
         </div>
       </div>
@@ -293,9 +292,9 @@
 
     <footer>
       <p>
-        &copy; 2025 Our Music Time 。版权所有。
+        &copy; 2025 Our Music Time 。版權所有。
         <a id="footer-link" href="https://chainedtears.dev">
-          <b>网站设计：江Arthur</b>
+          <b>網站設計：江Arthur</b>
         </a>
       </p>
     </footer>
