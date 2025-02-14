@@ -5,8 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Our Music Time</title>
     <link rel="stylesheet" href="styles.css" />
+    <link
+      href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
   </head>
   <body>
+    <div id="particles-js"></div>
+    <script src="http://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+    <script src="http://threejs.org/examples/js/libs/stats.min.js"></script>
     <div id="navbar">
       <img src="media/logo.png" alt="logo" id="logo" />
       <div id="navbar-links">
@@ -22,51 +30,83 @@
     <section id="main">
       <div id="noflex">
         <h1 id="title">Welcome to Our Music Time</h1>
-        <p>Inspiring the next generation of music educators and performers.</p>
+        <div id="subtitle-container">
+          <p id="subtitle">
+            Inspiring the next generation of music educators and performers.
+          </p>
+        </div>
         <br />
-        <button onclick="window.location.href='#about'">Learn More</button>
+        <button id="learn-more-btn" onclick="window.location.href='#about'">
+          Learn More
+        </button>
       </div>
     </section>
 
     <section id="about">
-      <h1>About Our Music Time</h1>
+      <h1 data-aos="fade-up" data-aos-anchor-placement="top-bottom">
+        About Our Music Time
+      </h1>
       <div class="card-container">
-        <div class="card">
-          <h2>What is Our Music Time?</h2>
-          <p>
-            Our Music Time is a bilingual and Kodály-inspired teaching course
-            incorporating flexible lesson-planning and song-leading structures
-            for teaching general music classes and private instrumental lessons,
-            especially piano.
-          </p>
+        <div
+          class="card"
+          data-aos="fade-up"
+          data-aos-anchor-placement="top-bottom"
+        >
+          <div id="noflex">
+            <h2>What is Our Music Time?</h2>
+            <p>
+              Our Music Time is a bilingual and Kodály-inspired teaching course
+              incorporating flexible lesson-planning and song-leading structures
+              for teaching general music classes and private instrumental
+              lessons, especially piano.
+            </p>
+          </div>
         </div>
 
-        <div class="card">
-          <h2>Teacher Training</h2>
-          <p>
-            Passionate about music education? Join our teacher training team and
-            grow with us to create a better future for music education.
-          </p>
-          <button onclick="alert('Contact us for training details!')">
-            Join Us
-          </button>
+        <div
+          class="card"
+          data-aos="fade-up"
+          data-aos-anchor-placement="top-bottom"
+        >
+          <div id="noflex">
+            <h2>Teacher Training</h2>
+            <p>
+              Passionate about music education? Join our teacher training team
+              and grow with us to create a better future for music education.
+            </p>
+            <button>
+              <a
+                href="https://forms.gle/sqtUk72GNF8U3sYB9"
+                target="_blank"
+                style="text-decoration: none; color: white"
+              >
+                Sign Up
+              </a>
+            </button>
+          </div>
         </div>
       </div>
 
-      <div class="card-author">
+      <div
+        class="card-author"
+        data-aos="fade-up"
+        data-aos-anchor-placement="top-bottom"
+      >
         <div id="left">
           <img src="media/chiunglien.JPEG" alt="Chiunglien Liu" id="author" />
         </div>
         <div id="right">
-          <h2>About the Founder</h2>
-          <p>
-            Chiunglien Liu integrates Eastern and Western cultures with decades
-            of teaching experience and pedagogical research, providing a solid
-            foundation for children to learn music.
-          </p>
-          <button onclick="alert('Explore more about Chiunglien Liu!')">
-            Read More
-          </button>
+          <div id="noflex">
+            <h2>About the Founder</h2>
+            <p>
+              Chiunglien Liu integrates Eastern and Western cultures with
+              decades of teaching experience and pedagogical research, providing
+              a solid foundation for children to learn music.
+            </p>
+            <button onclick="alert('Explore more about Chiunglien Liu!')">
+              Read More
+            </button>
+          </div>
         </div>
       </div>
     </section>
@@ -76,7 +116,8 @@
         <div class="popup-2022-content">
           <span
             class="close"
-            onclick="document.querySelector('.popup-2022').classList.remove('open')">
+            onclick="document.querySelector('.popup-2022').classList.remove('open')"
+          >
             Close
           </span>
           <h2>2022 Events</h2>
@@ -86,7 +127,8 @@
               class="active"
               id="current-image"
               src="media/events/2022/main.jpg"
-              alt="Event Image" />
+              alt="Event Image"
+            />
             <div class="arrow right" onclick="nextImage()">&#9654;</div>
           </div>
           <p>2022 Event Pictures</p>
@@ -96,48 +138,119 @@
         <div class="popup-2023-content">
           <span
             class="close"
-            onclick="document.querySelector('.popup-2023').classList.remove('open')">
+            onclick="document.querySelector('.popup-2023').classList.remove('open')"
+          >
             Close
           </span>
-          <h2>Popup Title</h2>
+          <h2>2023 Events</h2>
           <div class="image-viewer2">
             <div class="arrow left" onclick="prevImage2()">&#9664;</div>
             <img
               class="active2"
               id="current-image2"
               src="media/events/2023/main.JPG"
-              alt="Event Image" />
+              alt="Event Image"
+            />
             <div class="arrow right" onclick="nextImage2()">&#9654;</div>
           </div>
-          <p>2022 Event Pictures</p>
+          <p>2023 Event Pictures</p>
+        </div>
+      </div>
+      <div class="popup-2024">
+        <div class="popup-2024-content">
+          <span
+            class="close"
+            onclick="document.querySelector('.popup-2024').classList.remove('open')"
+          >
+            Close
+          </span>
+          <h2>2025 Events</h2>
+          <div class="image-viewer3">
+            <div class="arrow left" onclick="prevImage3()">&#9664;</div>
+            <img
+              class="active3"
+              id="current-image3"
+              style="width: 50%"
+              src="media/events/2025/main.jpg"
+              alt="Event Image"
+            />
+            <div class="arrow right" onclick="nextImage3()">&#9654;</div>
+          </div>
+          <p>theres only one picture for this haha 2025 just started</p>
         </div>
       </div>
       <h1>Past Events</h1>
       <div class="card-container">
-        <div class="card">
-          <img src="media/events/2022/main.jpg" alt="2021" />
-          <h2>2022 Events Photos</h2>
-          <button
-            id="2022-btn"
-            onclick="document.querySelector('.popup-2022').classList.toggle('open')">
-            Learn More
-          </button>
+        <div
+          class="card"
+          data-aos="fade-up"
+          data-aos-anchor-placement="top-bottom"
+        >
+          <div id="noflex">
+            <img src="media/events/2022/main.jpg" alt="2022" />
+            <h2>2022 Events Photos</h2>
+            <button
+              id="2022-btn"
+              onclick="document.querySelector('.popup-2022').classList.toggle('open')"
+            >
+              Learn More
+            </button>
+          </div>
         </div>
-        <div class="card">
-          <img src="media/events/2023/main.JPG" alt="2021" />
-          <h2>2023 Events Photos</h2>
-          <button
-            id="2023-btn"
-            onclick="document.querySelector('.popup-2023').classList.toggle('open')">
-            Learn More
-          </button>
+        <div
+          class="card"
+          data-aos="fade-up"
+          data-aos-anchor-placement="top-bottom"
+        >
+          <div id="noflex">
+            <img src="media/events/2023/main.JPG" alt="2023" />
+            <h2>2023 Events Photos</h2>
+            <button
+              id="2023-btn"
+              onclick="document.querySelector('.popup-2023').classList.toggle('open')"
+            >
+              Learn More
+            </button>
+          </div>
         </div>
+        <div
+          class="card"
+          data-aos="fade-up"
+          data-aos-anchor-placement="top-bottom"
+        >
+          <div id="noflex">
+            <img src="media/events/2025/main.jpg" alt="2025" />
+            <h2>2025 Events Photos</h2>
+            <button
+              id="2024-btn"
+              onclick="document.querySelector('.popup-2024').classList.toggle('open')"
+            >
+              Learn More
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section
+      id="carousel"
+      data-aos="fade-up"
+      data-aos-anchor-placement="top-bottom"
+    >
+      <h1>Student Acheivements!</h1>
+      <div class="carousel-container">
+        <button class="nav-button prev">←</button>
+        <button class="nav-button next">→</button>
       </div>
     </section>
 
     <section id="faq">
       <h1>FAQ</h1>
-      <div class="faq-item">
+      <div
+        class="faq-item"
+        data-aos="fade-up"
+        data-aos-anchor-placement="top-bottom"
+      >
         <div class="faq-question">
           The English songs in the Our Music Time course materials are more
           difficult for children and teachers to learn in Taiwan. How to
@@ -155,7 +268,11 @@
           </p>
         </div>
       </div>
-      <div class="faq-item">
+      <div
+        class="faq-item"
+        data-aos="fade-up"
+        data-aos-anchor-placement="top-bottom"
+      >
         <div class="faq-question">
           Can the teachers translate the folk songs in English into Chinese for
           children to learn?
@@ -170,7 +287,11 @@
           </p>
         </div>
       </div>
-      <div class="faq-item">
+      <div
+        class="faq-item"
+        data-aos="fade-up"
+        data-aos-anchor-placement="top-bottom"
+      >
         <div class="faq-question">
           How can I efficiently add all the Our Music Time lessons into
           individual piano lessons?
@@ -188,7 +309,11 @@
           </p>
         </div>
       </div>
-      <div class="faq-item">
+      <div
+        class="faq-item"
+        data-aos="fade-up"
+        data-aos-anchor-placement="top-bottom"
+      >
         <div class="faq-question">
           Is Our Music Time lesson plan only suitable for piano?
           <span class="faq-icon">▼</span>
@@ -200,7 +325,11 @@
           </p>
         </div>
       </div>
-      <div class="faq-item">
+      <div
+        class="faq-item"
+        data-aos="fade-up"
+        data-aos-anchor-placement="top-bottom"
+      >
         <div class="faq-question">
           How do you simultaneously plan private lessons and match the My First
           Piano Adventure with Our Music Time lesson plans?
@@ -217,7 +346,11 @@
           </p>
         </div>
       </div>
-      <div class="faq-item">
+      <div
+        class="faq-item"
+        data-aos="fade-up"
+        data-aos-anchor-placement="top-bottom"
+      >
         <div class="faq-question">
           Can teachers use other piano textbooks?
           <span class="faq-icon">▼</span>
@@ -231,7 +364,11 @@
           </p>
         </div>
       </div>
-      <div class="faq-item">
+      <div
+        class="faq-item"
+        data-aos="fade-up"
+        data-aos-anchor-placement="top-bottom"
+      >
         <div class="faq-question">
           Are all Our Music Time lesson plans only suitable for children in
           preschool or beginners?
@@ -246,7 +383,11 @@
           </p>
         </div>
       </div>
-      <div class="faq-item">
+      <div
+        class="faq-item"
+        data-aos="fade-up"
+        data-aos-anchor-placement="top-bottom"
+      >
         <div class="faq-question">
           How long do the students complete the Elementary, Intermediate, and
           Advanced levels courses?
@@ -262,7 +403,11 @@
           </p>
         </div>
       </div>
-      <div class="faq-item">
+      <div
+        class="faq-item"
+        data-aos="fade-up"
+        data-aos-anchor-placement="top-bottom"
+      >
         <div class="faq-question">
           How do we tell parents that ‘Slow Learning’ is a better concept than
           ‘Faster Learning’?
@@ -280,7 +425,11 @@
           </p>
         </div>
       </div>
-      <div class="faq-item">
+      <div
+        class="faq-item"
+        data-aos="fade-up"
+        data-aos-anchor-placement="top-bottom"
+      >
         <div class="faq-question">
           Do Our Music Time courses have other things besides training
           children's audition dictation?
@@ -300,7 +449,11 @@
           </p>
         </div>
       </div>
-      <div class="faq-item">
+      <div
+        class="faq-item"
+        data-aos="fade-up"
+        data-aos-anchor-placement="top-bottom"
+      >
         <div class="faq-question">
           Is there a link to learn all the songs?
           <span class="faq-icon">▼</span>
@@ -313,7 +466,11 @@
           </p>
         </div>
       </div>
-      <div class="faq-item">
+      <div
+        class="faq-item"
+        data-aos="fade-up"
+        data-aos-anchor-placement="top-bottom"
+      >
         <div class="faq-question">
           What does the teacher use the size of the whiteboard in training
           courses?
@@ -328,7 +485,11 @@
           </p>
         </div>
       </div>
-      <div class="faq-item">
+      <div
+        class="faq-item"
+        data-aos="fade-up"
+        data-aos-anchor-placement="top-bottom"
+      >
         <div class="faq-question">
           What do Our Music Time 2023 Online 15-week courses include?
           <span class="faq-icon">▼</span>
@@ -347,7 +508,11 @@
           </p>
         </div>
       </div>
-      <div class="faq-item">
+      <div
+        class="faq-item"
+        data-aos="fade-up"
+        data-aos-anchor-placement="top-bottom"
+      >
         <div class="faq-question">
           What are the requirements for becoming a certified Our Music Time
           teacher?
@@ -364,7 +529,6 @@
         </div>
       </div>
     </section>
-
     <footer>
       <p>
         &copy; 2025 Our Music Time. All rights reserved.
