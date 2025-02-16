@@ -23,7 +23,15 @@
         <a href="#events">Events</a>
         <a href="#faq">FAQ</a>
         <a href="index_cn.html">中文网站</a>
-        <button id="signup-btn">Sign Up!</button>
+        <button id="signup-btn">
+          <a
+            href="https://forms.gle/sqtUk72GNF8U3sYB9"
+            target="_blank"
+            style="text-decoration: none; color: white"
+          >
+            Sign Up!
+          </a>
+        </button>
       </div>
     </div>
 
@@ -36,11 +44,16 @@
           </p>
         </div>
         <br />
+        <br />
+        <br />
+        <br />
         <button id="learn-more-btn" onclick="window.location.href='#about'">
           Learn More
         </button>
       </div>
     </section>
+
+    <img src="media/dolls.png" alt="dolls" id="dolls" style="max-width: 50%" />
 
     <section id="about">
       <h1 data-aos="fade-up" data-aos-anchor-placement="top-bottom">
@@ -69,6 +82,7 @@
           data-aos-anchor-placement="top-bottom"
         >
           <div id="noflex">
+            <img id="new" src="media/new.png" />
             <h2>Teacher Training</h2>
             <p>
               Passionate about music education? Join our teacher training team
@@ -164,19 +178,41 @@
           >
             Close
           </span>
-          <h2>2025 Events</h2>
+          <h2>2024 Events</h2>
           <div class="image-viewer3">
             <div class="arrow left" onclick="prevImage3()">&#9664;</div>
             <img
               class="active3"
               id="current-image3"
               style="width: 50%"
-              src="media/events/2025/main.jpg"
+              src="media/events/2024/main.jpg"
               alt="Event Image"
             />
             <div class="arrow right" onclick="nextImage3()">&#9654;</div>
           </div>
-          <p>theres only one picture for this haha 2025 just started</p>
+          <p>Images for 2024 Events</p>
+        </div>
+      </div>
+      <div class="popup-2025">
+        <div class="popup-2025-content">
+          <span
+            class="close"
+            onclick="document.querySelector('.popup-2025').classList.remove('open')"
+          >
+            Close
+          </span>
+          <h2>2025 Events</h2>
+          <div class="image-viewer4">
+            <div class="arrow left" onclick="prevImage4()">&#9664;</div>
+            <img
+              class="active4"
+              id="current-image4"
+              src="media/events/2025/main.jpg"
+              alt="Event Image"
+            />
+            <div class="arrow right" onclick="nextImage4()">&#9654;</div>
+          </div>
+          <p>Images for 2025 Events</p>
         </div>
       </div>
       <h1>Past Events</h1>
@@ -219,11 +255,27 @@
           data-aos-anchor-placement="top-bottom"
         >
           <div id="noflex">
-            <img src="media/events/2025/main.jpg" alt="2025" />
-            <h2>2025 Events Photos</h2>
+            <img src="media/events/2024/main.jpg" alt="2024" />
+            <h2>2024 Events Photos</h2>
             <button
               id="2024-btn"
               onclick="document.querySelector('.popup-2024').classList.toggle('open')"
+            >
+              Learn More
+            </button>
+          </div>
+        </div>
+        <div
+          class="card"
+          data-aos="fade-up"
+          data-aos-anchor-placement="top-bottom"
+        >
+          <div id="noflex">
+            <img src="media/events/2025/main.jpg" alt="2025" />
+            <h2>2025 Events Photos</h2>
+            <button
+              id="2025-btn"
+              onclick="document.querySelector('.popup-2025').classList.toggle('open')"
             >
               Learn More
             </button>
@@ -237,7 +289,7 @@
       data-aos="fade-up"
       data-aos-anchor-placement="top-bottom"
     >
-      <h1>Student Acheivements!</h1>
+      <h1>Our little Singers!</h1>
       <div class="carousel-container">
         <button class="nav-button prev">←</button>
         <button class="nav-button next">→</button>

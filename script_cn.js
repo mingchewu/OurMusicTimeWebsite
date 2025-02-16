@@ -320,13 +320,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Random text effect for subtitle
   const subtitleContainer = document.getElementById("subtitle-container");
-  const subtitleText =
-    "Inspiring the next generation of music educators and performers.";
+  const subtitleText = "啟發新一代的音樂教育者與表演者。";
   const randomCharacters =
-    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+-=[]{}|;:,.<>?/~";
+    "的一是不了人我在有他这为之大来以个中上们国年发和地到以说时要就出会可也你对生能而子那得于着下自之三小经去法学如都同现当没动面起看定天分还进好";
+  // Use common Chinese characters
+
   let elapsedTime = 0;
 
-  // Wrap text in a <p> to keep structure
   subtitleContainer.innerHTML = `<p id="subtitle"><span></span></p>`;
   const subtitleSpan = subtitleContainer.querySelector("span");
 
@@ -335,15 +335,15 @@ document.addEventListener("DOMContentLoaded", () => {
   function generateRandomText() {
     let randomText = "";
     for (let i = 0; i < subtitleText.length; i++) {
-      randomText += randomCharacters.charAt(
-        Math.floor(Math.random() * randomCharacters.length)
-      );
+      if (Math.random() > elapsedTime / 2500) {
+        randomText += randomCharacters.charAt(
+          Math.floor(Math.random() * randomCharacters.length)
+        ); // Pick a random Chinese character
+      } else {
+        randomText += subtitleText[i]; // Gradually reveal correct characters
+      }
     }
     subtitleSpan.textContent = randomText;
-  }
-
-  function showFinalText() {
-    subtitleSpan.textContent = subtitleText;
   }
 
   function startEffect() {
@@ -352,7 +352,7 @@ document.addEventListener("DOMContentLoaded", () => {
       elapsedTime += 40;
       if (elapsedTime >= 2500) {
         clearInterval(interval);
-        showFinalText();
+        subtitleSpan.textContent = subtitleText; // Show final text
       }
     }, 40);
   }

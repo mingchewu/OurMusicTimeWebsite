@@ -43,6 +43,15 @@ scrollbar-track {
   background-color: transparent;
 }
 
+#learn-more-btn {
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+#learn-more-btn:hover {
+  transform: scale(1.1);
+}
+
 .carousel-container {
   z-index: 50;
   position: relative;
@@ -490,6 +499,54 @@ h1 {
   opacity: 1;
 }
 
+.popup-2025 {
+  z-index: 20000;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  visibility: hidden;
+  opacity: 0;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
+.popup-2025.open {
+  visibility: visible;
+  opacity: 1;
+}
+
+.popup-2025-content {
+  z-index: 20001;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.2),
+    rgba(255, 255, 255, 0.1)
+  );
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), inset 0 1px rgba(255, 255, 255, 0.3);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 25px;
+  padding: 20px;
+  color: white;
+  transform-origin: top center;
+  transform: scale(0.3, 0.1) translateY(-100%);
+  opacity: 0;
+  transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease;
+}
+
+.popup-2025.open .popup-2025-content {
+  transform: scale(1, 1) translateY(0);
+  opacity: 1;
+}
+
 .close {
   position: absolute;
   top: 10%;
@@ -498,37 +555,31 @@ h1 {
   font-family: "Montserrat", "Trebuchet MS", "Lucida Sans Unicode";
 }
 
-.image-viewer {
+.image-viewer,
+.image-viewer2,
+.image-viewer3,
+.image-viewer4 {
   position: relative;
   max-width: 600px;
   margin: 50px auto;
-}
-.image-viewer img {
-  width: 100%;
-  max-height: 700px;
-  border-radius: 8px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-  opacity: 0;
-  transition: opacity 0.3s ease-in-out;
-}
-.image-viewer img.active {
-  opacity: 1;
 }
 
-.image-viewer2 {
-  position: relative;
-  max-width: 600px;
-  margin: 50px auto;
-}
-.image-viewer2 img {
+.image-viewer img,
+.image-viewer2 img,
+.image-viewer3 img,
+.image-viewer4 img {
   width: 100%;
+  max-height: 500px;
   border-radius: 8px;
-  max-height: 700px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
   opacity: 0;
   transition: opacity 0.3s ease-in-out;
 }
-.image-viewer2 img.active2 {
+
+.image-viewer img.active,
+.image-viewer2 img.active2,
+.image-viewer3 img.active3,
+.image-viewer4 img.active4 {
   opacity: 1;
 }
 .arrow {
@@ -546,6 +597,13 @@ h1 {
 }
 .arrow.right {
   right: 10px;
+}
+
+#new {
+  max-width: 100px;
+  position: absolute;
+  left: 0;
+  top: 0;
 }
 
 #navbar.scrolled {
