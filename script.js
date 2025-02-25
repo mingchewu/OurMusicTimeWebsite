@@ -155,14 +155,33 @@ document.addEventListener("DOMContentLoaded", () => {
   const mediaData = [
     {
       type: "image",
+      url: "media/aurelia/2.JPG",
+      title: "Aurelia",
+    },
+    {
+      type: "image",
+      url: "media/aurelia/3.JPG",
+      title: "Aurelia",
+    },
+    {
+      type: "image",
+      url: "media/aurelia/4.JPG",
+      title: "Aurelia",
+    },
+    {
+      type: "image",
+      url: "media/isabelle/2.JPG",
+      title: "Isabelle",
+    },
+    {
+      type: "image",
       url: "media/events/carousel/cobblercobbler.jpg",
       title: "Cobbler, Cobbler",
     },
     {
       type: "video",
       url: "media/events/carousel/cobblercobbler.MOV",
-      title:
-        "Aurelia lives in Nova Scotia, Canda and is 9 years old. She loves to paint, dance, and bike. Aurelia is learning how to play the piano, the harp, & sing. She joined the choir Cappelia Regalis this spring. When she grows up, Aurelia wants to study Dinoasaurs (Palaeontology)!",
+      title: "Aurelia's Shoes",
     },
     {
       type: "image",
