@@ -102,7 +102,22 @@ document.addEventListener("DOMContentLoaded", () => {
     updateImage2(newIndex);
   };
 
-  const images3 = ["media/events/2024/main.jpg"];
+  const images3 = [
+    "media/events/2024/main.jpg",
+    "media/events/2024/1.jpg",
+    "media/events/2024/2.jpg",
+    "media/events/2024/3.jpg",
+    "media/events/2024/4.jpg",
+    "media/events/2024/5.jpg",
+    "media/events/2024/6.jpg",
+    "media/events/2024/7.jpg",
+    "media/events/2024/8.jpg",
+    "media/events/2024/9.jpg",
+    "media/events/2024/10.jpg",
+    "media/events/2024/11.jpg",
+    "media/events/2024/12.jpg",
+    "media/events/2024/13.jpg",
+  ];
 
   let currentIndex3 = 0;
 
@@ -127,7 +142,11 @@ document.addEventListener("DOMContentLoaded", () => {
     updateImage3(newIndex);
   };
 
-  const images4 = ["media/events/2025/main.jpg"];
+  const images4 = [
+    "media/events/2025/main.jpg",
+    "media/events/2025/1.JPG",
+    "media/events/2025/2.JPG",
+  ];
 
   let currentIndex4 = 0;
 
@@ -151,181 +170,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const newIndex = (currentIndex4 + 1) % images4.length;
     updateImage4(newIndex);
   };
-
-  const mediaData = [
-    {
-      type: "image",
-      url: "media/aurelia/2.JPG",
-      title: "Aurelia",
-    },
-    {
-      type: "image",
-      url: "media/aurelia/3.JPG",
-      title: "Aurelia",
-    },
-    {
-      type: "image",
-      url: "media/aurelia/4.JPG",
-      title: "Aurelia",
-    },
-    {
-      type: "image",
-      url: "media/isabelle/2.JPG",
-      title: "Isabelle",
-    },
-    {
-      type: "image",
-      url: "media/events/carousel/cobblercobbler.jpg",
-      title: "Cobbler, Cobbler",
-    },
-    {
-      type: "video",
-      url: "media/events/carousel/cobblercobbler.MOV",
-      title: "Aurelia's Shoes",
-    },
-    {
-      type: "image",
-      url: "media/events/carousel/witchwitch.jpg",
-      title: "Witch, Witch",
-    },
-    {
-      type: "video",
-      url: "media/events/carousel/witchwitch.MOV",
-      title: "Witch, Witch",
-    },
-    {
-      type: "image",
-      url: "media/events/carousel/lucylocket.jpg",
-      title: "Lucy Locket Lost Her Pocket",
-    },
-    {
-      type: "video",
-      url: "media/events/carousel/lucylocket.MOV",
-      title: "Lucy Locket Lost Her Pocket",
-    },
-    {
-      type: "image",
-      url: "media/events/carousel/charlieocean.jpg",
-      title: "Charlie Over the Ocean",
-    },
-    {
-      type: "video",
-      url: "media/events/carousel/charlieocean.MOV",
-      title: "Charlie Over the Ocean",
-    },
-    {
-      type: "image",
-      url: "media/events/carousel/closetkey.jpg",
-      title: "I've Lost the Closet Key",
-    },
-    {
-      type: "video",
-      url: "media/events/carousel/closetkey.MOV",
-      title: "I've Lost the Closet Key",
-    },
-  ];
-
-  class Carousel {
-    constructor(container, data) {
-      this.container = container;
-      this.data = data;
-      this.currentIndex = 0;
-      this.interval = null;
-      this.init();
-    }
-
-    init() {
-      this.createSlides();
-      this.setupNavigation();
-      this.showSlide(0);
-      this.startAutoPlay();
-    }
-
-    createSlides() {
-      this.data.forEach((item, index) => {
-        const slide = document.createElement("div");
-        slide.className = "carousel-slide";
-
-        const mediaElement =
-          item.type === "video"
-            ? this.createVideoElement(item.url)
-            : this.createImageElement(item.url);
-
-        const title = document.createElement("div");
-        title.className = "title";
-        title.textContent = item.title;
-
-        slide.appendChild(mediaElement);
-        slide.appendChild(title);
-        this.container.appendChild(slide);
-
-        mediaElement.addEventListener("click", () => {
-          window.open(item.url, "_blank");
-        });
-      });
-    }
-
-    createVideoElement(url) {
-      const video = document.createElement("video");
-      video.style.zIndex = 50;
-      video.style.borderRadius = "15px";
-      video.className = "media-content";
-      video.src = url;
-      video.controls = true;
-      video.muted = true; // Ensure video is muted for autoplay
-      video.loop = false;
-      video.play(); // Explicitly call play to ensure autoplay
-      return video;
-    }
-
-    createImageElement(url) {
-      const img = document.createElement("img");
-      img.style.borderRadius = "15px";
-      img.className = "media-content";
-      img.src = url;
-      return img;
-    }
-
-    setupNavigation() {
-      const prevButton = this.container.querySelector(".prev");
-      const nextButton = this.container.querySelector(".next");
-
-      prevButton.addEventListener("click", () => this.navigate(-1));
-      nextButton.addEventListener("click", () => this.navigate(1));
-    }
-
-    navigate(direction) {
-      this.currentIndex =
-        (this.currentIndex + direction + this.data.length) % this.data.length;
-      this.showSlide(this.currentIndex);
-      this.resetAutoPlay();
-    }
-
-    showSlide(index) {
-      const slides = this.container.querySelectorAll(".carousel-slide");
-      slides.forEach((slide) => slide.classList.remove("active"));
-      slides[index].classList.add("active");
-    }
-
-    startAutoPlay() {
-      this.interval = setInterval(() => {
-        this.navigate(1);
-      }, 15000); // Change slide every 5 seconds
-    }
-
-    resetAutoPlay() {
-      clearInterval(this.interval);
-      this.startAutoPlay();
-    }
-  }
-
-  // Initialize the carousel
-  const container = document.querySelector(".carousel-container");
-  const carousel = new Carousel(container, mediaData); // Typewriter effect
-  const titleElement = document.getElementById("title");
-  const titleText = titleElement.textContent;
-  let index = 0;
-  titleElement.textContent = "";
 
   function typeWriter() {
     if (index < titleText.length) {

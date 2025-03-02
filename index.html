@@ -5,22 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Our Music Time</title>
     <link rel="stylesheet" href="styles.css" />
-    <link
-      href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css"
-      rel="stylesheet"
-    />
-    <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
   </head>
   <body>
-    <div id="particles-js"></div>
-    <script src="http://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
-    <script src="http://threejs.org/examples/js/libs/stats.min.js"></script>
     <div id="navbar">
       <img src="media/logo.png" alt="logo" id="logo" />
       <div id="navbar-links">
         <a href="#main">Home</a>
         <a href="#about">About</a>
+        <a href="#books">Books</a>
         <a href="#events">Events</a>
+        <a href="#carousel">Singers</a>
         <a href="#faq">FAQ</a>
         <a href="index_cn.html">中文网站</a>
         <button id="signup-btn">
@@ -37,12 +31,7 @@
 
     <section id="main">
       <div id="noflex">
-        <img
-          src="media/dolls.png"
-          alt="dolls"
-          id="dolls"
-          style="max-width: 25%"
-        />
+        <img src="media/dolls.png" alt="dolls" id="dolls" />
         <h1 id="title">Welcome to Our Music Time</h1>
         <div id="subtitle-container">
           <p id="subtitle">
@@ -60,15 +49,9 @@
     </section>
 
     <section id="about">
-      <h1 data-aos="fade-up" data-aos-anchor-placement="top-bottom">
-        About Our Music Time
-      </h1>
+      <h1>About Our Music Time</h1>
       <div class="card-container">
-        <div
-          class="card"
-          data-aos="fade-up"
-          data-aos-anchor-placement="top-bottom"
-        >
+        <div class="card">
           <div id="noflex">
             <h2>What is Our Music Time?</h2>
             <p>
@@ -80,11 +63,7 @@
           </div>
         </div>
 
-        <div
-          class="card"
-          data-aos="fade-up"
-          data-aos-anchor-placement="top-bottom"
-        >
+        <div class="card">
           <div id="noflex">
             <img id="new" src="media/new.png" />
             <h2>Teacher Training</h2>
@@ -105,11 +84,7 @@
         </div>
       </div>
 
-      <div
-        class="card-author"
-        data-aos="fade-up"
-        data-aos-anchor-placement="top-bottom"
-      >
+      <div class="card-author">
         <div id="left">
           <img src="media/chiunglien.JPEG" alt="Chiunglien Liu" id="author" />
         </div>
@@ -127,6 +102,142 @@
           </div>
         </div>
       </div>
+    </section>
+
+    <section id="books">
+      <h1>Our Publications</h1>
+      <section id="photo-gallery">
+        <h2>Our Fabulous Music Plans for Private and Group Lessons</h2>
+        <br />
+        <div class="gallery-row">
+          <img
+            src="media/books/l1.JPG"
+            alt="Photo 1"
+            class="gallery-photo"
+            onclick="showPopup( )"
+          />
+          <img
+            src="media/books/l2.JPG"
+            alt="Photo 2"
+            class="gallery-photo"
+            onclick="showPopup(this)"
+          />
+          <img
+            src="media/books/l3.JPG"
+            alt="Photo 3"
+            class="gallery-photo"
+            onclick="showPopup(this)"
+          />
+        </div>
+        <br />
+        <br />
+        <br />
+        <h2>Our Folk Songs & Rhymes for Children</h2>
+        <br />
+        <div class="gallery-row">
+          <img src="media/books/e1.jpg" alt="Photo 4" class="gallery-photo" />
+          <img src="media/books/e2.jpg" alt="Photo 5" class="gallery-photo" />
+        </div>
+        <br />
+        <br />
+        <br />
+        <h2>Our Music Time Course Materials</h2>
+        <br />
+        <div class="gallery-row">
+          <img
+            src="media/books/1.jpg"
+            alt="Photo 6"
+            class="gallery-photo"
+            onclick="showPopup('media/books/1.png')"
+          />
+          <img
+            src="media/books/2.jpg"
+            alt="Photo 7"
+            class="gallery-photo"
+            onclick="showPopup('media/books/2.png')"
+          />
+          <img
+            src="media/books/3.jpg"
+            alt="Photo 8"
+            class="gallery-photo"
+            onclick="showPopup('media/books/3.png')"
+          />
+          <img
+            src="media/books/4.jpg"
+            alt="Photo 9"
+            class="gallery-photo"
+            onclick="showPopup('media/books/4.png')"
+          />
+          <img
+            src="media/books/5.jpg"
+            alt="Photo 10"
+            class="gallery-photo"
+            onclick="showPopup('media/books/5.png')"
+          />
+        </div>
+      </section>
+
+      <div id="image-popup" class="popup">
+        <span class="close" onclick="closePopup()">&times;</span>
+        <img class="popup-content" id="popup-image" />
+      </div>
+
+      <style>
+        .gallery-row {
+          display: flex;
+          justify-content: center;
+          margin-bottom: 20px;
+        }
+        .gallery-row img {
+          width: 15%;
+          margin-left: 20px;
+          margin-right: 20px;
+          cursor: pointer;
+        }
+        .popup {
+          display: none;
+          position: fixed;
+          z-index: 1;
+          left: 0;
+          top: 0;
+          width: 100%;
+          height: 100%;
+          background-color: rgba(0, 0, 0, 0.8);
+        }
+        .popup-content {
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          display: block;
+          max-width: 90%;
+        }
+        .close {
+          position: absolute;
+          top: 10px;
+          right: 25px;
+          color: #fff;
+          font-size: 35px;
+          font-weight: bold;
+          cursor: pointer;
+        }
+      </style>
+
+      <script>
+        function showPopup(imgPath) {
+          const popup = document.getElementById("image-popup");
+          const popupImage = document.getElementById("popup-image");
+          popupImage.src = imgPath;
+          popup.style.display = "block";
+          popup.addEventListener("click", closePopup);
+        }
+        function closePopup(e) {
+          if (e.target.classList.contains("popup")) {
+            const popup = document.getElementById("image-popup");
+            popup.style.display = "none";
+          }
+        }
+      </script>
     </section>
 
     <section id="events">
@@ -188,7 +299,6 @@
             <img
               class="active3"
               id="current-image3"
-              style="width: 50%"
               src="media/events/2024/main.jpg"
               alt="Event Image"
             />
@@ -221,11 +331,7 @@
       </div>
       <h1>Events</h1>
       <div class="card-container">
-        <div
-          class="card"
-          data-aos="fade-up"
-          data-aos-anchor-placement="top-bottom"
-        >
+        <div class="card">
           <div id="noflex">
             <img src="media/events/2025/main.jpg" alt="2025" />
             <h2>2025 Events Photos</h2>
@@ -237,11 +343,7 @@
             </button>
           </div>
         </div>
-        <div
-          class="card"
-          data-aos="fade-up"
-          data-aos-anchor-placement="top-bottom"
-        >
+        <div class="card">
           <div id="noflex">
             <img src="media/events/2024/main.jpg" alt="2024" />
             <h2>2024 Events Photos</h2>
@@ -253,11 +355,7 @@
             </button>
           </div>
         </div>
-        <div
-          class="card"
-          data-aos="fade-up"
-          data-aos-anchor-placement="top-bottom"
-        >
+        <div class="card">
           <div id="noflex">
             <img src="media/events/2023/main.JPG" alt="2023" />
             <h2>2023 Events Photos</h2>
@@ -269,11 +367,7 @@
             </button>
           </div>
         </div>
-        <div
-          class="card"
-          data-aos="fade-up"
-          data-aos-anchor-placement="top-bottom"
-        >
+        <div class="card">
           <div id="noflex">
             <img src="media/events/2022/main.jpg" alt="2022" />
             <h2>2022 Events Photos</h2>
@@ -288,71 +382,25 @@
       </div>
     </section>
 
-    <section
-      id="carousel"
-      data-aos="fade-up"
-      data-aos-anchor-placement="top-bottom"
-    >
-      <h1>Our Little Singers!</h1>
-      <div class="carousel-container">
-        <button class="nav-button prev">←</button>
-        <button class="nav-button next">→</button>
-      </div>
+    <section id="singers">
+      <h1>Our Little Singers</h1>
       <div class="card-container">
-        <div
-          class="card-author"
-          data-aos="fade-up"
-          data-aos-anchor-placement="top-bottom"
-        >
-          <div id="left">
-            <img src="media/aurelia/1.JPG" alt="Chiunglien Liu" id="author" />
-          </div>
-          <div id="right">
-            <div id="noflex">
-              <h2>Aurelia</h2>
-              <p>
-                Aurelia lives in Nova Scotia, Canda and is 9 years old. She
-                loves to paint, dance, and bike. Aurelia is learning how to play
-                the piano, the harp, & sing. She joined the choir Cappelia
-                Regalis this spring. When she grows up, Aurelia wants to study
-                Dinoasaurs (Palaeontology)!
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="card-container">
-        <div
-          class="card-author"
-          data-aos="fade-up"
-          data-aos-anchor-placement="top-bottom"
-        >
-          <div id="left">
-            <img src="media/isabelle/1.JPG" alt="Chiunglien Liu" id="author" />
-          </div>
-          <div id="right">
-            <div id="noflex">
-              <h2>Isabelle</h2>
-              <p>
-                Isabelle lives in San Jose, California. She is 6 years old. She
-                loves all beautiful things in the world. Isabelle is learning to
-                play piano and flute. Also she does ballet in "New ballet"
-                ballet school. When she grows up, Isabelle wants to be a
-                ballerina or a teacher.
-              </p>
-            </div>
-          </div>
+        <div id="student-card">
+          <h2>Aurelia</h2>
+          <p>
+            Aurelia lives in Nova Scotia, Canda and is 9 years old. She loves to
+            paint, dance, and bike. Aurelia is learning how to play the piano,
+            the harp, & sing. She joined the choir Cappelia Regalis this spring.
+            When she grows up, Aurelia wants to study Dinoasaurs
+            (Palaeontology)!
+          </p>
         </div>
       </div>
     </section>
 
     <section id="faq">
       <h1>FAQ</h1>
-      <div
-        class="faq-item"
-        data-aos="fade-up"
-        data-aos-anchor-placement="top-bottom"
-      >
+      <div class="faq-item">
         <div class="faq-question">
           The English songs in the Our Music Time course materials are more
           difficult for children and teachers to learn in Taiwan. How to
@@ -370,11 +418,7 @@
           </p>
         </div>
       </div>
-      <div
-        class="faq-item"
-        data-aos="fade-up"
-        data-aos-anchor-placement="top-bottom"
-      >
+      <div class="faq-item">
         <div class="faq-question">
           Can the teachers translate the folk songs in English into Chinese for
           children to learn?
@@ -389,11 +433,7 @@
           </p>
         </div>
       </div>
-      <div
-        class="faq-item"
-        data-aos="fade-up"
-        data-aos-anchor-placement="top-bottom"
-      >
+      <div class="faq-item">
         <div class="faq-question">
           How can I efficiently add all the Our Music Time lessons into
           individual piano lessons?
@@ -411,11 +451,7 @@
           </p>
         </div>
       </div>
-      <div
-        class="faq-item"
-        data-aos="fade-up"
-        data-aos-anchor-placement="top-bottom"
-      >
+      <div class="faq-item">
         <div class="faq-question">
           Is Our Music Time lesson plan only suitable for piano?
           <span class="faq-icon">▼</span>
@@ -427,11 +463,7 @@
           </p>
         </div>
       </div>
-      <div
-        class="faq-item"
-        data-aos="fade-up"
-        data-aos-anchor-placement="top-bottom"
-      >
+      <div class="faq-item">
         <div class="faq-question">
           How do you simultaneously plan private lessons and match the My First
           Piano Adventure with Our Music Time lesson plans?
@@ -448,11 +480,7 @@
           </p>
         </div>
       </div>
-      <div
-        class="faq-item"
-        data-aos="fade-up"
-        data-aos-anchor-placement="top-bottom"
-      >
+      <div class="faq-item">
         <div class="faq-question">
           Can teachers use other piano textbooks?
           <span class="faq-icon">▼</span>
@@ -466,11 +494,7 @@
           </p>
         </div>
       </div>
-      <div
-        class="faq-item"
-        data-aos="fade-up"
-        data-aos-anchor-placement="top-bottom"
-      >
+      <div class="faq-item">
         <div class="faq-question">
           Are all Our Music Time lesson plans only suitable for children in
           preschool or beginners?
@@ -485,11 +509,7 @@
           </p>
         </div>
       </div>
-      <div
-        class="faq-item"
-        data-aos="fade-up"
-        data-aos-anchor-placement="top-bottom"
-      >
+      <div class="faq-item">
         <div class="faq-question">
           How long do the students complete the Elementary, Intermediate, and
           Advanced levels courses?
@@ -505,11 +525,7 @@
           </p>
         </div>
       </div>
-      <div
-        class="faq-item"
-        data-aos="fade-up"
-        data-aos-anchor-placement="top-bottom"
-      >
+      <div class="faq-item">
         <div class="faq-question">
           How do we tell parents that ‘Slow Learning’ is a better concept than
           ‘Faster Learning’?
@@ -527,11 +543,7 @@
           </p>
         </div>
       </div>
-      <div
-        class="faq-item"
-        data-aos="fade-up"
-        data-aos-anchor-placement="top-bottom"
-      >
+      <div class="faq-item">
         <div class="faq-question">
           Do Our Music Time courses have other things besides training
           children's audition dictation?
@@ -551,11 +563,7 @@
           </p>
         </div>
       </div>
-      <div
-        class="faq-item"
-        data-aos="fade-up"
-        data-aos-anchor-placement="top-bottom"
-      >
+      <div class="faq-item">
         <div class="faq-question">
           Is there a link to learn all the songs?
           <span class="faq-icon">▼</span>
@@ -568,11 +576,7 @@
           </p>
         </div>
       </div>
-      <div
-        class="faq-item"
-        data-aos="fade-up"
-        data-aos-anchor-placement="top-bottom"
-      >
+      <div class="faq-item">
         <div class="faq-question">
           What does the teacher use the size of the whiteboard in training
           courses?
@@ -587,11 +591,7 @@
           </p>
         </div>
       </div>
-      <div
-        class="faq-item"
-        data-aos="fade-up"
-        data-aos-anchor-placement="top-bottom"
-      >
+      <div class="faq-item">
         <div class="faq-question">
           What do Our Music Time 2023 Online 15-week courses include?
           <span class="faq-icon">▼</span>
@@ -610,11 +610,7 @@
           </p>
         </div>
       </div>
-      <div
-        class="faq-item"
-        data-aos="fade-up"
-        data-aos-anchor-placement="top-bottom"
-      >
+      <div class="faq-item">
         <div class="faq-question">
           What are the requirements for becoming a certified Our Music Time
           teacher?
