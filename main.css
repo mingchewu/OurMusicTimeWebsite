@@ -130,7 +130,7 @@ main {
 .hero-title {
   font-size: 3rem;
   font-weight: 700;
-  color: var(--primary);
+  color: var(--text);
   letter-spacing: 2px;
   margin: 0;
   text-shadow: 0 2px 16px #000a;
