@@ -64,6 +64,7 @@ body {
   font-weight: 600;
   font-size: 1.1rem;
   padding: 0.5rem 1rem;
+  border-radius: 25px;
   transition: background var(--transition), color var(--transition);
 }
 #navbar-links a:focus,
@@ -129,7 +130,7 @@ main {
 .hero-title {
   font-size: 3rem;
   font-weight: 700;
-  color: var(--text);
+  color: var(--primary);
   letter-spacing: 2px;
   margin: 0;
   text-shadow: 0 2px 16px #000a;
@@ -139,7 +140,7 @@ main {
 }
 .hero-subtitle {
   font-size: 1.5rem;
-  color: var(--text-muted);
+  color: var(--text);
   letter-spacing: 1px;
   text-shadow: 0 1px 8px #000a;
 }
