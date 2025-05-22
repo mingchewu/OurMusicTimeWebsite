@@ -64,7 +64,6 @@ body {
   font-weight: 600;
   font-size: 1.1rem;
   padding: 0.5rem 1rem;
-  border-radius: 12px;
   transition: background var(--transition), color var(--transition);
 }
 #navbar-links a:focus,
