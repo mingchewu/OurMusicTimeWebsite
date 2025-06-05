@@ -68,9 +68,6 @@
               Inspiring the next generation of music educators and performers.
             </p>
           </div>
-          <button class="cta-btn" onclick="window.location.href='#about'">
-            Learn More
-          </button>
         </div>
       </section>
       <section id="about" class="section about-section">
@@ -237,50 +234,6 @@
         </div>
         <div id="event-popups"></div>
       </section>
-      <section id="instructors" class="section instructors-section">
-        <h1>Instructors Database</h1>
-        <div class="singer-cards">
-          <div class="singer-card">
-            <img src="/media/instructors/2.jpg" alt="Instructor 1" />
-            <h2>Yu-Pei Hsiao</h2>
-            <p>
-              Yu-Pei Hsiao is currently the Director of Graz Music and
-              Chairperson of the Taiwan Science and Arts Education Association.
-              She specializes in teaching piano, violin, and orchestral
-              conducting, with many years of teaching experience. Under her
-              leadership, the Graz Music team has achieved outstanding results
-              in student admissions to music programs, competitions, and
-              ensemble training. She is also dedicated to promoting music
-              education for children in remote areas, aiming to improve musical
-              literacy among underprivileged students. Ms. Yu-Pei introduced the
-              Our Music Time curriculum, which is based on the Kodály Method.
-              Through this program, her students have been able to build a
-              strong musical foundation. The curriculum has proven highly
-              effective in both individual and group instruction, greatly
-              enhancing students’ overall music learning and development.
-            </p>
-          </div>
-          <div class="singer-card">
-            <img src="/media/instructors/1.JPG" alt="Instructor 2" />
-            <h2>Shuo-Li Hung</h2>
-            <p>
-              Shuo-Li Hung holds a Master’s degree in Piano from National Yang
-              Ming Chiao Tung University. Since 2010, she has been
-              professionally teaching piano and violin. Ms. Shuo-Li is currently
-              devoted to music education and various chamber music
-              collaborations in southern Taiwan, and has founded a rare
-              dual-piano performance hall in Kaohsiung. In her teaching, She
-              maintains a lively and engaging style, aiming to cultivate the
-              musical abilities of Taiwanese students. Ms. Shou-Li introduced
-              the Our Music Time curriculum from the United States, which is
-              based on the Kodály Method, using specially designed teaching
-              tools along with Chinese and English folk song materials to
-              nurture musical literacy and inspire students to joyfully explore
-              the world of music.
-            </p>
-          </div>
-        </div>
-      </section>
       <section id="singers" class="section singers-section">
         <h1>Our Little Singers</h1>
         <div class="singer-cards">
@@ -308,6 +261,122 @@
           </div>
         </div>
       </section>
+      <section id="instructors" class="section instructors-section">
+        <h1>Our Music Time Instructors</h1>
+        <div class="singer-cards">
+          <div class="singer-card">
+            <img src="/media/instructors/2.jpg" alt="Instructor 1" />
+            <h2>Yu-Pei Hsiao</h2>
+            <p id="text-yupei-en">
+              Yu-Pei Hsiao is currently the Director of Graz Music and
+              Chairperson of the Taiwan Science and Arts Education Association.
+              She specializes in teaching piano, violin, and orchestral
+              conducting, with many years of teaching experience. Under her
+              leadership, the Graz Music team has achieved outstanding results
+              in student admissions to music programs, competitions, and
+              ensemble training. She is also dedicated to promoting music
+              education for children in remote areas, aiming to improve musical
+              literacy among underprivileged students. Ms. Yu-Pei introduced the
+              Our Music Time curriculum, which is based on the Kodály Method.
+              Through this program, her students have been able to build a
+              strong musical foundation. The curriculum has proven highly
+              effective in both individual and group instruction, greatly
+              enhancing students’ overall music learning and development.
+            </p>
+            <a
+              href="#"
+              id="readmore"
+              onclick="toggleText('text-yupei-en', this); return false;"
+            >
+              Read More
+            </a>
+          </div>
+          <div class="singer-card">
+            <img src="/media/instructors/1.JPG" alt="Instructor 2" />
+            <h2>Shuo-Li Hung</h2>
+            <p id="text-shuoli-en">
+              Shuo-Li Hung holds a Master’s degree in Piano from National Yang
+              Ming Chiao Tung University. Since 2010, she has been
+              professionally teaching piano and violin. Ms. Shuo-Li is currently
+              devoted to music education and various chamber music
+              collaborations in southern Taiwan, and has founded a rare
+              dual-piano performance hall in Kaohsiung. In her teaching, She
+              maintains a lively and engaging style, aiming to cultivate the
+              musical abilities of Taiwanese students. Ms. Shou-Li introduced
+              the Our Music Time curriculum from the United States, which is
+              based on the Kodály Method, using specially designed teaching
+              tools along with Chinese and English folk song materials to
+              nurture musical literacy and inspire students to joyfully explore
+              the world of music.
+            </p>
+            <a
+              href="#"
+              id="readmore"
+              onclick="toggleText('text-shuoli-en', this); return false;"
+            >
+              Read More
+            </a>
+          </div>
+        </div>
+
+        <script>
+          const originalHeights = {};
+
+          function toggleText(paragraphId, linkElement) {
+            const paragraph = document.getElementById(paragraphId);
+            const initialMaxHeight = "42px";
+
+            if (!originalHeights[paragraphId]) {
+              if (
+                paragraph.style.maxHeight === initialMaxHeight ||
+                !paragraph.style.maxHeight
+              ) {
+                const currentMaxHeight = paragraph.style.maxHeight;
+                paragraph.style.maxHeight = "none";
+                originalHeights[paragraphId] = paragraph.scrollHeight + "px";
+                paragraph.style.maxHeight = currentMaxHeight;
+              } else {
+                originalHeights[paragraphId] = paragraph.scrollHeight + "px";
+              }
+            }
+
+            if (
+              paragraph.style.maxHeight === initialMaxHeight ||
+              paragraph.style.maxHeight === ""
+            ) {
+              paragraph.style.maxHeight = originalHeights[paragraphId];
+              paragraph.style.overflow = "visible";
+              linkElement.textContent = "Read Less";
+            } else {
+              paragraph.style.maxHeight = initialMaxHeight;
+              paragraph.style.overflow = "hidden";
+              linkElement.textContent = "Read More";
+            }
+          }
+
+          document.addEventListener("DOMContentLoaded", function () {
+            const paragraphs = document.querySelectorAll(
+              "#text-yupei, #text-shuoli"
+            );
+            paragraphs.forEach((p) => {
+              if (!p.style.maxHeight) {
+                p.style.maxHeight = "42px";
+                p.style.overflow = "hidden";
+                p.style.transition = "max-height 0.3s ease-out";
+              }
+              const link = p.nextElementSibling;
+              if (
+                link &&
+                link.tagName === "A" &&
+                (p.style.maxHeight === "42px" || p.style.maxHeight === "")
+              ) {
+                link.textContent = "Read More";
+              }
+            });
+          });
+        </script>
+      </section>
+
       <section id="faq" class="section faq-section">
         <h1>FAQ</h1>
         <div class="faq-list">
