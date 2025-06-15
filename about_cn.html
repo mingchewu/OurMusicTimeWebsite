@@ -1,9 +1,10 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-Hant">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>About Chunglien Liu | Our Music Time</title>
+    <title>Our Music Time</title>
+    <link rel="stylesheet" href="styles.css" />
     <link rel="stylesheet" href="main.css" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -13,83 +14,455 @@
     />
   </head>
   <body>
+    <div id="music-loader">
+      <div class="loader-content">
+        <svg
+          width="64"
+          height="64"
+          viewBox="0 0 64 64"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+          class="loader-svg"
+        >
+          <g>
+            <ellipse cx="32" cy="48" rx="12" ry="8" fill="#FF6200" />
+            <rect x="38" y="16" width="4" height="32" rx="2" fill="#FFD700" />
+            <path
+              d="M40 16 Q54 8 52 32"
+              stroke="#FFD700"
+              stroke-width="3"
+              fill="none"
+            />
+          </g>
+        </svg>
+        <div class="loader-text">正在加載 Our Music Time。</div>
+      </div>
+    </div>
     <div id="navbar" class="navbar">
-      <img src="media/logo.png" alt="Our Music Time Logo" id="logo" />
+      <img src="/media/logo.png" alt="Our Music Time Logo" id="logo" />
       <nav id="navbar-links">
-        <a href="index.html#main">Home</a>
-        <a href="index.html#about">About</a>
-        <a href="index.html#books">Books</a>
-        <a href="index.html#events">Events</a>
-        <a href="index.html#singers">Singers</a>
-        <a href="index.html#faq">FAQ</a>
-        <a href="index_cn.html">中文網站</a>
+        <a href="#main">首頁</a>
+        <a href="#about">關於我們</a>
+        <a href="#books">書籍</a>
+        <a href="#events">活動</a>
+        <a href="#singers">歌手</a>
+        <a href="#instructors">師資</a>
+        <a href="#faq">常見問題</a>
+        <a href="/index.html">English Website</a>
       </nav>
     </div>
     <main>
-      <section class="section about-section">
-        <h1>About Chunglien Liu</h1>
-        <div class="about-founder">
-          <img
-            src="media/chiunglien.JPEG"
-            alt="Chunglien Liu"
-            class="founder-img"
-          />
-          <div class="founder-info">
-            <h2>Founder, Our Music Time</h2>
-            <p>
-              劉瓊蓮在英國劍橋大學獲得音樂教育碩士學位。她同時也榮獲劍橋大學海外學者獎學金。在移居英國劍橋之前，也曾擔任台灣的大學講師、國高中學樂團指揮、長笛三重奏總監（魔笛概念三重奏），以及在台灣活躍的長笛演奏家。她在Capital
-              University獲得高大宜教學法（Kodály
-              Method）音樂教育碩士學位。她也在City University of New
-              York獲得音樂演奏碩士學位，師承長笛名家Bernard Goldberg。
-              劉瓊蓮在劍橋參議院皇家室內樂團和劍橋大學愛樂樂團擁有豐富的音樂表演經驗。她是劍橋愛樂協會的成員，並在國王學院教堂（King’s
-              College Chapel）、劍橋伊利大教堂（Ely Cathedral in
-              Cambridge）和布拉格魯道夫音樂廳（Rudolfinum in Prague）表演音樂。
-              之後她搬到美國加利福尼亞州，目前是史丹弗音樂俱樂部（Fortnightly
-              Music
-              Club）的活躍成員、長笛演奏家和舊金山灣區的音樂比賽的評審。她也是自行出版許多教材與書籍，包括五冊的不織布故事書：《鞋匠》Cobbler,
-              Cobbler；《巫婆》Witch, Witch；《露西丟掉錢包》Lucy Locket Lost
-              Her Pocket；《查理越過海洋》Charlie Over the
-              Ocean；《我的衣櫃鑰匙不見了》I’ve Lost the Closet
-              Key；《我們一起去抓熊》The Bear
-              Hunt；和給教師音樂的書籍：《給寶貝的音樂歌謠》Our Folk Songs &
-              Rhymes for
-              Children；以及《給老師的音樂課程教案－初級、中級和高級》Our
-              Fabulous Music Plans for Private & Group Lessons。
-            </p>
+      <section id="main" class="hero-section">
+        <div class="hero-bg-anim">
+          <object
+            id="hero-animated-svg"
+            type="image/svg+xml"
+            data="/media/ourmusictime/music-notes.svg"
+          ></object>
+        </div>
+        <div class="hero-content">
+          <img src="/media/dolls.png" alt="娃娃" class="hero-img" />
+          <h1 class="hero-title">歡迎來到 Our Music Time</h1>
+          <div class="hero-subtitle-container">
+            <p class="hero-subtitle">啟發下一代的音樂教育家與演奏家。</p>
           </div>
         </div>
-        <div class="about-cards" style="margin-top: 2.5rem">
+      </section>
+      <section id="about" class="section about-section">
+        <h1>關於 Our Music Time</h1>
+        <div class="about-cards">
           <div class="about-card">
-            <h2>Achievements</h2>
-            <ul style="text-align: left; color: var(--text); font-size: 1.1rem">
-              <li>
-                Founder of Our Music Time, a leading bilingual music education
-                program
-              </li>
-              <li>
-                Decades of teaching experience in both Eastern and Western
-                contexts
-              </li>
-              <li>
-                Developer of innovative, Kodály-inspired curriculum and
-                materials
-              </li>
-              <li>Mentor and trainer for music educators worldwide</li>
-            </ul>
+            <h2>Our Music Time 是什麼？</h2>
+            <p>
+              Our Music Time
+              是一套雙語且受柯大宜教學法啟發的教學課程，結合了靈活的課程計畫和歌曲引導架構，適用於一般音樂課程和私人樂器課程，特別是鋼琴。
+            </p>
           </div>
           <div class="about-card">
-            <h2>Philosophy</h2>
+            <img src="/media/new.png" alt="新" class="about-badge" />
+            <h2>師資培訓</h2>
             <p>
-              "Music is a universal language that bridges cultures and
-              generations. My mission is to make music education joyful,
-              inclusive, and transformative for every child and teacher."
+              對音樂教育充滿熱情嗎？加入我們的師資培訓團隊，與我們一同成長，共創音樂教育的美好未來。
             </p>
-            <p style="color: var(--text-muted); font-size: 1rem">
-              — Chunglien Liu
+            <a
+              href="https://docs.google.com/forms/d/e/1FAIpQLSeqX_rls0oQuHczBq3Cayg9Wkug1JpvkjPT03PNBNmKA5V2PQ/viewform"
+              target="_blank"
+              class="cta-btn small"
+            >
+              報名
+            </a>
+          </div>
+        </div>
+        <div class="about-founder">
+          <img src="/media/chiunglien.JPEG" alt="劉瓊蓮" class="founder-img" />
+          <div class="founder-info">
+            <h2>關於創辦人</h2>
+            <p>
+              劉瓊蓮融合了東西方文化，憑藉數十年的教學經驗和教育學研究，為孩子們學習音樂奠定了堅實的基礎。
+            </p>
+            <button
+              class="cta-btn small"
+              onclick="window.open('about_cn.html')"
+            >
+              閱讀更多
+            </button>
+          </div>
+        </div>
+      </section>
+      <section id="books" class="section books-section">
+        <h1>我們的出版物</h1>
+        <div class="gallery-group">
+          <h2>我們的精彩音樂計畫（適用於私人與團體課程）</h2>
+          <div class="gallery-row">
+            <img
+              src="/media/books/l1.jpg"
+              alt="書 1"
+              class="gallery-photo"
+              data-popup="/media/books/l1.jpg"
+            />
+            <img
+              src="/media/books/l2.jpg"
+              alt="書 2"
+              class="gallery-photo"
+              data-popup="/media/books/l2.jpg"
+            />
+            <img
+              src="/media/books/l3.jpg"
+              alt="書 3"
+              class="gallery-photo"
+              data-popup="/media/books/l3.jpg"
+            />
+          </div>
+        </div>
+        <div class="gallery-group">
+          <h2>我們的兒童民謠與童謠</h2>
+          <div class="gallery-row">
+            <img
+              src="/media/books/e1.jpg"
+              alt="民謠 1"
+              class="gallery-photo"
+              data-popup="/media/books/e1.jpg"
+            />
+            <img
+              src="/media/books/e2.jpg"
+              alt="民謠 2"
+              class="gallery-photo"
+              data-popup="/media/books/e2.jpg"
+            />
+          </div>
+        </div>
+        <div class="gallery-group">
+          <h2>Our Music Time 課程教材</h2>
+          <div class="gallery-row">
+            <img
+              src="/media/books/1.JPG"
+              alt="課程 1"
+              class="gallery-photo"
+              data-popup="/media/books/1.png"
+            />
+            <img
+              src="/media/books/2.JPG"
+              alt="課程 2"
+              class="gallery-photo"
+              data-popup="/media/books/2.png"
+            />
+            <img
+              src="/media/books/3.JPG"
+              alt="課程 3"
+              class="gallery-photo"
+              data-popup="/media/books/3.png"
+            />
+            <img
+              src="/media/books/4.JPG"
+              alt="課程 4"
+              class="gallery-photo"
+              data-popup="/media/books/4.png"
+            />
+            <img
+              src="/media/books/5.JPG"
+              alt="課程 5"
+              class="gallery-photo"
+              data-popup="/media/books/5.png"
+            />
+          </div>
+        </div>
+        <div id="image-popup" class="popup">
+          <span class="close">&times;</span>
+          <img class="popup-content" id="popup-image" />
+          <div class="popup-desc"></div>
+        </div>
+      </section>
+      <section id="events" class="section events-section">
+        <h1>活動</h1>
+        <div class="events-cards">
+          <div class="event-card" data-year="2025">
+            <img src="/media/events/2025/main.jpg" alt="2025 活動" />
+            <h2>2025 活動照片</h2>
+            <button class="cta-btn small" data-popup-btn="2025">
+              了解更多
+            </button>
+          </div>
+          <div class="event-card" data-year="2024">
+            <img src="/media/events/2024/main.JPG" alt="2024 活動" />
+            <h2>2024 活動照片</h2>
+            <button class="cta-btn small" data-popup-btn="2024">
+              了解更多
+            </button>
+          </div>
+          <div class="event-card" data-year="2023">
+            <img src="/media/events/2023/main.JPG" alt="2023 活動" />
+            <h2>2023 活動照片</h2>
+            <button class="cta-btn small" data-popup-btn="2023">
+              了解更多
+            </button>
+          </div>
+          <div class="event-card" data-year="2022">
+            <img src="/media/events/2022/main.jpg" alt="2022 活動" />
+            <h2>2022 活動照片</h2>
+            <button class="cta-btn small" data-popup-btn="2022">
+              了解更多
+            </button>
+          </div>
+        </div>
+        <div id="event-popups"></div>
+      </section>
+      <section id="singers" class="section singers-section">
+        <h1>我們的小歌手</h1>
+        <div class="singer-cards">
+          <div class="singer-card">
+            <img src="/media/aurelia/1.JPG" alt="Aurelia" />
+            <h2>Aurelia</h2>
+            <p>
+              Aurelia
+              住在加拿大的新斯科舍省，今年9歲。她喜歡畫畫、跳舞和騎自行車。Aurelia
+              正在學習彈鋼琴、豎琴和唱歌。今年春天，她加入了 Cappelia Regalis
+              合唱團。長大後，Aurelia 想研究恐龍（古生物學）！
+            </p>
+          </div>
+          <div class="singer-card">
+            <img src="/media/isabelle/1.JPG" />
+            <h2>Isabelle</h2>
+            <p>
+              Aurelia
+              住在加拿大的新斯科舍省，今年9歲。她喜歡畫畫、跳舞和騎自行車。Aurelia
+              正在學習彈鋼琴、豎琴和唱歌。今年春天，她加入了 Cappelia Regalis
+              合唱團。長大後，Aurelia 想研究恐龍（古生物學）！
             </p>
           </div>
         </div>
       </section>
+      <section id="instructors" class="section instructors-section">
+        <h1>師資培訓</h1>
+        <p>
+          對音樂教育充滿熱情嗎？加入我們的師資培訓團隊，與我們一同成長，共創音樂教育的美好未來。
+        </p>
+        <h2>課程說明</h2>
+        <p>
+          探索 Our Music Time
+          線上課程如何幫助教師提升教學品質。本師資培訓課程不僅為初學者或幼兒教學的老師設計，也為正在教學並需要特定教學法以克服困難的老師提供幫助。我們的線上課程提供初級、中級和高級課程，內容包括100首民謠教學、音樂素養訓練、遊戲與活動學習，以及
+          Our Music Time 資料庫的證書資格。
+        </p>
+        <h2>師資資料庫</h2>
+        <p>
+          歡迎來到我們的師資資料庫，這裡收錄了使用 OUR MUSIC TIME
+          教材進行一般音樂課程或私人課程的教師。如果您是一位有興趣加入我們名單的教師，請參加我們的工作坊。完成我們的師資培訓課程後，我們的團隊將審核並批准合格的申請。請立即報名參加劉瓊蓮老師的15週線上課程。
+        </p>
+        <br />
+        <div class="singer-cards">
+          <div class="singer-card">
+            <img src="/media/instructors/2.jpg" alt="師資 1" />
+            <h2>蕭宇沛</h2>
+            <p id="text-yupei-cn">
+              蕭宇沛老師，現任 Graz Music
+              總監、臺灣術科教育學會理事長。專長為鋼琴、小提琴、管弦樂團指揮，並擁有多年的教學經驗。在她的帶領下，Graz
+              Music
+              團隊在學生音樂班升學、比賽及樂團培訓上屢獲佳績。她也致力於偏鄉兒童音樂教育的推廣，期望能提升弱勢學生的音樂素養。蕭老師引進了以柯大宜音樂教學法為基礎的
+              Our Music Time
+              課程，學生透過此系統，奠定了紮實的音樂基礎。此課程無論在個別或團體教學中，皆展現出極高的成效，大幅提升了學生的整體音樂學習與發展。
+            </p>
+            <a
+              href="#"
+              id="readmore-yupei-cn"
+              onclick="toggleText('text-yupei-cn', this); return false;"
+            >
+              閱讀更多
+            </a>
+          </div>
+          <div class="singer-card">
+            <img src="/media/instructors/1.png" alt="師資 2" />
+            <h2>洪碩勵</h2>
+            <p id="text-shuoli-cn">
+              洪碩勵老師，國立陽明交通大學音樂研究所鋼琴碩士。自2010年起，專業從事鋼琴與小提琴教學。碩勵老師目前致力於南臺灣的音樂教育與各式室內樂合作，並創辦了高雄地區少有的雙鋼琴演奏廳。在教學上，她秉持著活潑且引人入勝的教學風格，致力於培養臺灣學生的音樂能力。碩勵老師引進了美國
+              Our Music Time
+              課程，以柯大宜教學法為基礎，運用其專門設計的教具，搭配中、英、台語的民謠教材，培養音樂素養，並啟發學生快樂地探索音樂世界。
+            </p>
+            <a
+              href="#"
+              id="readmore-shuoli-cn"
+              onclick="toggleText('text-shuoli-cn', this); return false;"
+            >
+              閱讀更多
+            </a>
+          </div>
+          <div class="singer-card">
+            <img src="/media/instructors/4.jpg" alt="師資 3" />
+            <h2>高振玉</h2>
+            <p id="text-chenyu-cn">
+              高振玉老師畢業於台南藝術大學，現為新莊國小音樂教師及樂團指揮。專長涵蓋管樂、鋼琴及幼兒音樂教育，其指導學生在全國比賽中屢獲佳績。高老師推廣以柯大宜教學法為基礎的
+              Our Music Time
+              課程，運用歌謠、故事及律動，讓音樂學習充滿樂趣與吸引力。
+            </p>
+            <a
+              href="#"
+              id="readmore-chenyu-cn"
+              onclick="toggleText('text-chenyu-cn', this); return false;"
+            >
+              閱讀更多
+            </a>
+          </div>
+          <div class="singer-card">
+            <img src="/media/instructors/3.jpeg" alt="師資 4" />
+            <h2>陳昭融</h2>
+            <p id="text-chaojung-cn">
+              陳昭融老師在雲嘉地區從事鋼琴與幼兒音樂教學，並於社區托育中心開設課程。她秉持以孩子為中心的教學理念，設計符合年齡、引人入勝的課程。近年來，她融入
+              Our Music Time
+              課程元素，營造一個充滿遊戲性、自然的環境，鼓勵孩子們快樂地探索音樂。此課程深受學生與家長的好評。
+            </p>
+            <a
+              href="#"
+              id="readmore-chaojung-cn"
+              onclick="toggleText('text-chaojung-cn', this); return false;"
+            >
+              閱讀更多
+            </a>
+          </div>
+        </div>
+        <br />
+        <h2>合作音樂學校</h2>
+        <p>
+          在台灣，Our Music Time
+          致力於推動合作音樂教育，並提供專業的師資培訓計畫，幫助音樂學校與個人教師發展有效且個人化的教學方法。透過多樣化的合作項目，我們確保音樂教育成為每個孩子學習旅程中不可或缺的一部分，同時也激勵教育工作者
+          renewed creativity and passion for
+          teaching。這是將您的音樂教學生涯提升至新境界的理想選擇！
+        </p>
+        <div class="about-cards">
+          <div class="about-card">
+            <img
+              src="/media/instructors/schools/graz.JPG"
+              alt="Graz 音樂學校"
+              class="school-img"
+            />
+            <h2>Graz Music</h2>
+            <p>
+              地址：嘉義縣太保市健康路173號
+              <br />
+              地址：嘉義縣朴子市山通路1-81號
+            </p>
+            <a
+              href="https://www.facebook.com/lovegrazmusic"
+              target="_blank"
+              class="cta-btn small"
+            >
+              Facebook 專頁
+            </a>
+          </div>
+          <div class="about-card">
+            <img
+              src="/media/instructors/schools/mick.JPG"
+              alt="Mick 音樂學校"
+              class="school-img"
+            />
+            <h2>Mick Music</h2>
+            <p>地址：高雄市鳳山區高鳳一路32號</p>
+            <br />
+            <a
+              href="https://www.instagram.com/mickmusic32"
+              target="_blank"
+              class="cta-btn small"
+            >
+              Instagram 專頁
+            </a>
+          </div>
+        </div>
+        <script>
+          const originalHeights = {};
+
+          function toggleText(paragraphId, linkElement) {
+            const paragraph = document.getElementById(paragraphId);
+            const initialMaxHeight = "60px"; // Adjusted for Chinese text
+
+            if (!originalHeights[paragraphId]) {
+              const currentMaxHeight = paragraph.style.maxHeight;
+              paragraph.style.maxHeight = "none";
+              originalHeights[paragraphId] = paragraph.scrollHeight + "px";
+              paragraph.style.maxHeight = currentMaxHeight;
+            }
+
+            if (
+              paragraph.style.maxHeight === initialMaxHeight ||
+              paragraph.style.maxHeight === ""
+            ) {
+              paragraph.style.maxHeight = originalHeights[paragraphId];
+              paragraph.style.overflow = "visible";
+              linkElement.textContent = "收合";
+            } else {
+              paragraph.style.maxHeight = initialMaxHeight;
+              paragraph.style.overflow = "hidden";
+              linkElement.textContent = "閱讀更多";
+            }
+          }
+
+          document.addEventListener("DOMContentLoaded", function () {
+            const paragraphs = document.querySelectorAll(
+              "#text-yupei-cn, #text-shuoli-cn, #text-chenyu-cn, #text-chaojung-cn"
+            );
+            paragraphs.forEach((p) => {
+              if (!p.style.maxHeight) {
+                p.style.maxHeight = "60px"; // Adjusted for Chinese text
+                p.style.overflow = "hidden";
+                p.style.transition = "max-height 0.3s ease-out";
+              }
+              const link = p.nextElementSibling;
+              if (
+                link &&
+                link.tagName === "A" &&
+                (p.style.maxHeight === "60px" || p.style.maxHeight === "")
+              ) {
+                link.textContent = "閱讀更多";
+              }
+            });
+          });
+        </script>
+      </section>
+
+      <section id="faq" class="section faq-section">
+        <h1>常見問題</h1>
+        <div class="faq-list"></div>
+      </section>
     </main>
+    <footer>
+      <p>
+        &copy; 2025 Our Music Time. 版權所有。
+        <a id="footer-link" href="https://chainedtears.dev">
+          <b>網站由 Arthur Jiang 製作</b>
+        </a>
+      </p>
+    </footer>
+    <script src="main_cn.js"></script>
+    <script>
+      // 確保加載器至少停留 2.5 秒
+      const loaderStart = Date.now();
+      window.addEventListener("load", function () {
+        const elapsed = Date.now() - loaderStart;
+        const minTime = 2500;
+        if (elapsed >= minTime) {
+          document.getElementById("music-loader").style.display = "none";
+        } else {
+          setTimeout(function () {
+            document.getElementById("music-loader").style.display = "none";
+          }, minTime - elapsed);
+        }
+      });
+    </script>
   </body>
 </html>
