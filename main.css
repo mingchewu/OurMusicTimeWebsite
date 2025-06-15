@@ -211,8 +211,9 @@ main {
   box-shadow: 0 8px 32px 0 rgba(255, 98, 0, 0.15);
 }
 .about-badge {
+  position: absolute;
+  transform: translate(-300%, -50%);
   width: 60px;
-  margin-bottom: 0.5rem;
 }
 .about-founder {
   display: flex;
@@ -226,8 +227,8 @@ main {
   animation: fadeIn 1.5s;
 }
 .founder-img {
-  width: 180px;
-  border-radius: 50%;
+  width: 250px;
+  border-radius: 25px;
   box-shadow: 0 2px 16px #000a;
 }
 .founder-info {
