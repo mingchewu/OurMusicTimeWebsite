@@ -212,7 +212,7 @@ main {
 }
 .about-badge {
   position: absolute;
-  transform: translate(-300%, -50%);
+  transform: translate(-120%, -50%);
   width: 60px;
 }
 .about-founder {

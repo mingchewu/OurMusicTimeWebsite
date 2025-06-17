@@ -129,6 +129,8 @@ const eventImages = {
     "../media/events/2025/main.jpg",
     "../media/events/2025/1.JPG",
     "../media/events/2025/2.JPG",
+    "../media/events/2025/4.png",
+    "../media/events/2025/3.png",
   ],
 };
 
