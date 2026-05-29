@@ -1,0 +1,43 @@
+/* CSS Variables (Design Tokens) */
+:root {
+  /* Colors */
+  --color-primary: #FF6A13;
+  --color-primary-dark: #D44B00;
+  --color-primary-light: #FF8F4D;
+  --color-primary-glow: rgba(255, 106, 19, 0.5);
+
+  --color-bg-base: #06070B;
+  --color-bg-surface: rgba(16, 18, 27, 0.4);
+  --color-bg-surface-elevated: rgba(24, 28, 41, 0.6);
+
+  --color-text-main: #FAFAFA;
+  --color-text-muted: #9BA0B2;
+
+  /* Glassmorphism */
+  --glass-bg: rgba(16, 18, 27, 0.6);
+  --glass-bg-strong: rgba(10, 12, 18, 0.85);
+  --glass-blur: blur(24px);
+  --glass-border: 1px solid rgba(255, 255, 255, 0.05);
+  --glass-border-highlight: 1px solid rgba(255, 106, 19, 0.25);
+
+  /* Shadows */
+  --shadow-sm: 0 8px 32px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 16px 48px rgba(0, 0, 0, 0.5);
+  --shadow-lg: 0 24px 64px rgba(0, 0, 0, 0.6);
+  --shadow-glow: 0 0 32px var(--color-primary-glow);
+
+  /* Typography */
+  --font-family-body: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-family-heading: 'Outfit', system-ui, -apple-system, sans-serif;
+  
+  /* Borders and Radii */
+  --radius-sm: 12px;
+  --radius-md: 20px;
+  --radius-lg: 32px;
+  --radius-full: 9999px;
+
+  /* Transitions */
+  --transition-fast: 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  --transition-normal: 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+  --transition-slow: 0.8s cubic-bezier(0.165, 0.84, 0.44, 1);
+}

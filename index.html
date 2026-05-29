@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Our Music Time</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  
+  <link rel="stylesheet" href="css/variables.css" />
+  <link rel="stylesheet" href="css/base.css" />
+  <link rel="stylesheet" href="css/layout.css" />
+  <link rel="stylesheet" href="css/components.css" />
+  <link rel="stylesheet" href="css/animations.css" />
+</head>
+<body>
+  
+  <!-- Loader -->
+  <div id="music-loader" class="loader-overlay">
+    <div class="loader-spinner"></div>
+    <div class="loader-text">LOADING OUR MUSIC TIME</div>
+  </div>
+
+  <!-- Abstract Hero Background -->
+  <div class="hero-bg-anim">
+    <div class="hero-blob blob-1"></div>
+    <div class="hero-blob blob-2"></div>
+  </div>
+
+  <!-- Navbar -->
+  <nav id="navbar" class="navbar">
+    <a href="#main">
+      <img src="/media/logo.png" alt="Our Music Time Logo" class="navbar-logo" />
+    </a>
+    <div class="navbar-links">
+      <a href="#main" class="navbar-link">Home</a>
+      <a href="#about" class="navbar-link">About</a>
+      <a href="#books" class="navbar-link">Resources</a>
+      <a href="#events" class="navbar-link">Events</a>
+      <a href="#singers" class="navbar-link">Singers</a>
+      <a href="#instructors" class="navbar-link">Training</a>
+      <a href="#faq" class="navbar-link">FAQ</a>
+      <a href="/index_cn.html" class="navbar-link">中文網站</a>
+    </div>
+  </nav>
+
+  <main>
+    <!-- Hero Section -->
+    <section id="main" class="hero-section">
+      <div class="hero-content">
+        <img src="/media/dolls.png" alt="Dolls" class="hero-img float-anim" />
+        <h1 class="hero-title reveal">Welcome to Our Music Time</h1>
+        <p class="hero-subtitle reveal delay-100" id="hero-scramble-text" data-text="We inspire the next generation of music educators and performers to shape the future of the arts and shine on the global stage.">
+          We inspire the next generation of music educators and performers to shape the future of the arts and shine on the global stage.
+        </p>
+      </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="section">
+      <h1 class="reveal">About Our Music Time</h1>
+      
+      <div class="grid reveal delay-100">
+        <!-- What is OMT -->
+        <div class="card">
+          <h2 class="card-title">What is Our Music Time?</h2>
+          <div class="card-text expandable-text" id="text-founder-en">
+            <p>
+              OUR MUSIC TIME was founded in 2025 by Chiunglien Liu in San Jose,
+              California. She is the CEO of OUR MUSIC TIME and the author of
+              numerous books. In the 2000s, Chiunglien combined Eastern and
+              Western cultures with her decades of teaching experience and
+              pedagogical research, creating a solid foundation for students to
+              learn music, particularly musicianship. Chiunglien's work
+              gradually evolved to include the sharing of engaging and
+              challenging activities with music educators. Her approach not only
+              motivated teachers but also inspired students to immerse
+              themselves in their instrument learning. By stimulating both the
+              right and left hemispheres of the brain, Chiunglien's methods
+              encourage physical engagement with music, fostering a holistic
+              learning environment that emphasizes creativity alongside
+              technical skill development.
+            </p>
+          </div>
+          <a href="#" class="read-more-btn" data-target="text-founder-en">Read More</a>
+        </div>
+        
+        <!-- Teacher Training -->
+        <div class="card">
+          <img src="/media/new.png" alt="New" style="position: absolute; top: -10px; left: -10px; width: 60px; transform: rotate(-15deg);" />
+          <h2 class="card-title">Teacher Training</h2>
+          <p class="card-text">
+            Passionate about music education? Join our teacher training team
+            and grow with us to create a better future for music education.
+          </p>
+          <a href="https://docs.google.com/forms/d/e/1FAIpQLSeqX_rls0oQuHczBq3Cayg9Wkug1JpvkjPT03PNBNmKA5V2PQ/viewform" target="_blank" class="btn btn-small">Sign Up</a>
+        </div>
+      </div>
+      
+      <div class="card reveal delay-200" style="margin-top: 2rem; flex-direction: row; gap: 2rem; text-align: left; align-items: flex-start; padding: 2rem; flex-wrap: wrap;">
+        <img src="/media/chiunglien.JPEG" alt="Chiunglien Liu" style="width: 250px; border-radius: var(--radius-md); box-shadow: var(--shadow-sm);" />
+        <div style="flex: 1; min-width: 250px;">
+          <h2 class="card-title">Meet the Author</h2>
+          <p class="card-text">
+            Chiunglien Liu integrates Eastern and Western cultures with
+            decades of teaching experience and pedagogical research, providing
+            a solid foundation for children to learn music.
+          </p>
+          <a href="about.html" class="btn btn-small">Read More</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Resources Section -->
+    <section id="books" class="section">
+      <h1 class="reveal">Resources</h1>
+      <p class="section-intro reveal delay-100">
+        Systematic Design × Engaging Activities × Visual Learning × Piano Teaching Support<br><br>
+        Our Fabulous Music Plans for Private & Group Lessons is a spiral-based curriculum designed for both group and individual lessons.
+        Spanning beginner to advanced levels, it gradually develops students’ ear training, theory, and musical understanding.
+        The series includes colorful, child-friendly flashcards to enhance interaction and motivation in class.
+      </p>
+
+      <!-- Music Plans -->
+      <h2 class="reveal delay-200">Our Fabulous Music Plans</h2>
+      <div class="grid reveal delay-300" style="margin-bottom: 4rem;">
+        <div class="card">
+          <img src="/media/books/l1.jpg" alt="Book 1" class="card-img-top book-cover" data-popup="/media/books/l1.jpg" />
+          <h3 class="card-title">Lesson Plans Level I</h3>
+          <ul class="card-text">
+            <li>Visual aids for learning</li>
+            <li>My First Piano Adventure A</li>
+            <li>Student Piano Library 1</li>
+          </ul>
+        </div>
+        <div class="card">
+          <img src="/media/books/l2.jpg" alt="Book 2" class="card-img-top book-cover" data-popup="/media/books/l2.jpg" />
+          <h3 class="card-title">Lesson Plans Level II</h3>
+          <ul class="card-text">
+            <li>Staff-reading exercises</li>
+            <li>My First Piano Adventure B</li>
+            <li>Student Piano Library 1</li>
+          </ul>
+        </div>
+        <div class="card">
+          <img src="/media/books/l3.jpg" alt="Book 3" class="card-img-top book-cover" data-popup="/media/books/l3.jpg" />
+          <h3 class="card-title">Lesson Plans Level III</h3>
+          <ul class="card-text">
+            <li>Meter and rhythm</li>
+            <li>Metronome integration</li>
+            <li>A Dozen A Day </li>
+            <li>Alfred Piano Course 1</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Felt Storybooks -->
+      <h2 class="reveal">5 Felt Storybooks</h2>
+      <p class="section-intro reveal delay-100">
+        Singing with children is the first step in nurturing their interest and confidence in music.<br><br>
+        Our Folk Songs & Rhymes for Children features 100 easy-to-remember folk songs in Chinese and English, with bilingual lyrics and educational value.
+      </p>
+      <div class="grid reveal delay-200" style="margin-bottom: 4rem;">
+        <div class="card">
+          <img src="/media/books/1.JPG" alt="Cobbler" class="card-img-top book-cover" data-popup="/media/books/1.png" />
+          <h3 class="card-title">Cobbler</h3>
+          <ul class="card-text"><li>Steady beat & rhythm</li><li>Note lengths with magnets</li><li>Expression & breath control</li></ul>
+        </div>
+        <div class="card">
+          <img src="/media/books/2.JPG" alt="Witch" class="card-img-top book-cover" data-popup="/media/books/2.png" />
+          <h3 class="card-title">Witch</h3>
+          <ul class="card-text"><li>Sound differences</li><li>High & low pitch</li><li>Strong beats in meters</li></ul>
+        </div>
+        <div class="card">
+          <img src="/media/books/3.JPG" alt="Lucy" class="card-img-top book-cover" data-popup="/media/books/3.png" />
+          <h3 class="card-title">Lucy Lost Her Pocket</h3>
+          <ul class="card-text"><li>Loud/soft contrasts</li><li>Note lengths & rhythm</li><li>Octaves & solfège</li></ul>
+        </div>
+        <div class="card">
+          <img src="/media/books/4.JPG" alt="Charlie" class="card-img-top book-cover" data-popup="/media/books/4.png" />
+          <h3 class="card-title">Charlie Over the Ocean</h3>
+          <ul class="card-text"><li>Understand tempo changes</li><li>Learn half notes and ties</li><li>Phrasing with split eighth notes</li></ul>
+        </div>
+        <div class="card">
+          <img src="/media/books/5.JPG" alt="Closet Key" class="card-img-top book-cover" data-popup="/media/books/5.png" />
+          <h3 class="card-title">I’ve Lost the Closet key</h3>
+          <ul class="card-text"><li>Eighth rests in phrases</li><li>Steady 4/4 meter</li><li>Canons & ostinatos</li></ul>
+        </div>
+      </div>
+
+      <!-- Folk Songs & Bear Hunt -->
+      <h2 class="reveal">Folk Songs & Rhymes | The Bear Hunt</h2>
+      <div class="grid reveal delay-100" style="margin-bottom: 4rem;">
+        <div class="card">
+          <img src="/media/books/e1.jpg" alt="Folk Song" class="card-img-top book-cover" data-popup="/media/books/e1.jpg" />
+          <h3 class="card-title">Folk Songs & Rhymes Collection</h3>
+          <ul class="card-text"><li>100 traditional folk songs and rhymes</li><li>English and Chinese selections</li><li>Includes translations</li></ul>
+        </div>
+        <div class="card">
+          <img src="/media/books/e2.jpg" alt="Bear Hunt" class="card-img-top book-cover" data-popup="/media/books/e2.jpg" />
+          <h3 class="card-title">The Bear Hunt</h3>
+          <ul class="card-text"><li>Interactive rhythmic word book</li><li>Based on classic children's story</li><li>Incorporates musical elements</li><li>Steady beat & Ostinato patterns</li></ul>
+        </div>
+      </div>
+
+      <!-- Supplementary -->
+      <h2 class="reveal">Supplementary Teaching Materials</h2>
+      <div class="grid reveal delay-100">
+        <div class="card">
+          <img src="/media/materials/magnets.png" alt="Song Magnets" class="card-img-top gallery-photo" data-popup="/media/materials/magnets.jpg" />
+          <h3 class="card-title">Song Magnets</h3>
+          <ul class="card-text" style="text-align: left; padding-left: 1.2rem; list-style: disc;">
+            <li>73 song and rhyme magnets for learning pitch and rhythm</li>
+            <li>Two sizes relative to note values for easy visualization</li>
+            <li>20 Heart-shaped magnets for steady beat practice</li>
+          </ul>
+        </div>
+        <div class="card">
+          <img src="/media/materials/cards.png" alt="Picture Cards" class="card-img-top gallery-photo" data-popup="/media/materials/cards.jpg" />
+          <h3 class="card-title">Picture Cards</h3>
+          <ul class="card-text" style="text-align: left; padding-left: 1.2rem; list-style: disc;">
+            <li>89 colorful cards for musical theory learning</li>
+            <li>Musical Alphabet and Solfège integration</li>
+            <li>Kodály sequence rhythm patterns</li>
+          </ul>
+        </div>
+        <div class="card">
+          <img src="/media/materials/posters.png" alt="Lyric Posters" class="card-img-top gallery-photo" data-popup="/media/materials/posters.jpg" />
+          <h3 class="card-title">Lyric Posters</h3>
+          <ul class="card-text" style="text-align: left; padding-left: 1.2rem; list-style: disc;">
+            <li>100 bilingual English-Chinese lyric posters</li>
+            <li>Perfect for song learning and review</li>
+            <li>Available in A3 and A1 sizes</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- Events Section -->
+    <section id="events" class="section">
+      <h1 class="reveal">Events</h1>
+      <p class="section-intro reveal delay-100">
+        With every remarkable moment and every heartfelt chapter, we have written a story that is uniquely ours.
+        Let us come together to honor the dedication and achievements we have built over the years.
+      </p>
+      <div class="grid reveal delay-200">
+        <div class="card" data-year="2026">
+          <img src="/media/events/2026/2026%20English%20poster%202.PNG" alt="2026 Event" class="card-img-top event-img" />
+          <h2 class="card-title">2026 Events Photos</h2>
+          <button class="btn btn-small" data-popup-btn="2026">Learn More</button>
+        </div>
+        <div class="card" data-year="2025">
+          <img src="/media/events/2025/main.jpg" alt="2025 Event" class="card-img-top event-img" />
+          <h2 class="card-title">2025 Events Photos</h2>
+          <button class="btn btn-small" data-popup-btn="2025">Learn More</button>
+        </div>
+        <div class="card" data-year="2024">
+          <img src="/media/events/2024/main.JPG" alt="2024 Event" class="card-img-top event-img" />
+          <h2 class="card-title">2024 Events Photos</h2>
+          <button class="btn btn-small" data-popup-btn="2024">Learn More</button>
+        </div>
+        <div class="card" data-year="2023">
+          <img src="/media/events/2023/main.JPG" alt="2023 Event" class="card-img-top event-img" />
+          <h2 class="card-title">2023 Events Photos</h2>
+          <button class="btn btn-small" data-popup-btn="2023">Learn More</button>
+        </div>
+        <div class="card" data-year="2022">
+          <img src="/media/events/2022/main.jpg" alt="2022 Event" class="card-img-top event-img" />
+          <h2 class="card-title">2022 Events Photos</h2>
+          <button class="btn btn-small" data-popup-btn="2022">Learn More</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Singers Section -->
+    <section id="singers" class="section">
+      <h1 class="reveal">Our Little Singers</h1>
+      <div class="grid reveal delay-100" style="margin-bottom: 4rem;">
+        <div class="card">
+          <img src="/media/aurelia/1.JPG" alt="Aurelia" class="card-img-top" style="max-width: 150px; border-radius: 50%; aspect-ratio: 1/1;" />
+          <h2 class="card-title">Aurelia</h2>
+          <p class="card-text">
+            Aurelia lives in Nova Scotia, Canada and is 9 years old. She loves
+            to paint, dance, and bike. Aurelia is learning how to play the
+            piano, the harp, & sing. She joined the choir Cappelia Regalis
+            this spring. When she grows up, Aurelia wants to study Dinosaurs
+            (Palaeontology)!
+          </p>
+        </div>
+        <div class="card">
+          <img src="/media/isabelle/1.JPG" alt="Isabelle" class="card-img-top" style="max-width: 150px; border-radius: 50%; aspect-ratio: 1/1;" />
+          <h2 class="card-title">Isabelle</h2>
+          <p class="card-text">
+            Isabelle lives in Nova Scotia, Canada and is 9 years old. She loves
+            to paint, dance, and bike. Aurelia is learning how to play the
+            piano, the harp, & sing. She joined the choir Cappelia Regalis
+            this spring. When she grows up, Aurelia wants to study Dinosaurs
+            (Palaeontology)!
+          </p>
+        </div>
+      </div>
+
+      <h2 class="reveal">5 Theme Songs of Recording</h2>
+      <p class="section-intro reveal delay-100">
+        Let the melodies of English nursery rhymes awaken children’s inner sensitivity, guiding them into a beautiful world where music and language intertwine.<br><br>
+        OUR MUSIC TIME features five theme songs recorded by Aurelia. These songs are ideal as sample
+        recordings for the book Our Folk Songs & Rhymes for Children. Both
+        teachers and children will enjoy learning the new songs from our young
+        musician, Aurelia, with ease.
+      </p>
+      
+      <div class="grid reveal delay-200" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));">
+        <div class="card" style="padding: 1rem;">
+          <iframe width="100%" height="300" src="https://www.youtube.com/embed/CUhSpqbHTLY" frameborder="0" allowfullscreen style="border-radius: var(--radius-md);"></iframe>
+        </div>
+        <div class="card" style="padding: 1rem;">
+          <iframe width="100%" height="300" src="https://www.youtube.com/embed/OkPH0sR7xd4" frameborder="0" allowfullscreen style="border-radius: var(--radius-md);"></iframe>
+        </div>
+        <div class="card" style="padding: 1rem;">
+          <iframe width="100%" height="300" src="https://www.youtube.com/embed/X6ntD_PgZFk" frameborder="0" allowfullscreen style="border-radius: var(--radius-md);"></iframe>
+        </div>
+        <div class="card" style="padding: 1rem;">
+          <iframe width="100%" height="300" src="https://www.youtube.com/embed/TVXq5NbOH3g" frameborder="0" allowfullscreen style="border-radius: var(--radius-md);"></iframe>
+        </div>
+        <div class="card" style="padding: 1rem;">
+          <iframe width="100%" height="300" src="https://www.youtube.com/embed/jO2Sub6Sr8E" frameborder="0" allowfullscreen style="border-radius: var(--radius-md);"></iframe>
+        </div>
+      </div>
+    </section>
+
+    <!-- Instructors Section -->
+    <section id="instructors" class="section">
+      <h1 class="reveal">Teachers Training</h1>
+      <p class="section-intro reveal delay-100">
+        Passionate about music education? Join our teacher training team and
+        grow with us to create a better future for music education.
+      </p>
+
+      <div class="card reveal delay-200" style="margin-bottom: 4rem; text-align: left;">
+        <h2 class="card-title">Course Description</h2>
+        <p class="card-text">
+          Discover how Our Music Time Online courses can help teachers enhance
+          their teaching. This teacher training course is designed not only for
+          teachers starting with beginners or young students, but also for those
+          who are teaching current students and may need specific pedagogy to
+          help them overcome difficulties. Our online offers Elementary,
+          Intermediate, and Advanced courses, including 100 Folk Song teaching,
+          Musicianship training, Game and Activity learning, and a Certificate
+          qualification for the Our Music Time database.
+        </p>
+        <h2 class="card-title" style="margin-top: 2rem;">Instructors Database</h2>
+        <p class="card-text">
+          Welcome to our database of teachers using OUR MUSIC TIME materials to
+          teach general music classes or private lessons. If you are an
+          instructor interested in being listed, please join our workshop. Our
+          team will review and approve qualified applications after you complete
+          our teacher training courses. Please sign up now for the Online
+          15-week courses with Chiunglien Liu.
+        </p>
+      </div>
+
+      <div class="grid reveal delay-300" style="margin-bottom: 4rem;">
+        <div class="card">
+          <img src="/media/instructors/2.jpg" alt="Yu-Pei Hsiao" class="card-img-top" style="max-width: 150px; border-radius: 50%; aspect-ratio: 1/1;" />
+          <h2 class="card-title">Yu-Pei Hsiao</h2>
+          <div class="card-text expandable-text" id="text-yupei-en">
+            <p>
+              Yu-Pei Hsiao, Director of Graz Music and Chairperson of the Taiwan Science and Arts Education Association, is an experienced educator in piano, violin, and conducting.
+              She has led her team to success in admissions, competitions, and ensemble training.
+              Committed to supporting underprivileged children, she introduced the Kodály-based Our Music Time curriculum to build strong musical foundations.
+            </p>
+          </div>
+          <a href="#" class="read-more-btn" data-target="text-yupei-en">Read More</a>
+        </div>
+        <div class="card">
+          <img src="/media/instructors/1.png" alt="Shuo-Li Hung" class="card-img-top" style="max-width: 150px; border-radius: 50%; aspect-ratio: 1/1;" />
+          <h2 class="card-title">Shuo-Li Hung</h2>
+          <div class="card-text expandable-text" id="text-shuoli-en">
+            <p>
+              Shuo-Li Hung, with a Master’s in Piano from National Yang Ming Chiao Tung University, has taught piano and violin since 2010.
+              Based in southern Taiwan, she is active in music education and chamber music, and founded a unique dual-piano hall in Kaohsiung.
+              She introduced the Kodály-based Our Music Time curriculum, using custom tools and bilingual folk songs to foster musical growth.
+            </p>
+          </div>
+          <a href="#" class="read-more-btn" data-target="text-shuoli-en">Read More</a>
+        </div>
+        <div class="card">
+          <img src="/media/instructors/4.JPG" alt="Chen-Yu Kao" class="card-img-top" style="max-width: 150px; border-radius: 50%; aspect-ratio: 1/1;" />
+          <h2 class="card-title">Chen-Yu Kao</h2>
+          <div class="card-text expandable-text" id="text-chenyu-en">
+            <p>
+              Chen-Yu Kao, a graduate of Tainan National University of the Arts, is a music teacher and orchestra director at Xinzhuang Elementary School.
+              Specializing in wind instruments, piano, and early childhood education, her students excel in national competitions.
+              She promotes the Kodály-based Our Music Time curriculum, using songs, stories, and movement to make learning joyful and engaging.
+            </p>
+          </div>
+          <a href="#" class="read-more-btn" data-target="text-chenyu-en">Read More</a>
+        </div>
+        <div class="card">
+          <img src="/media/instructors/3.jpeg" alt="Chao-Jung Chen" class="card-img-top" style="max-width: 150px; border-radius: 50%; aspect-ratio: 1/1;" />
+          <h2 class="card-title">Chao-Jung Chen</h2>
+          <div class="card-text expandable-text" id="text-chaojung-en">
+            <p>
+              Chao-Jung Chen teaches piano and early childhood music in the Yunlin–Chiayi region, including at community childcare centers.
+              Using a child-centered approach, she creates engaging, age-appropriate lessons.
+              By integrating the Our Music Time curriculum, she fosters a playful and joyful space for musical exploration—well-received by students and parents alike.
+            </p>
+          </div>
+          <a href="#" class="read-more-btn" data-target="text-chaojung-en">Read More</a>
+        </div>
+      </div>
+
+      <h2 class="reveal">Collaborating Music Schools</h2>
+      <p class="section-intro reveal delay-100">
+        In Taiwan, Our Music Time is dedicated to promoting collaborative
+        music education and offers professional teacher training programs to
+        help music schools and private instructors develop effective,
+        personalized teaching methods.
+      </p>
+
+      <div class="grid reveal delay-200">
+        <div class="card">
+          <img src="/media/instructors/schools/graz.JPG" alt="Graz Music School" class="card-img-top" style="max-width: 150px; border-radius: 50%; aspect-ratio: 1/1;" />
+          <h2 class="card-title">Graz Music</h2>
+          <p class="card-text">
+            Address: 太保市健康路173號<br />
+            Address: 朴子市山通路1-81號
+          </p>
+          <a href="https://www.facebook.com/lovegrazmusic" target="_blank" class="btn btn-small">Facebook Page</a>
+        </div>
+        <div class="card">
+          <img src="/media/instructors/schools/mick.JPG" alt="Mick Music School" class="card-img-top" style="max-width: 150px; border-radius: 50%; aspect-ratio: 1/1;" />
+          <h2 class="card-title">Mick Music</h2>
+          <p class="card-text">Address: 高雄市鳳山區高鳳一路32號</p>
+          <a href="https://www.instagram.com/mickmusic32" target="_blank" class="btn btn-small">Instagram Page</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section id="faq" class="section">
+      <h1 class="reveal">FAQ</h1>
+      <div id="faq-container" class="accordion">
+        <!-- FAQ items injected by JS -->
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-content">
+      <p>&copy; 2025 Our Music Time. All rights reserved.</p>
+      <p class="footer-credit">Website by <a href="https://chainedtears.dev" target="_blank">Arthur Jiang</a></p>
+    </div>
+  </footer>
+
+  <!-- Reusable Popup Overlay -->
+  <div id="popup-overlay" class="popup-overlay">
+    <div class="popup-content">
+      <span id="popup-close" class="popup-close">&times;</span>
+      
+      <!-- For Single Image Popup -->
+      <img id="popup-img" class="popup-img" style="display:none;" />
+      
+      <!-- For Carousel -->
+      <div id="popup-carousel" class="carousel-container" style="display:none;"></div>
+      
+      <div id="popup-desc" class="popup-desc"></div>
+    </div>
+  </div>
+
+  <script src="js/components/navbar.js"></script>
+  <script src="js/components/gallery.js"></script>
+  <script src="js/components/faq.js"></script>
+  <script src="js/components/utils.js"></script>
+  <script src="js/animations.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>
