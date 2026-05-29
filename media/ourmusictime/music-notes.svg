@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="100%" height="100%" viewBox="0 0 800 400" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <g>
+    <!-- Eighth Note -->
+    <g class="note" style="animation: float1 8s infinite linear;">
+      <ellipse cx="80" cy="350" rx="10" ry="7" fill="#FF6200"/>
+      <rect x="90" y="305" width="4" height="45" rx="2" fill="#FF6200"/>
+      <path d="M92 305 Q115 285 105 320" stroke="#FF6200" stroke-width="3" fill="none"/>
+    </g>
+    <!-- Quarter Note -->
+    <g class="note" style="animation: float2 10s infinite linear;">
+      <ellipse cx="250" cy="370" rx="9" ry="6" fill="#FFD700"/>
+      <rect x="259" y="325" width="4" height="45" rx="2" fill="#FFD700"/>
+    </g>
+    <!-- Eighth Note (mirrored) -->
+    <g class="note" style="animation: float3 12s infinite linear;">
+      <ellipse cx="420" cy="390" rx="10" ry="7" fill="#00CFFF"/>
+      <rect x="430" y="345" width="4" height="45" rx="2" fill="#00CFFF"/>
+      <path d="M432 345 Q455 325 445 360" stroke="#00CFFF" stroke-width="3" fill="none"/>
+    </g>
+    <!-- Quarter Note (pink) -->
+    <g class="note" style="animation: float4 9s infinite linear;">
+      <ellipse cx="610" cy="360" rx="10" ry="7" fill="#FF62A0"/>
+      <rect x="620" y="315" width="4" height="45" rx="2" fill="#FF62A0"/>
+    </g>
+    
+  </g>
+  <style>
+    @keyframes float1 {
+      0% { transform: translateY(0); opacity: 1; }
+      80% { opacity: 1; }
+      100% { transform: translateY(-320px); opacity: 0; }
+    }
+    @keyframes float2 {
+      0% { transform: translateY(0); opacity: 1; }
+      80% { opacity: 1; }
+      100% { transform: translateY(-340px); opacity: 0; }
+    }
+    @keyframes float3 {
+      0% { transform: translateY(0); opacity: 1; }
+      80% { opacity: 1; }
+      100% { transform: translateY(-360px); opacity: 0; }
+    }
+    @keyframes float4 {
+      0% { transform: translateY(0); opacity: 1; }
+      80% { opacity: 1; }
+      100% { transform: translateY(-300px); opacity: 0; }
+    }
+  </style>
+</svg> 
