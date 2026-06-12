@@ -77,6 +77,14 @@ const eventImages = {
     "/media/events/2025/18.JPG",
     "/media/events/2025/19.JPG",
   ],
+  "2026_cn": [
+    "/media/events/2026/2026%20OMT%20Workshop%20Coverpage-%20Taiwan.png",
+    "/media/events/2026/2026%20OMT%20Workshop%20Details-Taiwan.png",
+    "/media/events/2026/2026%20English%20poster%202.PNG",
+    "/media/events/2026/2026%20Chinese%20poster%202.PNG",
+    "/media/events/2026/Image.PNG",
+    "/media/events/2026/Image%202.PNG",
+  ],
   2026: [
     "/media/events/2026/2026%20English%20poster%202.PNG",
     "/media/events/2026/2026%20Chinese%20poster%202.PNG",
@@ -121,7 +129,8 @@ function initGallery() {
       let currentIndex = 0;
       
       popupImg.style.display = 'none';
-      popupDesc.textContent = `${year} Events`;
+      const displayYear = year.toString().replace('_cn', '');
+      popupDesc.textContent = `${displayYear} Events`;
       
       if (carouselContainer) {
         carouselContainer.style.display = 'flex';
