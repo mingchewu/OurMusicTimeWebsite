@@ -3,7 +3,7 @@
 /* Navbar */
 .navbar {
   position: fixed;
-  top: 0;
+  top: 48px;
   left: 0;
   width: 100%;
   padding: 1rem 2rem;
@@ -52,7 +52,7 @@
 
 /* Main Content */
 main {
-  padding-top: 80px; /* offset for navbar */
+  padding-top: 128px; /* offset for navbar and banner */
 }
 
 /* Sections */
