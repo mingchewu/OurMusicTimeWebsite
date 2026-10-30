@@ -21,7 +21,7 @@
   /* ───────── Loading veil ─────────
      Real progress — page ready, fonts loaded, piano started — fills the
      hairline; then the veil slides away and the piano assembles itself.
-     It never waits more than a few seconds, and shows once per session. */
+     It never waits more than a few seconds, and shows on every visit. */
   const veil = document.getElementById("veil");
   const veiled = root.classList.contains("is-loading") && veil;
   const veilParts = { dom: 0.2, fonts: 0.3, piano: 0.5 };
@@ -43,7 +43,6 @@
     if (!veiled || veilLifted) return;
     veilLifted = true;
     veil.querySelector(".veil-bar i").style.transform = "scaleX(1)";
-    try { sessionStorage.setItem("omt-seen", "1"); } catch (e) {}
     setTimeout(() => {
       root.classList.add("is-lifting");
       root.classList.remove("is-loading");

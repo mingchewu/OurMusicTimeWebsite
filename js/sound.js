@@ -106,6 +106,44 @@
     voice(freqFor(step), now, 0.55 + Math.random() * 0.2);
   }
 
+  // A soft, felted knock as a heavy piece of the piano lands back in place:
+  // a short falling low tone plus a breath of filtered noise. size: 0–1.
+  let lastThud = 0;
+  function thud(size) {
+    if (!playable()) return;
+    const now = ctx.currentTime;
+    if (now - lastThud < 0.06) return;
+    lastThud = now;
+    const level = 0.12 + size * 0.2;
+
+    const body = ctx.createOscillator();
+    const bodyEnv = ctx.createGain();
+    body.type = "sine";
+    body.frequency.setValueAtTime(70 + (1 - size) * 60, now);
+    body.frequency.exponentialRampToValueAtTime(42, now + 0.25);
+    bodyEnv.gain.setValueAtTime(0.0001, now);
+    bodyEnv.gain.linearRampToValueAtTime(level, now + 0.005);
+    bodyEnv.gain.exponentialRampToValueAtTime(0.0001, now + 0.35);
+    body.connect(bodyEnv).connect(out);
+    body.start(now);
+    body.stop(now + 0.4);
+
+    const len = Math.floor(ctx.sampleRate * 0.12);
+    const buf = ctx.createBuffer(1, len, ctx.sampleRate);
+    const data = buf.getChannelData(0);
+    for (let i = 0; i < len; i++) data[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / len, 3);
+    const noise = ctx.createBufferSource();
+    const felt = ctx.createBiquadFilter();
+    const noiseEnv = ctx.createGain();
+    noise.buffer = buf;
+    felt.type = "lowpass";
+    felt.frequency.value = 600 + size * 500;
+    noiseEnv.gain.value = level * 0.6;
+    noise.connect(felt).connect(noiseEnv).connect(out);
+    noise.start(now);
+    played++;
+  }
+
   const CHORDS = {
     intro: [0, 2, 3, 5],        // C3 E3 G3 C4 — rolled, as the piano arrives
     together: [3, 5, 6, 7],     // G3 C4 D4 E4 — soft and open, back in one piece
@@ -162,6 +200,7 @@
   window.OMTSound = {
     note,
     chord,
+    thud,
     get enabled() { return enabled; },
     get state() { return ctx ? ctx.state : "not started"; },
     get played() { return played; },

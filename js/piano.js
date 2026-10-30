@@ -359,63 +359,103 @@ function init() {
     t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
     return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
   };
-  /* ───────── Coming apart: sucked away, thrown back ─────────
-     Pieces leave one after another — keys first, sweeping bass to treble,
-     then legs and pedals, the lid, and the case last — each spiralling ever
-     faster into a single point behind the piano, where it vanishes. Coming
-     back they're thrown out of that point in arcs, overshoot a touch and
-     settle: the case lands first and the keys last, so the piano builds up. */
-  // The point everything is drawn into: just behind and above the piano as
-  // seen from the camera, re-placed every frame so it stays in view whatever
-  // pose the piano is in (see placeSink in the frame loop).
-  const SINK = new THREE.Vector3();
-  const SINK_OFFSET = new THREE.Vector3(0, 0.35, -2.4); // world space, from the piano
-  const SPAN = 0.5;   // share of the whole burst each piece spends travelling
-  let burst = 0;      // 0 = assembled … 1 = every piece gone
-  let throwMix = 0;   // 0 = being sucked away, 1 = being thrown back (blended)
+  /* ───────── Coming apart, without anything passing through anything ─────
+     The piano comes apart from the top down — prop and lid first, the legs
+     last — so a piece only ever leaves once everything above it has gone.
+     Each piece first rises straight up until it's clear of whatever still
+     stands (keys lift out of the keybed towards the player), and only then
+     is pulled, spiralling and shrinking, into a point above the piano.
+     It rebuilds in reverse, bottom up: each piece is thrown from that point
+     to just above its place, then drops the last stretch under gravity,
+     lands, and rebounds a touch. No path crosses a part that's in place. */
+  const SINK = new THREE.Vector3();                     // re-placed each frame (placeSink)
+  const SINK_OFFSET = new THREE.Vector3(0, 1.15, -0.5); // world space, above the piano
+  const SPAN = 0.42;      // share of the whole burst each piece spends travelling
+  const LIFT = 0.3;       // share of a piece's trip spent rising clear
+  const CLEAR = 1.06;     // model height to rise above: the rim, hinge and desk
+  const LAND = 0.62;      // share of the return spent flying; the rest is the drop
+  const IMPACT = 0.8;     // point in the drop where it hits home and rebounds
+  let burst = 0;          // 0 = assembled … 1 = every piece gone
+  let throwMix = 0;       // 0 = being pulled away, 1 = being rebuilt (blended)
   const easeIn = (t) => t * t * t;
   const easeOutCubic = (t) => 1 - Math.pow(1 - t, 3);
-  const easeOutBack = (t) => { const c = 1.45, u = t - 1; return 1 + (c + 1) * u * u * u + c * u * u; };
+  const easeInOut = (t) => t * t * (3 - 2 * t);
   const _sa = new THREE.Vector3();
   const _sb = new THREE.Vector3();
-  const _trip = { scale: 1, turn: 0 };
-  // Where a piece is on its journey. Writes the position into `out` and
-  // returns its scale and how much of its tumble it has done (0 = none).
-  function travel(base, start, arc, out) {
-    const p = burst <= start ? 0 : Math.min(1, (burst - start) / SPAN);
+  const _lift = new THREE.Vector3();
+  const _trip = { scale: 1, turn: 0, landed: false };
+
+  // Where a piece is on its journey. `pc` = { home, start, dy, fwd, arc }.
+  // Writes the position into `out`; returns its scale, how much of its
+  // tumble it has done, and whether (on the way back) it has touched down.
+  function travel(pc, home, out) {
+    const p = burst <= pc.start ? 0 : Math.min(1, (burst - pc.start) / SPAN);
     if (p <= 0) {
-      out.copy(base);
+      out.copy(home);
       _trip.scale = 1;
       _trip.turn = 0;
+      _trip.landed = true;
       return _trip;
     }
-    // Sucked: an accelerating spiral in towards the sink, shrinking away
-    const t = easeIn(p);
-    const ang = 2.6 * t;
-    const cos = Math.cos(ang), sin = Math.sin(ang);
-    _sa.copy(base).sub(SINK);
-    _sa.set(_sa.x * cos - _sa.z * sin, _sa.y, _sa.x * sin + _sa.z * cos).multiplyScalar(1 - t).add(SINK);
-    const suckScale = Math.pow(1 - t, 0.8);
-    // Thrown: out of the sink along an arc, past home a little, then back
+    // the point straight above home where a piece is clear of everything
+    _lift.copy(home);
+    _lift.y += pc.dy;
+    _lift.z += pc.fwd;
+
+    // Pulled away: rise clear, then an accelerating spiral into the sink
+    let suckScale = 1, suckTurn = 0;
+    if (p < LIFT) {
+      const k = easeInOut(p / LIFT);
+      // straight up first; any forward drift only once well above neighbours
+      _sa.set(home.x, home.y + pc.dy * k, home.z + pc.fwd * k * k * k);
+      suckTurn = Math.sin(k * Math.PI) * 0.06; // a little rattle as it comes free
+    } else {
+      const t = easeIn((p - LIFT) / (1 - LIFT));
+      const ang = 2.4 * t;
+      const cos = Math.cos(ang), sin = Math.sin(ang);
+      _sa.copy(_lift).sub(SINK);
+      _sa.set(_sa.x * cos - _sa.z * sin, _sa.y, _sa.x * sin + _sa.z * cos).multiplyScalar(1 - t).add(SINK);
+      suckScale = Math.pow(1 - t, 0.8);
+      suckTurn = t;
+    }
+
+    // Rebuilt: thrown from the sink to above its place, then a gravity drop
     const q = 1 - p;
-    _sb.copy(base).sub(SINK).multiplyScalar(easeOutBack(q)).add(SINK);
-    _sb.y += Math.sin(Math.PI * q) * arc;
-    const throwScale = Math.min(1, q * 2.2);
+    let throwScale = 1, throwTurn = 0, landed = false;
+    if (q < LAND) {
+      const u = easeOutCubic(q / LAND);
+      _sb.copy(SINK).lerp(_lift, u);
+      _sb.y += Math.sin(Math.PI * u) * pc.arc;
+      throwScale = Math.min(1, (q / LAND) * 1.8);
+      throwTurn = 1 - u;
+    } else {
+      const d = (q - LAND) / (1 - LAND);
+      // falls with gravity to home, then a small rebound
+      const f = d < IMPACT ? 1 - (d / IMPACT) * (d / IMPACT) : 0.06 * Math.sin(Math.PI * (d - IMPACT) / (1 - IMPACT));
+      _sb.copy(home);
+      _sb.y += pc.dy * f;
+      _sb.z += pc.fwd * Math.pow(Math.max(0, f), 3);
+      landed = d >= IMPACT;
+    }
+
     const m = throwMix;
     out.copy(_sa).lerp(_sb, m);
     _trip.scale = Math.max(0.0001, suckScale + (throwScale - suckScale) * m);
-    _trip.turn = t * (1 - m) + (1 - easeOutCubic(q)) * m;
+    _trip.turn = suckTurn + (throwTurn - suckTurn) * m;
+    _trip.landed = landed;
     return _trip;
   }
 
-  // Keys leave in a sweep from the bass up, and land back in the reverse order
+  // Keys rise out of the keybed (towards the player) in a sweep from the bass
+  // and slot back in from the treble end. Their place in the top-down order is
+  // set later, once every part's height is known (see "order" below).
   [...whiteKeys, ...blackKeys].forEach((k) => {
     k.home = new THREE.Vector3(k.x, KEY_TOP, KEY_Z_BACK);
-    // (starting from 0.1 rather than 0, the keys are home before the slow
-    // tail of the gathering, so even a quick scroll finds the piano whole)
-    k.start = 0.1 + ((k.x + 0.7) / 1.4) * 0.15 + rand() * 0.02;
-    k.arc = 0.2 + rand() * 0.35;
-    k.spin = new THREE.Euler((rand() - 0.5) * 6, (rand() - 0.5) * 6, (rand() - 0.5) * 6);
+    k.sweep = (k.x + 0.7) / 1.4;
+    k.dy = CLEAR - KEY_TOP + 0.05;
+    k.fwd = 0.08;
+    k.arc = 0.15 + rand() * 0.25;
+    k.spin = new THREE.Euler((rand() - 0.5) * 5, (rand() - 0.5) * 5, (rand() - 0.5) * 5);
   });
 
   const _m = new THREE.Matrix4();
@@ -426,7 +466,7 @@ function init() {
   const _one = new THREE.Vector3(1, 1, 1);
   const _s = new THREE.Vector3();
   function keyMatrix(k, tilt) {
-    const trip = travel(k.home, k.start, k.arc, _v);
+    const trip = travel(k, k.home, _v);
     _e.set(k.spin.x * trip.turn, k.spin.y * trip.turn, k.spin.z * trip.turn);
     _m.compose(_v, _q.setFromEuler(_e), trip.scale === 1 ? _one : _s.setScalar(trip.scale));
     return _m.multiply(_r.makeRotationX(k.press * tilt));
@@ -477,9 +517,10 @@ function init() {
     const leg = new THREE.Mesh(legGeo, lacquer);
     leg.position.set(x, 0.05 + (Y_BOTTOM - 0.05) / 2, -d);
     model.add(leg);
+    // the caster belongs to its leg, so they travel as one piece
     const caster = new THREE.Mesh(casterGeo, brass);
-    caster.position.set(x, 0.025, -d);
-    model.add(caster);
+    caster.position.set(0, 0.025 - leg.position.y, 0);
+    leg.add(caster);
   });
   {
     const lyre = new THREE.Group();
@@ -522,22 +563,24 @@ function init() {
     model.add(shadow);
   }
 
-  /* Every other piece joins the same journey. Small pieces (legs, pedals,
-     prop, hinge) leave early; big ones (lid, plate, rim, case) leave last
-     and so are the first to be thrown back into place. */
-  updateLid(0.6); // so the prop has a real position to measure
+  /* Every other piece joins the same journey, measured from where it sits. */
+  updateLid(0.6); // so the prop and lid have real positions to measure
   const parts = [];
   const _box = new THREE.Box3();
   const _c = new THREE.Vector3();
   function addPart(o) {
-    const size = _box.setFromObject(o).getSize(_c).length();
+    _box.setFromObject(o);
     parts.push({
       o,
       base: o.position.clone(),
       baseRot: o.rotation.clone(),
-      start: Math.min(0.5, 0.29 + 0.2 * Math.min(1, size / 2.3) + rand() * 0.02),
-      arc: 0.3 + rand() * 0.5,
-      spin: new THREE.Vector3((rand() - 0.5) * 3, (rand() - 0.5) * 3, (rand() - 0.5) * 3),
+      top: _box.max.y,
+      size: _box.getSize(_c).length(),
+      dy: Math.max(0.14, CLEAR - _box.min.y + 0.04), // rise until its underside clears
+      fwd: 0,
+      arc: 0.25 + rand() * 0.4,
+      spin: new THREE.Vector3((rand() - 0.5) * 2.4, (rand() - 0.5) * 2.4, (rand() - 0.5) * 2.4),
+      landed: true,
     });
   }
   model.children.forEach((o) => {
@@ -546,6 +589,37 @@ function init() {
     else addPart(o);
   });
 
+  // The order: five layers, top down. Everything in a layer rises the same
+  // distance at the same moment, like one rigid block, so nothing stacked
+  // inside a layer can overtake what sits on it; and a layer only starts
+  // rising once the layer above has risen clear. (Reversed when rebuilding.)
+  //   0 lid, prop, desk · 1 rim, hinge, dampers, fallboard · 2 strings,
+  //   plate, keys, slip, cheeks · 3 soundboard, lining, keybed, case bottom ·
+  //   4 legs (with casters) and the pedal lyre
+  {
+    const layerOf = (top) => (top >= 0.95 ? 0 : top >= 0.78 ? 1 : top >= 0.715 ? 2 : top >= 0.62 ? 3 : 4);
+    const LAYER_GAP = LIFT * SPAN;                  // the time one layer takes to rise clear
+    const startOf = (layer) => layer * LAYER_GAP;
+    const rise = [0, 0, 0, 0, 0];
+    parts.forEach((p) => {
+      p.layer = layerOf(p.top);
+      rise[p.layer] = Math.max(rise[p.layer], p.dy);
+    });
+    const KEYS_LAYER = 2;
+    rise[KEYS_LAYER] = Math.max(rise[KEYS_LAYER], CLEAR - (KEY_TOP - 0.02) + 0.04);
+    parts.forEach((p) => {
+      p.dy = rise[p.layer];
+      p.start = startOf(p.layer);
+    });
+    // keys lift in a sweep from the bass; black keys rest on the white ones,
+    // so each leaves just before the white keys either side of it
+    const keysAt = startOf(KEYS_LAYER);
+    const sweepAt = (x) => keysAt + ((x + 0.7) / 1.4) * 0.05;
+    whiteKeys.forEach((k) => (k.start = sweepAt(k.x)));
+    blackKeys.forEach((k) => (k.start = sweepAt(k.x - KEY_W / 2) - 0.012));
+    [...whiteKeys, ...blackKeys].forEach((k) => (k.dy = rise[KEYS_LAYER]));
+  }
+
   const _propBase = new THREE.Vector3();
   const _sinkW = new THREE.Vector3();
   function placeSink() {
@@ -553,21 +627,29 @@ function init() {
     _sinkW.copy(piano.position).add(SINK_OFFSET);
     SINK.copy(model.worldToLocal(_sinkW));
   }
+
   function applyBurst() {
     parts.forEach((p) => {
       const o = p.o;
+      let trip;
       if (o === prop) {
         // updateLid re-places and re-sizes the prop every frame; carry it along
         _propBase.copy(o.position);
-        o.scale.multiplyScalar(travel(_propBase, p.start, p.arc, o.position).scale);
-        return;
+        trip = travel(p, _propBase, o.position);
+        o.scale.multiplyScalar(trip.scale);
+      } else {
+        trip = travel(p, p.base, o.position);
+        o.scale.setScalar(trip.scale);
+        o.rotation.x = p.baseRot.x + p.spin.x * trip.turn;
+        o.rotation.y = p.baseRot.y + p.spin.y * trip.turn;
+        // the lid's z rotation is its opening angle, set by updateLid
+        o.rotation.z = o === lidPivot ? o.rotation.z + p.spin.z * trip.turn : p.baseRot.z + p.spin.z * trip.turn;
       }
-      const trip = travel(p.base, p.start, p.arc, o.position);
-      o.scale.setScalar(trip.scale);
-      o.rotation.x = p.baseRot.x + p.spin.x * trip.turn;
-      o.rotation.y = p.baseRot.y + p.spin.y * trip.turn;
-      // the lid's z rotation is its opening angle, set by updateLid
-      o.rotation.z = o === lidPivot ? o.rotation.z + p.spin.z * trip.turn : p.baseRot.z + p.spin.z * trip.turn;
+      // a soft thud as the heavier pieces touch down while rebuilding
+      if (trip.landed && !p.landed && throwMix > 0.5 && p.size > 0.45 && window.OMTSound) {
+        window.OMTSound.thud(Math.min(1, p.size / 2.3));
+      }
+      p.landed = trip.landed;
     });
     shadow.material.opacity = 1 - Math.min(1, burst * 1.6);
   }
@@ -763,9 +845,14 @@ function init() {
       // Pulled away steadily. Thrown back at a pace that follows the scroll:
       // a leisurely scroll gets the full, readable throw; a fast one throws
       // everything home proportionally quicker so the piano is whole in time.
+      // A steady pace (not an exponential chase, which would rush the first
+      // pieces): ~2.2 s to come fully apart, ~1.6 s to rebuild when scrolling
+      // slowly, quicker when scrolling fast. Eases off near the target.
       const hurry = Math.min(velocity / 14, 1);
-      const rate = want < burst ? 2.4 + hurry * 4 : 1.6;
-      burst += (want - burst) * (1 - Math.exp(-dt * rate));
+      const speed = want < burst ? 0.62 + hurry * 1.6 : 0.45;
+      const gap = want - burst;
+      const step = Math.min(Math.abs(gap), speed * dt * Math.min(1, 0.25 + Math.abs(gap) * 4));
+      burst += Math.sign(gap) * step;
       if (burst < 0.001) burst = 0;
       // a soft chord as the piano settles back together after coming apart
       if (burst > 0.6) apartAgo = true;
