@@ -1503,6 +1503,15 @@ html[lang="zh-Hant"] .coda-title { font-size: clamp(2.4rem, 1.4rem + 4vw, 5rem);
   transition-delay: calc(var(--d, 0s) + var(--i, 0) * 0.055s);
 }
 .is-split.is-in .wi { transform: none; }
+/* Flicking through the page: reveal at once rather than leaving blank space */
+.is-fast [data-reveal] { transition-duration: 0.15s !important; transition-delay: 0s !important; }
+.is-fast .is-split .wi { transition-duration: 0.2s; transition-delay: 0s; }
+
+/* Images fade in over a quiet placeholder instead of popping in */
+img.is-pending { opacity: 0; }
+img.is-arrived { animation: img-in 0.7s var(--ease); }
+@keyframes img-in { from { opacity: 0; } }
+.frame, .cover img, .person-photo, .singer-photo, .portrait, .school img { background-color: var(--ink-4); }
 .js [data-reveal] {
   opacity: 0;
   transform: translateY(28px);

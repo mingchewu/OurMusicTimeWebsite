@@ -47,7 +47,16 @@ get the new file straight away instead of a stale copy.
 Each `<section data-piano='{…}'>` is a pose the piano moves to as that section
 scrolls into the middle of the screen (`x`, `y`, `ry`, `rx`, `s`, `lid`, `o`;
 `data-piano-m` is the phone version). Sections with the `surface` class are
-solid and cover it.
+solid and cover it. Before one covers the piano it comes apart, top down,
+and rebuilds bottom up afterwards. When someone flicks through the page fast
+(`html.is-fast`, set in `js/main.js`), the piano steps aside and is rebuilt
+where they land.
+
+## Sound
+
+Off by default (the Sound button). When on, scrolling plays an original theme
+(`THEME` in `js/sound.js`: 16 bars, melody + bass + chord per bar) that grows
+fuller further down the page and resolves at the bottom. All synthesised.
 
 ## Running locally
 

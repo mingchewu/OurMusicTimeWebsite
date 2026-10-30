@@ -18,6 +18,7 @@
 
 let THREE, RoomEnvironment;
 const canvas = document.getElementById("piano");
+const root = document.documentElement;
 const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
 function webglAvailable() {
@@ -728,10 +729,13 @@ function init() {
   }
 
   /* ───────── Sizing ───────── */
+  let baseRatio = 1;
+  let lowRes = false; // drawn at reduced resolution while flicking through the page
   let widthScale = 1;
   function resize() {
     const w = window.innerWidth, h = window.innerHeight;
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, w < 860 ? 1.5 : 2));
+    baseRatio = Math.min(window.devicePixelRatio, w < 860 ? 1.5 : 2);
+    renderer.setPixelRatio(lowRes ? Math.min(baseRatio, 1) : baseRatio);
     renderer.setSize(w, h, false);
     camera.aspect = w / h;
     // Pull the camera back on tall/narrow screens so the piano still fits
@@ -801,8 +805,19 @@ function init() {
     const scroll = window.scrollY;
     const target = targetPose(scroll);
 
-    const k = reduceMotion ? 1 : 1 - Math.exp(-dt * 2.2);
+    // Flicking through the page (html.is-fast, set by main.js): rather than
+    // swinging through every in-between pose, the piano holds still while it
+    // is drawn away, then — once out of sight — jumps to where the visitor is
+    // heading, ready to be rebuilt there when they land.
+    const fast = !reduceMotion && intro.state === "done" && root.classList.contains("is-fast");
+    let k = reduceMotion ? 1 : 1 - Math.exp(-dt * 2.2);
+    if (fast) k = burst >= 0.98 ? 1 : 0;
+    else if (burst >= 0.98) k = 1; // still out of sight: be in place before it returns
     KEYS.forEach((key) => (cur[key] += (target[key] - cur[key]) * k));
+    if (fast !== lowRes) {
+      lowRes = fast;
+      renderer.setPixelRatio(lowRes ? Math.min(baseRatio, 1) : baseRatio);
+    }
 
     pointer.x += (pointer.tx - pointer.x) * (1 - Math.exp(-dt * 2));
     pointer.y += (pointer.ty - pointer.y) * (1 - Math.exp(-dt * 2));
@@ -821,7 +836,7 @@ function init() {
     if (!reduceMotion) keyLight.position.set(3 + pointer.x * 1.6, 5 - pointer.y * 1.2, 4);
     // Pieces drift apart slowly but gather back about twice as fast, so the
     // piano is reliably whole again even on a quick scroll through a stage.
-    const want = burstTarget(scroll);
+    const want = fast ? 1 : burstTarget(scroll);
     if (intro.state === "hold") {
       burst = 1;
       throwMix = 1; // the opening throws the piece together
@@ -849,7 +864,8 @@ function init() {
       // pieces): ~2.2 s to come fully apart, ~1.6 s to rebuild when scrolling
       // slowly, quicker when scrolling fast. Eases off near the target.
       const hurry = Math.min(velocity / 14, 1);
-      const speed = want < burst ? 0.62 + hurry * 1.6 : 0.45;
+      // stepping aside for a fast scroll happens briskly (~0.6 s), still top down
+      const speed = want < burst ? 0.62 + hurry * 1.6 : fast ? 1.7 : 0.45;
       const gap = want - burst;
       const step = Math.min(Math.abs(gap), speed * dt * Math.min(1, 0.25 + Math.abs(gap) * 4));
       burst += Math.sign(gap) * step;
@@ -883,18 +899,14 @@ function init() {
     velocity += (Math.min(Math.abs(ds), 60) - velocity) * 0.15;
     if (!reduceMotion) {
       playhead += ds * 0.035;
-      const intensity = Math.min(velocity / 18, 1);
+      const intensity = fast ? 0 : Math.min(velocity / 18, 1);
       const head = ((playhead % 52) + 52) % 52;
       whiteKeys.forEach((key, i) => {
         // distance on the playhead's circular track, two "hands" an octave+ apart
         const d1 = Math.abs(((i - head + 78) % 52) - 26);
         const d2 = Math.abs(((i - head - 9 + 78) % 52) - 26);
         const target = Math.max(0, 1 - Math.min(d1, d2) / 1.6) * intensity;
-        const before = key.press;
         key.press += (target - key.press) * 0.35;
-        // a key that just went down sounds its note (when sound is on and the piano is in view)
-        // (a low threshold: on quick scrolls the wave passes before keys go fully down)
-        if (before < 0.3 && key.press >= 0.3 && window.OMTSound && burst < 0.2) window.OMTSound.note(i);
       });
       let pressed = 0;
       blackKeys.forEach((key) => {

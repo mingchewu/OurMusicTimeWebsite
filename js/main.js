@@ -150,11 +150,17 @@
   const menuBtn = document.querySelector(".menu-btn");
   let lastY = window.scrollY;
 
+  // The bar hides after a deliberate run downwards and returns after one
+  // upwards, so jerking the scroll back and forth doesn't make it flicker.
+  let navRun = 0;
   function onNavScroll() {
     const y = window.scrollY;
     nav.classList.toggle("is-scrolled", y > 24);
+    const dy = y - lastY;
+    navRun = Math.sign(dy) === Math.sign(navRun) ? navRun + dy : dy;
     const menuOpen = menuBtn.getAttribute("aria-expanded") === "true";
-    nav.classList.toggle("is-hidden", !menuOpen && y > lastY && y > window.innerHeight * 0.6);
+    if (menuOpen || y < window.innerHeight * 0.6 || navRun < -40) nav.classList.remove("is-hidden");
+    else if (navRun > 60) nav.classList.add("is-hidden");
     lastY = y;
   }
 
@@ -193,7 +199,10 @@
     glide.last = now;
     // Someone dragged the scrollbar or pressed a key mid-glide: let go
     if (Math.abs(window.scrollY - glide.y) > 3) { glide.active = false; return; }
-    glide.y += (glide.target - glide.y) * (1 - Math.exp(-dt * 5));
+    // big distances close faster than small ones: silky for a gentle scroll,
+    // responsive for a hard flick
+    const far = Math.min(Math.abs(glide.target - glide.y) / window.innerHeight, 1.5);
+    glide.y += (glide.target - glide.y) * (1 - Math.exp(-dt * (5 + far * 5)));
     if (Math.abs(glide.target - glide.y) < 0.5) glide.y = glide.target;
     // keep the fractional position ourselves; the browser rounds what it shows
     window.scrollTo({ top: glide.y, behavior: "instant" });
@@ -218,7 +227,11 @@
       if (e.target.closest && e.target.closest("dialog, iframe, .lb-thumbs")) return;
       e.preventDefault();
       const unit = e.deltaMode === 1 ? 40 : e.deltaMode === 2 ? window.innerHeight : 1;
-      glideTo((glide.active ? glide.target : window.scrollY) + e.deltaY * unit);
+      // stacked flicks can lead the page by at most about a screen, so the
+      // glide never keeps running long after the wheel has stopped
+      const lead = window.innerHeight * 1.1;
+      const next = (glide.active ? glide.target : window.scrollY) + e.deltaY * unit;
+      glideTo(Math.max(window.scrollY - lead, Math.min(window.scrollY + lead, next)));
     }, { passive: false });
   }
 
@@ -302,7 +315,7 @@
           io.unobserve(entry.target);
         }
       });
-    }, { rootMargin: "0px 0px -8% 0px", threshold: 0.08 });
+    }, { rootMargin: "0px 0px 25% 0px", threshold: 0 }); // start before it's in view
     revealables.forEach((el) => io.observe(el));
   }
 
@@ -342,8 +355,79 @@
     for (const [el, prop, value] of writes) el.style[prop] = value;
   }
 
+  /* ───────── Fast scrolling ─────────
+     html.is-fast is set while someone is flicking through the page (over
+     ~2,400 px/s) and cleared once they've been calm for a moment. Reveals
+     then appear at once, and the piano steps aside (see piano.js). */
+  let speed = 0;
+  let lastSY = window.scrollY;
+  let lastST = performance.now();
+  let lastFast = 0;
+  let calmTimer = null;
+  function checkCalm() {
+    if (performance.now() - lastFast > 320) {
+      root.classList.remove("is-fast");
+      speed = 0;
+    } else {
+      calmTimer = setTimeout(checkCalm, 120);
+    }
+  }
+  // While flicking, reveal everything in the next couple of screens straight
+  // away, so content is already there as it flies past
+  let lastAhead = 0;
+  function revealAhead(now) {
+    if (now - lastAhead < 90) return;
+    lastAhead = now;
+    const reach = window.innerHeight * 2.5;
+    document.querySelectorAll("[data-reveal]:not(.is-in)").forEach((el) => {
+      const r = el.getBoundingClientRect();
+      if (r.top < reach && r.bottom > -reach) el.classList.add("is-in");
+    });
+  }
+  function trackSpeed() {
+    const now = performance.now();
+    const dt = Math.max(1, now - lastST);
+    const v = Math.abs(window.scrollY - lastSY) / dt; // px per ms
+    lastSY = window.scrollY;
+    lastST = now;
+    speed += (v - speed) * Math.min(1, dt / 100);
+    if (speed > 2.4) {
+      lastFast = now;
+      root.classList.add("is-fast");
+      revealAhead(now);
+    }
+    clearTimeout(calmTimer);
+    calmTimer = setTimeout(checkCalm, 120);
+  }
+
+  /* ───────── Images ─────────
+     Load each image well before it scrolls into view (two screens ahead),
+     and let it fade in over its placeholder rather than popping in. */
+  const lazyImgs = [...document.querySelectorAll('img[loading="lazy"]')];
+  lazyImgs.forEach((img) => {
+    if (img.complete && img.naturalWidth) return;
+    img.classList.add("is-pending");
+    const done = () => {
+      img.classList.remove("is-pending");
+      img.classList.add("is-arrived");
+    };
+    img.addEventListener("load", done, { once: true });
+    img.addEventListener("error", done, { once: true });
+  });
+  if ("IntersectionObserver" in window) {
+    const ahead = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+        entry.target.loading = "eager";
+        ahead.unobserve(entry.target);
+      });
+    }, { rootMargin: "0px 0px 200% 0px" });
+    lazyImgs.forEach((img) => ahead.observe(img));
+  }
+
   const progress = document.querySelector(".progress");
   function onScroll() {
+    trackSpeed();
     onNavScroll();
     const max = maxScroll();
     progress.style.transform = `scaleX(${max > 0 ? (window.scrollY / max).toFixed(4) : 0})`;

@@ -1,7 +1,8 @@
 // Opt-in piano sound. Nothing plays — and no audio engine is even created —
-// until the visitor turns "Sound" on. Then the keys the scroll "plays" on the
-// 3D piano (see piano.js) sound soft felt-piano notes, and gentle chords mark
-// the piano assembling itself. Everything is synthesised: no audio files.
+// until the visitor turns "Sound" on. Then scrolling plays an original theme,
+// note by note, that grows from a lone melody at the top of the page into
+// full chords by the end; gentle chords and soft thuds mark the 3D piano
+// rebuilding itself. Everything is synthesised: no audio files.
 (function () {
   "use strict";
 
@@ -14,10 +15,8 @@
   let lastNote = 0;
   let played = 0; // voices started, for a quick status check
 
-  // C-major pentatonic over three octaves from C3: any run of keys sounds musical
-  const PENTA = [0, 2, 4, 7, 9];
   const C3 = 130.81;
-  const freqFor = (step) => C3 * Math.pow(2, Math.floor(step / 5) + PENTA[step % 5] / 12);
+  const midi = (m) => 440 * Math.pow(2, (m - 69) / 12);
 
   // A short warm "room": decaying stereo noise as a convolution impulse
   function roomImpulse(seconds) {
@@ -59,11 +58,13 @@
 
   // One felt-piano voice: a few soft partials, quick attack, long decay,
   // through a low-pass that closes as the note fades (like a hammer's felt)
-  function voice(freq, when, velocity) {
-    if (!ctx || voices >= 8) return;
+  // `lite` voices (chords, doublings) use two partials instead of four, so a
+  // full texture near the end of the page stays light to synthesise
+  function voice(freq, when, velocity, length, lite) {
+    if (!ctx || voices >= 30) return;
     voices++;
     played++;
-    const dur = 2.6 - Math.min(1.4, (freq - C3) / 600); // low notes ring longer
+    const dur = length || 2.6 - Math.min(1.4, (freq - C3) / 600); // low notes ring longer
     const env = ctx.createGain();
     const tone = ctx.createBiquadFilter();
     tone.type = "lowpass";
@@ -74,7 +75,9 @@
     env.gain.exponentialRampToValueAtTime(0.0001, when + dur);
     env.connect(tone).connect(out);
 
-    const partials = [[1, 1, "triangle"], [2, 0.42, "sine"], [3, 0.16, "sine"], [4.02, 0.06, "sine"]];
+    const partials = lite
+      ? [[1, 1, "triangle"], [2, 0.38, "sine"]]
+      : [[1, 1, "triangle"], [2, 0.42, "sine"], [3, 0.16, "sine"], [4.02, 0.06, "sine"]];
     let ended = 0;
     partials.forEach(([mult, gain, type]) => {
       const osc = ctx.createOscillator();
@@ -96,15 +99,88 @@
     return enabled && ctx && ctx.state === "running";
   }
 
-  // whiteIndex: 0–51 across the keyboard
-  function note(whiteIndex) {
-    if (!playable()) return;
-    const now = ctx.currentTime;
-    if (now - lastNote < 0.075) return; // keep fast scrolls from turning into noise
-    lastNote = now;
-    const step = Math.round((whiteIndex / 51) * 14);
-    voice(freqFor(step), now, 0.55 + Math.random() * 0.2);
+  /* ───────── The theme ─────────
+     An original 16-bar theme in A minor: a searching first half that turns
+     home on E, then a second half that climbs higher before returning.
+     Scrolling moves through it note by note. It grows as you go down the
+     page: melody alone → a bass on each bar → a walking bass → chords →
+     melody doubled in octaves; scrolling with momentum adds a little more. */
+  //            melody (4 steps)     bass  chord
+  const THEME = [
+    [[69, 72, 76, 74], 45, [57, 60, 64]], // Am
+    [[72, 69, 65, 69], 41, [53, 57, 60]], // F
+    [[67, 72, 76, 79], 48, [55, 60, 64]], // C
+    [[77, 76, 74, 71], 43, [55, 59, 62]], // G
+    [[72, 76, 81, 79], 45, [57, 60, 64]], // Am
+    [[77, 76, 72, 69], 41, [53, 57, 60]], // F
+    [[74, 77, 76, 74], 38, [53, 57, 62]], // Dm
+    [[71, 68, 71, 76], 40, [52, 56, 59]], // E
+    [[81, 79, 77, 72], 41, [53, 57, 60]], // F
+    [[71, 74, 79, 77], 43, [55, 59, 62]], // G
+    [[76, 79, 83, 81], 40, [55, 59, 64]], // Em
+    [[79, 76, 72, 76], 45, [57, 60, 64]], // Am
+    [[77, 81, 86, 84], 38, [53, 57, 62]], // Dm
+    [[83, 79, 74, 77], 43, [55, 59, 62]], // G
+    [[76, 79, 84, 83], 48, [55, 60, 64]], // C
+    [[80, 76, 71, 76], 40, [52, 56, 59]], // E
+  ];
+  const STEP_PX = 80;   // scroll distance per note
+  const MIN_GAP = 0.14; // the quickest it will play (seconds between notes)
+  let stepAt = 0;       // position in the theme: bar * 4 + beat
+  let travelled = 0;
+  let lastStep = 0;
+  let pace = 0;         // 0 (idle) … 1 (scrolling briskly), from recent note spacing
+
+  function pageProgress() {
+    const max = document.documentElement.scrollHeight - window.innerHeight;
+    return max > 0 ? Math.min(1, window.scrollY / max) : 0;
   }
+  // How full the music is: mostly where you are on the page, plus momentum
+  const fullness = () => Math.min(1, pageProgress() * 0.9 + pace * 0.22);
+
+  function playStep() {
+    const now = ctx.currentTime;
+    const since = now - lastStep;
+    pace += (Math.min(1, MIN_GAP / Math.max(since, MIN_GAP) * 1.4) - pace) * 0.3;
+    lastStep = now;
+
+    const [melody, bass, chord] = THEME[Math.floor(stepAt / 4) % THEME.length];
+    const beat = stepAt % 4;
+    const f = fullness();
+    const vel = 0.3 + f * 0.42;
+    const tone = melody[beat];
+
+    voice(midi(tone), now, vel, 1.4);                                   // melody
+    if (f > 0.78) voice(midi(tone - 12), now, vel * 0.45, 1.1, true);   // octave doubling
+    if (beat === 0 && f > 0.18) voice(midi(bass), now, 0.3 + f * 0.26, 2.2);       // bass
+    if (beat === 2 && f > 0.42) voice(midi(bass + 7), now, 0.24 + f * 0.2, 1.6);   // walking fifth
+    if ((beat === 0 && f > 0.62) || (beat === 2 && f > 0.86)) {
+      chord.forEach((m, n) => voice(midi(m), now + n * 0.014, 0.16 + f * 0.16, 1.1, true)); // chords
+    }
+    stepAt++;
+  }
+
+  // Scrolling (in either direction) moves the theme forward; reaching the
+  // bottom of the page resolves it with a final chord.
+  let lastY = window.scrollY;
+  let resolved = false;
+  window.addEventListener("scroll", () => {
+    const y = window.scrollY;
+    travelled += Math.abs(y - lastY);
+    lastY = y;
+    if (!playable()) return;
+    if (travelled >= STEP_PX && ctx.currentTime - lastStep >= MIN_GAP) {
+      travelled = Math.min(travelled - STEP_PX, STEP_PX); // no backlog after a flick
+      playStep();
+    }
+    const p = pageProgress();
+    if (p > 0.985 && !resolved) {
+      resolved = true;
+      chord("end");
+    } else if (p < 0.9) {
+      resolved = false;
+    }
+  }, { passive: true });
 
   // A soft, felted knock as a heavy piece of the piano lands back in place:
   // a short falling low tone plus a breath of filtered noise. size: 0–1.
@@ -144,16 +220,19 @@
     played++;
   }
 
+  // All in the theme's key (A minor), voiced as MIDI notes
   const CHORDS = {
-    intro: [0, 2, 3, 5],        // C3 E3 G3 C4 — rolled, as the piano arrives
-    together: [3, 5, 6, 7],     // G3 C4 D4 E4 — soft and open, back in one piece
-    hello: [5, 7, 8],           // C4 E4 G4 — confirms sound is on
+    intro: [45, 57, 64, 69, 72],          // rolled A minor as the piano arrives
+    together: [57, 64, 69, 72],           // soft A minor: back in one piece
+    hello: [69, 72, 76],                  // confirms sound is on
+    end: [33, 45, 57, 64, 69, 72, 76],    // the theme resolves at the bottom of the page
   };
   function chord(kind) {
     if (!playable()) return;
     const steps = CHORDS[kind] || CHORDS.together;
     const now = ctx.currentTime + 0.02;
-    steps.forEach((step, i) => voice(freqFor(step), now + i * 0.09, 0.42));
+    const big = kind === "end";
+    steps.forEach((m, i) => voice(midi(m), now + i * (big ? 0.07 : 0.09), big ? 0.5 : 0.42, big ? 4 : undefined));
   }
 
   function setEnabled(on, persist) {
@@ -198,7 +277,6 @@
   });
 
   window.OMTSound = {
-    note,
     chord,
     thud,
     get enabled() { return enabled; },
