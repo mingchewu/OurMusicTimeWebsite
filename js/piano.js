@@ -359,45 +359,76 @@ function init() {
     t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
     return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
   };
-  // Each key pops up and tumbles away on its own path when the piano comes apart
+  /* ───────── Coming apart: sucked away, thrown back ─────────
+     Pieces leave one after another — keys first, sweeping bass to treble,
+     then legs and pedals, the lid, and the case last — each spiralling ever
+     faster into a single point behind the piano, where it vanishes. Coming
+     back they're thrown out of that point in arcs, overshoot a touch and
+     settle: the case lands first and the keys last, so the piano builds up. */
+  // The point everything is drawn into: just behind and above the piano as
+  // seen from the camera, re-placed every frame so it stays in view whatever
+  // pose the piano is in (see placeSink in the frame loop).
+  const SINK = new THREE.Vector3();
+  const SINK_OFFSET = new THREE.Vector3(0, 0.35, -2.4); // world space, from the piano
+  const SPAN = 0.5;   // share of the whole burst each piece spends travelling
+  let burst = 0;      // 0 = assembled … 1 = every piece gone
+  let throwMix = 0;   // 0 = being sucked away, 1 = being thrown back (blended)
+  const easeIn = (t) => t * t * t;
+  const easeOutCubic = (t) => 1 - Math.pow(1 - t, 3);
+  const easeOutBack = (t) => { const c = 1.45, u = t - 1; return 1 + (c + 1) * u * u * u + c * u * u; };
+  const _sa = new THREE.Vector3();
+  const _sb = new THREE.Vector3();
+  const _trip = { scale: 1, turn: 0 };
+  // Where a piece is on its journey. Writes the position into `out` and
+  // returns its scale and how much of its tumble it has done (0 = none).
+  function travel(base, start, arc, out) {
+    const p = burst <= start ? 0 : Math.min(1, (burst - start) / SPAN);
+    if (p <= 0) {
+      out.copy(base);
+      _trip.scale = 1;
+      _trip.turn = 0;
+      return _trip;
+    }
+    // Sucked: an accelerating spiral in towards the sink, shrinking away
+    const t = easeIn(p);
+    const ang = 2.6 * t;
+    const cos = Math.cos(ang), sin = Math.sin(ang);
+    _sa.copy(base).sub(SINK);
+    _sa.set(_sa.x * cos - _sa.z * sin, _sa.y, _sa.x * sin + _sa.z * cos).multiplyScalar(1 - t).add(SINK);
+    const suckScale = Math.pow(1 - t, 0.8);
+    // Thrown: out of the sink along an arc, past home a little, then back
+    const q = 1 - p;
+    _sb.copy(base).sub(SINK).multiplyScalar(easeOutBack(q)).add(SINK);
+    _sb.y += Math.sin(Math.PI * q) * arc;
+    const throwScale = Math.min(1, q * 2.2);
+    const m = throwMix;
+    out.copy(_sa).lerp(_sb, m);
+    _trip.scale = Math.max(0.0001, suckScale + (throwScale - suckScale) * m);
+    _trip.turn = t * (1 - m) + (1 - easeOutCubic(q)) * m;
+    return _trip;
+  }
+
+  // Keys leave in a sweep from the bass up, and land back in the reverse order
   [...whiteKeys, ...blackKeys].forEach((k) => {
-    k.fly = new THREE.Vector3(k.x * 1.4 + (rand() - 0.5) * 1.2, 0.8 + rand() * 1.2, 0.5 + rand() * 1.4)
-      .normalize().multiplyScalar(1.6 + rand() * 2.6);
-    k.spin = new THREE.Euler((rand() - 0.5) * 7, (rand() - 0.5) * 7, (rand() - 0.5) * 7);
+    k.home = new THREE.Vector3(k.x, KEY_TOP, KEY_Z_BACK);
+    // (starting from 0.1 rather than 0, the keys are home before the slow
+    // tail of the gathering, so even a quick scroll finds the piano whole)
+    k.start = 0.1 + ((k.x + 0.7) / 1.4) * 0.15 + rand() * 0.02;
+    k.arc = 0.2 + rand() * 0.35;
+    k.spin = new THREE.Euler((rand() - 0.5) * 6, (rand() - 0.5) * 6, (rand() - 0.5) * 6);
   });
 
-  let burst = 0; // 0 = assembled, 1 = scattered
-  const _pq = new THREE.Quaternion();
-  const _pqInv = new THREE.Quaternion();
-  const _w = new THREE.Vector3();
-  // Local outward direction -> local direction that, on screen, heads outward
-  // and recedes (never toward the camera, where pieces would balloon over text)
-  function screenward(dir, out) {
-    _w.copy(dir).applyQuaternion(_pq);
-    _w.z = -Math.abs(_w.z) * 0.5 - 0.25;
-    return out.copy(_w.normalize()).applyQuaternion(_pqInv);
-  }
   const _m = new THREE.Matrix4();
   const _r = new THREE.Matrix4();
   const _q = new THREE.Quaternion();
   const _e = new THREE.Euler();
   const _v = new THREE.Vector3();
   const _one = new THREE.Vector3(1, 1, 1);
-  const _d = new THREE.Vector3();
   const _s = new THREE.Vector3();
-  // Visual spread of the pieces for a given burst: an ease-in curve with a
-  // small settle zone, so the last few percent lock every piece (the keys
-  // especially, which are tiny next to their travel) cleanly back in place.
-  const SETTLE = 0.07;
-  const spread = () => (burst <= SETTLE ? 0 : ((burst - SETTLE) / (1 - SETTLE)) ** 2);
-
   function keyMatrix(k, tilt) {
-    const b = spread();
-    const reach = b ? k.fly.length() * b : 0;
-    if (reach) screenward(k.fly, _d); else _d.set(0, 0, 0);
-    _v.set(k.x + _d.x * reach, KEY_TOP + _d.y * reach, KEY_Z_BACK + _d.z * reach);
-    _e.set(k.spin.x * b, k.spin.y * b, k.spin.z * b);
-    _m.compose(_v, _q.setFromEuler(_e), b ? _s.setScalar(1 - 0.5 * b) : _one);
+    const trip = travel(k.home, k.start, k.arc, _v);
+    _e.set(k.spin.x * trip.turn, k.spin.y * trip.turn, k.spin.z * trip.turn);
+    _m.compose(_v, _q.setFromEuler(_e), trip.scale === 1 ? _one : _s.setScalar(trip.scale));
     return _m.multiply(_r.makeRotationX(k.press * tilt));
   }
   function updateKeys() {
@@ -491,27 +522,22 @@ function init() {
     model.add(shadow);
   }
 
-  /* ───────── Coming apart ─────────
-     Before a solid section scrolls over the piano it doesn't just get covered:
-     it comes apart. Every piece drifts outward from the centre on its own
-     path and tumbles, then they all fly back together on the way back. */
+  /* Every other piece joins the same journey. Small pieces (legs, pedals,
+     prop, hinge) leave early; big ones (lid, plate, rim, case) leave last
+     and so are the first to be thrown back into place. */
   updateLid(0.6); // so the prop has a real position to measure
   const parts = [];
-  const CORE = new THREE.Vector3(0, Y_BOTTOM, -1.0);
   const _box = new THREE.Box3();
   const _c = new THREE.Vector3();
   function addPart(o) {
-    _box.setFromObject(o).getCenter(_c);
-    const dir = _c.sub(CORE);
-    dir.y = Math.max(dir.y, 0) + 0.3;
-    dir.normalize().add(new THREE.Vector3(rand() - 0.5, rand() * 0.5, rand() - 0.5).multiplyScalar(0.9)).normalize();
+    const size = _box.setFromObject(o).getSize(_c).length();
     parts.push({
       o,
       base: o.position.clone(),
       baseRot: o.rotation.clone(),
-      dir,
-      dist: 3 + rand() * 3,
-      spin: new THREE.Vector3((rand() - 0.5) * 4, (rand() - 0.5) * 4, (rand() - 0.5) * 4),
+      start: Math.min(0.5, 0.29 + 0.2 * Math.min(1, size / 2.3) + rand() * 0.02),
+      arc: 0.3 + rand() * 0.5,
+      spin: new THREE.Vector3((rand() - 0.5) * 3, (rand() - 0.5) * 3, (rand() - 0.5) * 3),
     });
   }
   model.children.forEach((o) => {
@@ -520,25 +546,28 @@ function init() {
     else addPart(o);
   });
 
-  const _pd = new THREE.Vector3();
+  const _propBase = new THREE.Vector3();
+  const _sinkW = new THREE.Vector3();
+  function placeSink() {
+    piano.updateMatrixWorld(true);
+    _sinkW.copy(piano.position).add(SINK_OFFSET);
+    SINK.copy(model.worldToLocal(_sinkW));
+  }
   function applyBurst() {
-    const b = spread();
-    const shrink = 1 - 0.5 * b;
     parts.forEach((p) => {
       const o = p.o;
-      const d = b ? screenward(p.dir, _pd) : _pd.set(0, 0, 0);
       if (o === prop) {
         // updateLid re-places and re-sizes the prop every frame; carry it along
-        o.position.addScaledVector(d, b * p.dist);
-        o.scale.multiplyScalar(shrink);
+        _propBase.copy(o.position);
+        o.scale.multiplyScalar(travel(_propBase, p.start, p.arc, o.position).scale);
         return;
       }
-      o.position.copy(p.base).addScaledVector(d, b * p.dist);
-      o.scale.setScalar(shrink);
-      o.rotation.x = p.baseRot.x + p.spin.x * b;
-      o.rotation.y = p.baseRot.y + p.spin.y * b;
+      const trip = travel(p.base, p.start, p.arc, o.position);
+      o.scale.setScalar(trip.scale);
+      o.rotation.x = p.baseRot.x + p.spin.x * trip.turn;
+      o.rotation.y = p.baseRot.y + p.spin.y * trip.turn;
       // the lid's z rotation is its opening angle, set by updateLid
-      o.rotation.z = o === lidPivot ? o.rotation.z + p.spin.z * b : p.baseRot.z + p.spin.z * b;
+      o.rotation.z = o === lidPivot ? o.rotation.z + p.spin.z * trip.turn : p.baseRot.z + p.spin.z * trip.turn;
     });
     shadow.material.opacity = 1 - Math.min(1, burst * 1.6);
   }
@@ -555,6 +584,8 @@ function init() {
   const clamp01 = (v) => Math.min(1, Math.max(0, v));
   function burstTarget(scroll) {
     if (reduceMotion) return 0;
+    // testing hook: force a burst level from the console (number 0–1)
+    if (typeof window.__omtBurst === "number") return window.__omtBurst;
     const vh = window.innerHeight;
     let b = 0;
     for (const [docTop, docBottom] of surfaceSpans) {
@@ -670,6 +701,7 @@ function init() {
   // the veil may already have lifted before the piano finished loading
   if (intro.state === "hold" && window.__omtIntroGo) window.OMTPianoIntro();
   let apartAgo = false; // for the "back together" chord
+  let throwTarget = intro.state === "hold" ? 1 : 0;
   let keysWereMoving = true;
   let keysBurst = -1; // the burst the key matrices were last drawn at
   const clock = new THREE.Clock();
@@ -710,18 +742,29 @@ function init() {
     const want = burstTarget(scroll);
     if (intro.state === "hold") {
       burst = 1;
+      throwMix = 1; // the opening throws the piece together
     } else if (intro.state === "run") {
       const p = Math.min(1, (performance.now() - intro.t0) / INTRO_MS);
-      const e = 1 - Math.pow(1 - p, 3);
-      burst = Math.max(want, 1 - e);
-      introSpin = (1 - e) * 0.9;
+      // nearly linear, so the staggered landings play out one after another
+      burst = Math.max(want, 1 - (p * 0.85 + easeOutCubic(p) * 0.15));
+      throwMix = 1;
+      introSpin = (1 - easeOutCubic(p)) * 0.9;
       if (p >= 1) {
         intro.state = "done";
         introSpin = 0;
         if (window.OMTSound) window.OMTSound.chord("intro");
       }
     } else {
-      const rate = want < burst ? 4.6 : 1.7;
+      // Which way is it heading? Ease between the "sucked" and "thrown"
+      // journeys, so reversing mid-scroll bends pieces smoothly onto the other path.
+      if (want < burst - 0.002) throwTarget = 1;
+      else if (want > burst + 0.002) throwTarget = 0;
+      throwMix += (throwTarget - throwMix) * (1 - Math.exp(-dt * 5));
+      // Pulled away steadily. Thrown back at a pace that follows the scroll:
+      // a leisurely scroll gets the full, readable throw; a fast one throws
+      // everything home proportionally quicker so the piano is whole in time.
+      const hurry = Math.min(velocity / 14, 1);
+      const rate = want < burst ? 2.4 + hurry * 4 : 1.6;
       burst += (want - burst) * (1 - Math.exp(-dt * rate));
       if (burst < 0.001) burst = 0;
       // a soft chord as the piano settles back together after coming apart
@@ -731,11 +774,9 @@ function init() {
         if (window.OMTSound) window.OMTSound.chord("together");
       }
     }
-    _pq.copy(piano.quaternion);
-    _pqInv.copy(_pq).invert();
     fade = Math.min(1, fade + dt / 1.6);
     // pieces still in view at the very end dim away under the incoming section
-    const scatterDim = 1 - smooth(clamp01((burst - 0.55) / 0.45));
+    const scatterDim = 1 - smooth(clamp01((burst - 0.85) / 0.15));
     const opacity = cur.o * smooth(fade) * scatterDim;
     const opacityText = opacity.toFixed(3);
     if (opacityText !== lastOpacity) canvas.style.opacity = lastOpacity = opacityText;
@@ -743,6 +784,7 @@ function init() {
     // skip all the scene work until it's needed again.
     const visible = opacity > 0.004 && !document.hidden;
     if (visible) {
+      if (burst > 0) placeSink();
       updateLid(cur.lid);
       applyBurst();
     }
