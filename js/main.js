@@ -24,7 +24,12 @@
     2023: ["main.jpg", ...[1, 2, 4, 5, 6, 7].map((n) => `${n}.jpg`), "8.png", ...range(8, 9).map((n) => `${n}.jpg`)],
     2024: ["main.jpg", ...range(13).map((n) => `${n}.jpg`)],
     2025: ["main.jpg", ...range(19).map((n) => (n === 3 ? "3.png" : `${n}.jpg`))],
-    2026: ["2026-english-poster-2.jpg", "2026-chinese-poster-2.jpg", "image.jpg", "image-2.jpg"],
+    2026: [
+      "2026-english-poster-2.jpg", "2026-chinese-poster-2.jpg", "image.jpg", "image-2.jpg",
+      // Taiwan workshop flyers (1 is rendered from the PDF beside it in media/events/2026)
+      "2026-omt-taiwan-workshop-1.png", "2026-omt-taiwan-workshop-2.jpg", "2026-omt-taiwan-workshop-3.jpg",
+      ...[1972, 2662, 2663, 4497, 4499, 4503, 4511, 4515, 4517, 4518].map((n) => `img_${n}.jpg`),
+    ],
   };
   const eventImages = (year) => {
     let files = EVENTS[year] || [];

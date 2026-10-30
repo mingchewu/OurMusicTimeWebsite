@@ -28,6 +28,13 @@ second page. The choice is remembered; `?lang=zh` or `?lang=en` in a link
 forces a language. Old links (`index_cn.html`, `about.html`, `about_cn.html`)
 redirect to the right place.
 
+## Publishing changes
+
+The live host tells browsers to keep CSS and JS for a few hours. After editing
+`css/style.css` or anything in `js/`, bump the `?v=` number on its `<link>` /
+`<script>` tag in `index.html` (e.g. `?v=20261029` → `?v=20261105`) so visitors
+get the new file straight away instead of a stale copy.
+
 ## Adding photos
 
 1. Put originals in `media/…` (e.g. `media/events/2027/`).

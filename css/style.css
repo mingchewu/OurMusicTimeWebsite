@@ -1304,6 +1304,7 @@ html[lang="zh-Hant"] .coda-title { font-size: clamp(2.4rem, 1.4rem + 4vw, 5rem);
   opacity: 0.4;
   outline: 1px solid transparent;
   outline-offset: 2px;
+  background: #f6f1ea; /* keeps transparent flyers legible */
   transition: opacity 0.3s var(--ease), outline-color 0.3s var(--ease);
 }
 .lb-thumbs button:hover { opacity: 0.75; }
