@@ -15,7 +15,54 @@
     clearTimeout(pianoTimer);
     root.classList.toggle("no-piano", !ok);
     window.dispatchEvent(new Event("resize"));
+    veilStep("piano");
   };
+
+  /* ───────── Loading veil ─────────
+     Real progress — page ready, fonts loaded, piano started — fills the
+     hairline; then the veil slides away and the piano assembles itself.
+     It never waits more than a few seconds, and shows once per session. */
+  const veil = document.getElementById("veil");
+  const veiled = root.classList.contains("is-loading") && veil;
+  const veilParts = { dom: 0.2, fonts: 0.3, piano: 0.5 };
+  const veilDone = new Set();
+  const veilStart = performance.now();
+  let veilLifted = false;
+  function veilStep(part) {
+    if (!veiled || veilLifted || veilDone.has(part)) return;
+    veilDone.add(part);
+    let p = 0.04;
+    veilDone.forEach((k) => (p += veilParts[k] || 0));
+    veil.querySelector(".veil-bar i").style.transform = `scaleX(${Math.min(1, p)})`;
+    if (veilDone.size === Object.keys(veilParts).length) {
+      // let the mark finish drawing before leaving
+      setTimeout(liftVeil, Math.max(250, 1700 - (performance.now() - veilStart)));
+    }
+  }
+  function liftVeil() {
+    if (!veiled || veilLifted) return;
+    veilLifted = true;
+    veil.querySelector(".veil-bar i").style.transform = "scaleX(1)";
+    try { sessionStorage.setItem("omt-seen", "1"); } catch (e) {}
+    setTimeout(() => {
+      root.classList.add("is-lifting");
+      root.classList.remove("is-loading");
+      // the piano starts gathering as the veil clears its top half
+      setTimeout(() => {
+        window.__omtIntroGo = true;
+        if (window.OMTPianoIntro) window.OMTPianoIntro();
+      }, 380);
+      setTimeout(() => {
+        root.classList.remove("is-lifting", "is-intro");
+        veil.remove();
+      }, 1250);
+    }, 320);
+  }
+  if (veiled) {
+    veilStep("dom");
+    (document.fonts ? document.fonts.ready : Promise.resolve()).then(() => veilStep("fonts"));
+    setTimeout(liftVeil, 3200); // never hold anyone back for long
+  }
 
   /* ───────── Event galleries (web-sized copies in media/web) ───────── */
   const range = (n, from = 1) => Array.from({ length: n }, (_, i) => i + from);
@@ -227,7 +274,7 @@
 
   /* ───────── Buttons lean toward the cursor ───────── */
   if (!reduceMotion && window.matchMedia("(hover: hover) and (pointer: fine)").matches) {
-    document.querySelectorAll(".btn, .notice, .lang-switch, .lb-close").forEach((el) => {
+    document.querySelectorAll(".btn, .notice, .lang-switch, .sound-toggle, .lb-close").forEach((el) => {
       el.addEventListener("pointermove", (e) => {
         const r = el.getBoundingClientRect();
         const x = (e.clientX - (r.left + r.width / 2)) / r.width;

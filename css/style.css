@@ -301,6 +301,97 @@ html[lang="zh-Hant"] .shelf-title { font-size: clamp(1.35rem, 1.1rem + 0.9vw, 1.
 }
 .link:hover { border-color: var(--ember); }
 
+/* ---------- Loading veil ----------
+   Shown on the first visit of a session: the mark draws itself, the
+   wordmark settles, a hairline fills with real progress, then the veil
+   slides away upward with a glowing ember edge. */
+.veil {
+  color: var(--paper);
+  will-change: transform;
+}
+.veil::after {
+  content: "";
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--ember) 30%, var(--ember-hi) 50%, var(--ember) 70%, transparent);
+  box-shadow: 0 0 24px 4px rgba(242, 118, 58, 0.45);
+  opacity: 0;
+}
+.veil-inner {
+  display: grid;
+  justify-items: center;
+  gap: 0.9rem;
+  text-align: center;
+}
+.veil-mark {
+  width: 3.4rem;
+  height: 3.4rem;
+  margin-bottom: 0.6rem;
+  fill: none;
+  stroke: var(--ember);
+  stroke-width: 1.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.veil-mark * {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: veil-draw 1.5s cubic-bezier(0.65, 0, 0.35, 1) forwards;
+}
+.veil-mark path:nth-of-type(1) { animation-delay: 0.45s; animation-duration: 0.8s; }
+.veil-mark path:nth-of-type(2) { animation-delay: 0.7s; animation-duration: 1.1s; }
+@keyframes veil-draw { to { stroke-dashoffset: 0; } }
+.veil-word {
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: clamp(1.6rem, 1.2rem + 1.4vw, 2.3rem);
+  font-weight: 400;
+  letter-spacing: 0.24em;
+  opacity: 0;
+  animation: veil-word 1.6s cubic-bezier(0.2, 0.7, 0.1, 1) 0.6s forwards;
+}
+.veil-sub {
+  font-family: "Noto Serif TC", serif;
+  font-size: 0.8rem;
+  letter-spacing: 0.5em;
+  color: var(--muted);
+  opacity: 0;
+  animation: veil-word 1.6s cubic-bezier(0.2, 0.7, 0.1, 1) 0.85s forwards;
+}
+@keyframes veil-word {
+  from { opacity: 0; letter-spacing: 0.42em; filter: blur(4px); }
+  to { opacity: 1; letter-spacing: 0.24em; filter: blur(0); }
+}
+.veil-sub { animation-name: veil-sub; }
+@keyframes veil-sub {
+  from { opacity: 0; filter: blur(4px); }
+  to { opacity: 1; filter: blur(0); }
+}
+.veil-bar {
+  width: 9rem;
+  height: 1px;
+  margin-top: 1.4rem;
+  background: var(--line);
+  overflow: hidden;
+}
+.veil-bar i {
+  display: block;
+  height: 100%;
+  background: var(--ember);
+  transform: scaleX(0.04);
+  transform-origin: left;
+  transition: transform 0.7s cubic-bezier(0.2, 0.7, 0.1, 1);
+}
+html.is-loading body { overflow: hidden; }
+/* The hero waits behind the veil and starts rising as it lifts */
+html.is-loading .hero-inner > * { animation-play-state: paused; }
+html.is-lifting .veil { animation: veil-lift 1.15s cubic-bezier(0.76, 0, 0.18, 1) forwards; }
+html.is-lifting .veil::after { animation: veil-edge 1.15s ease forwards; }
+html.is-lifting .veil-inner { animation: veil-inner 0.7s cubic-bezier(0.6, 0, 0.4, 1) forwards; }
+@keyframes veil-lift { to { transform: translateY(-100%); } }
+@keyframes veil-edge { 0% { opacity: 0; } 15%, 80% { opacity: 1; } 100% { opacity: 0; } }
+@keyframes veil-inner { to { opacity: 0; transform: translateY(-2.5rem); } }
+
 /* ---------- Navigation ---------- */
 .nav {
   position: fixed;
@@ -403,7 +494,51 @@ html[data-lang="zh"] .lang-switch::before { transform: translateX(100%); }
   transition: color 0.4s var(--ease);
 }
 .lang-switch button[data-set-lang="zh"] { font-family: "Noto Serif TC", serif; }
+.lang-switch button { white-space: nowrap; }
 .lang-switch button[aria-pressed="true"] { color: var(--ink); }
+
+/* Sound toggle: three flat bars when off, a gentle ember equaliser when on */
+.sound-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  height: 2.35rem;
+  padding: 0 0.9rem 0 0.8rem;
+  border: 1px solid var(--line-strong);
+  border-radius: 999px;
+  background: none;
+  font-size: 0.8rem;
+  letter-spacing: 0.06em;
+  color: var(--paper-dim);
+  transition: border-color 0.4s var(--ease), color 0.4s var(--ease), translate 0.7s var(--ease);
+}
+.sound-toggle:hover { border-color: rgba(242, 118, 58, 0.6); color: var(--paper); }
+.sound-toggle[aria-pressed="true"] { border-color: rgba(242, 118, 58, 0.55); color: var(--paper); }
+.eq {
+  display: inline-flex;
+  align-items: flex-end;
+  gap: 2px;
+  height: 0.8rem;
+}
+.eq i {
+  width: 2px;
+  height: 25%;
+  border-radius: 1px;
+  background: currentColor;
+  opacity: 0.7;
+  transition: height 0.4s var(--ease), background-color 0.4s var(--ease);
+}
+.sound-toggle[aria-pressed="true"] .eq i {
+  background: var(--ember);
+  opacity: 1;
+  animation: eq 1.1s ease-in-out infinite;
+}
+.sound-toggle[aria-pressed="true"] .eq i:nth-child(2) { animation-delay: -0.35s; animation-duration: 0.9s; }
+.sound-toggle[aria-pressed="true"] .eq i:nth-child(3) { animation-delay: -0.7s; animation-duration: 1.3s; }
+@keyframes eq {
+  0%, 100% { height: 25%; }
+  50% { height: 100%; }
+}
 
 .menu-btn {
   display: none;
@@ -455,6 +590,18 @@ html[data-lang="zh"] .lang-switch::before { transform: translateX(100%); }
   animation: menu-in 0.7s var(--ease) forwards;
 }
 .menu a i { font-size: 0.9rem; font-family: var(--text); color: var(--ember); }
+.menu-sound { display: none; }
+@media (max-width: 600px) {
+  .menu-sound {
+    display: inline-flex;
+    justify-self: start;
+    height: 2.75rem;
+    margin-top: 1.5rem;
+    font-size: 0.95rem;
+    opacity: 0;
+    animation: menu-in 0.7s var(--ease) 0.3s forwards;
+  }
+}
 .menu a:nth-child(2) { animation-delay: 0.04s; }
 .menu a:nth-child(3) { animation-delay: 0.08s; }
 .menu a:nth-child(4) { animation-delay: 0.12s; }
@@ -1449,6 +1596,8 @@ html[lang="zh-Hant"] .coda-title { font-size: clamp(2.4rem, 1.4rem + 4vw, 5rem);
   .book-wide { grid-template-columns: minmax(0, 0.8fr) minmax(0, 1fr); gap: 1.25rem; }
   .wordmark-text { font-size: 1.2rem; }
   .lang-switch button { min-width: 2.6rem; padding-inline: 0.5rem; }
+  /* phones: Sound lives in the menu, where it has room for its label */
+  .nav-end .sound-toggle { display: none; }
   .qa summary { grid-template-columns: 2rem minmax(0, 1fr) 1rem; }
   .qa-a p { padding: 0 0 1.5rem 2.75rem; }
 }

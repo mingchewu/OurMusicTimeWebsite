@@ -18,13 +18,24 @@
       lang = lang.indexOf("zh") === 0 ? "zh" : "en";
       document.documentElement.dataset.lang = lang;
       document.documentElement.lang = lang === "zh" ? "zh-Hant" : "en";
+
+      // Loading veil + opening moment: first visit of the session only
+      var seen = null;
+      try { seen = sessionStorage.getItem("omt-seen"); } catch (e) {}
+      var still = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      if (!seen && !still) document.documentElement.className += " is-loading is-intro";
     })();
   </script>
+  <style>
+    /* painted before the stylesheet arrives */
+    .veil { display: none; position: fixed; inset: 0; z-index: 100; background: #0e0c0b; }
+    html.is-loading .veil, html.is-lifting .veil { display: grid; place-items: center; }
+  </style>
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;1,6..72,300;1,6..72,400&family=Noto+Serif+TC:wght@300;400;500;600&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="css/style.css?v=20261030b" />
+  <link rel="stylesheet" href="css/style.css?v=20261030c" />
 
   <script type="importmap">
     {
@@ -36,6 +47,20 @@
   </script>
 </head>
 <body>
+  <!-- Loading veil: the mark draws itself while the page gets ready -->
+  <div class="veil" id="veil" aria-hidden="true">
+    <div class="veil-inner">
+      <svg class="veil-mark" viewBox="0 0 32 32">
+        <circle cx="13" cy="19" r="9" pathLength="1" />
+        <path d="M13 13v6l4 2" pathLength="1" />
+        <path d="M22 19V4c3 0 6 2 6 5" pathLength="1" />
+      </svg>
+      <p class="veil-word">Our Music Time</p>
+      <p class="veil-sub">我們的音樂時光</p>
+      <div class="veil-bar"><i></i></div>
+    </div>
+  </div>
+
   <a class="skip" href="#about"><span lang="en">Skip to content</span><span lang="zh-Hant">跳至內容</span></a>
 
   <!-- The 3D piano lives behind everything; "stage" sections let it show through -->
@@ -63,6 +88,10 @@
     </nav>
 
     <div class="nav-end">
+      <button class="sound-toggle" type="button" data-sound-toggle aria-pressed="false">
+        <span class="eq" aria-hidden="true"><i></i><i></i><i></i></span>
+        <span class="sound-label"><span lang="en">Sound</span><span lang="zh-Hant">聲音</span></span>
+      </button>
       <div class="lang-switch" role="group" aria-label="Language / 語言">
         <button type="button" data-set-lang="en" aria-pressed="true">EN</button>
         <button type="button" data-set-lang="zh" aria-pressed="false">中文</button>
@@ -83,6 +112,10 @@
       <a href="#singers"><i>05</i><span lang="en">Singers</span><span lang="zh-Hant">小小歌手</span></a>
       <a href="#training"><i>06</i><span lang="en">Training</span><span lang="zh-Hant">師資培訓</span></a>
       <a href="#faq"><i>07</i><span lang="en">FAQ</span><span lang="zh-Hant">問與答</span></a>
+      <button class="sound-toggle menu-sound" type="button" data-sound-toggle aria-pressed="false">
+        <span class="eq" aria-hidden="true"><i></i><i></i><i></i></span>
+        <span><span lang="en">Piano sound</span><span lang="zh-Hant">鋼琴聲音</span></span>
+      </button>
     </nav>
   </div>
 
@@ -616,9 +649,10 @@
     </div>
   </dialog>
 
-  <script src="js/faq.js?v=20261030b"></script>
-  <script src="js/main.js?v=20261030b"></script>
-  <script src="js/piano.js?v=20261030b"></script>
+  <script src="js/faq.js?v=20261030c"></script>
+  <script src="js/main.js?v=20261030c"></script>
+  <script src="js/sound.js?v=20261030c"></script>
+  <script src="js/piano.js?v=20261030c"></script>
   <script type="module">
     import * as THREE from "three";
     import { RoomEnvironment } from "three/addons/environments/RoomEnvironment.js";

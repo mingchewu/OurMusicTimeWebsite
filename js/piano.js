@@ -53,17 +53,42 @@ function init() {
 
   const scene = new THREE.Scene();
   const pmrem = new THREE.PMREMGenerator(renderer);
-  scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
-  scene.environmentIntensity = 0.55;
+  scene.environment = pmrem.fromScene(studioEnvironment(), 0.02).texture;
+  scene.environmentIntensity = 1.15;
+
+  // A small dark, warm "photo studio" that only exists to be reflected: an
+  // overhead softbox lays a long highlight down the lid, a side strip and a
+  // thin front line catch the edges, and an ember panel warms the back.
+  function studioEnvironment() {
+    const env = new THREE.Scene();
+    env.add(new THREE.Mesh(
+      new THREE.BoxGeometry(12, 12, 12),
+      new THREE.MeshBasicMaterial({ color: 0x2a2019, side: THREE.BackSide })
+    ));
+    const panel = (w, h, hex, power, pos) => {
+      const mat = new THREE.MeshBasicMaterial({ color: new THREE.Color(hex).multiplyScalar(power), side: THREE.DoubleSide });
+      mat.toneMapped = false;
+      const m = new THREE.Mesh(new THREE.PlaneGeometry(w, h), mat);
+      m.position.set(...pos);
+      m.lookAt(0, 0.4, 0);
+      env.add(m);
+    };
+    panel(6, 2.2, 0xfff0de, 9, [0.5, 5, 1.5]);     // overhead softbox
+    panel(1.6, 4.5, 0xffe1c2, 6, [5, 1.6, 2.2]);   // side strip
+    panel(8, 0.35, 0xffffff, 5, [0, 2.2, 5.2]);    // thin front line
+    panel(2.4, 3.6, 0xff6a13, 3.5, [-5, 1.2, -3]); // ember kicker
+    panel(3, 1.2, 0xd9c7b3, 2.5, [0, -2.5, 3]);    // floor bounce for the legs
+    return env;
+  }
 
   const camera = new THREE.PerspectiveCamera(30, 1, 0.1, 60);
   camera.position.set(0, 1.1, 6.2);
   camera.lookAt(0, 0.05, 0);
 
   /* Lights — warm key, ember rim, cool whisper of fill */
-  const key = new THREE.DirectionalLight(0xffd2ad, 2.4);
-  key.position.set(3, 5, 4);
-  scene.add(key);
+  const keyLight = new THREE.DirectionalLight(0xffd2ad, 2.4);
+  keyLight.position.set(3, 5, 4);
+  scene.add(keyLight);
   const rim = new THREE.DirectionalLight(0xff6a13, 3.2);
   rim.position.set(-4, 2.5, -3.5);
   scene.add(rim);
@@ -79,12 +104,42 @@ function init() {
   const lacquerInside = new THREE.MeshStandardMaterial({ color: 0x15100c, roughness: 0.55 });
   const brass = new THREE.MeshStandardMaterial({ color: 0xc89048, metalness: 1, roughness: 0.32 });
   const plateMat = new THREE.MeshStandardMaterial({ color: 0xb98a4a, metalness: 0.85, roughness: 0.42 });
-  const spruce = new THREE.MeshStandardMaterial({ color: 0xc69c62, roughness: 0.62 });
+  const spruce = new THREE.MeshStandardMaterial({ color: 0xffffff, map: spruceGrain(), roughness: 0.58 });
   const ivory = new THREE.MeshPhysicalMaterial({ color: 0xf2ece2, roughness: 0.32, clearcoat: 0.6, clearcoatRoughness: 0.2 });
   const ebony = new THREE.MeshPhysicalMaterial({ color: 0x0d0b0a, roughness: 0.3, clearcoat: 0.8, clearcoatRoughness: 0.15 });
   const felt = new THREE.MeshStandardMaterial({ color: 0x7c2312, roughness: 1 });
   const damperMat = new THREE.MeshStandardMaterial({ color: 0x1b1714, roughness: 0.7 });
   const stringMat = new THREE.LineBasicMaterial({ color: 0xe6d3ad, transparent: true, opacity: 0.55 });
+
+  // Soundboard spruce: warm base with long, slightly wavering grain lines
+  function spruceGrain() {
+    const c = document.createElement("canvas");
+    c.width = 256;
+    c.height = 1024;
+    const g = c.getContext("2d");
+    g.fillStyle = "#c99e63";
+    g.fillRect(0, 0, c.width, c.height);
+    let seedG = 11;
+    const r = () => ((seedG = (seedG * 16807) % 2147483647) / 2147483647);
+    for (let i = 0; i < 140; i++) {
+      const x = r() * c.width;
+      const w = 0.6 + r() * 2.2;
+      g.strokeStyle = `rgba(${120 + r() * 40 | 0}, ${78 + r() * 25 | 0}, ${40 + r() * 15 | 0}, ${0.08 + r() * 0.22})`;
+      g.lineWidth = w;
+      g.beginPath();
+      for (let y = 0; y <= c.height; y += 32) {
+        const dx = Math.sin(y * 0.004 + i) * 3;
+        y === 0 ? g.moveTo(x + dx, y) : g.lineTo(x + dx, y);
+      }
+      g.stroke();
+    }
+    const tex = new THREE.CanvasTexture(c);
+    tex.colorSpace = THREE.SRGBColorSpace;
+    tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
+    tex.repeat.set(1.6, 0.6); // extrude UVs are in metres of the plan outline
+    tex.anisotropy = 4;
+    return tex;
+  }
 
   /* ───────── Case outline ─────────
      Drawn in plan view: x across the keyboard (bass at -x), d = depth from
@@ -127,10 +182,22 @@ function init() {
 
   // Plan (x, d) → world: x, y=height, z=-d.  ExtrudeGeometry extrudes along +z,
   // so rotate it to stand up and lift it to the right height.
-  function slab(points, depth, y, mat, holes = []) {
+  // `bevel` rounds the top and bottom edges so highlights roll along them like
+  // real lacquer; the outline keeps its size (offset inward) and the height is
+  // unchanged (the bevel is taken out of the straight wall).
+  function slab(points, depth, y, mat, holes = [], bevel = 0) {
     const shape = new THREE.Shape(points);
     holes.forEach((h) => shape.holes.push(h));
-    const geo = new THREE.ExtrudeGeometry(shape, { depth, bevelEnabled: false, curveSegments: 48 });
+    const geo = new THREE.ExtrudeGeometry(shape, bevel ? {
+      depth: depth - bevel * 2,
+      bevelEnabled: true,
+      bevelThickness: bevel,
+      bevelSize: bevel,
+      bevelOffset: -bevel,
+      bevelSegments: 3,
+      curveSegments: 48,
+    } : { depth, bevelEnabled: false, curveSegments: 48 });
+    if (bevel) geo.translate(0, 0, bevel);
     geo.rotateX(Math.PI / 2); // (x, d, h) -> (x, h→-y, d→z) ...
     geo.scale(1, -1, -1);     // ... flipped so height is +y and depth is -z
     const mesh = new THREE.Mesh(geo, mat);
@@ -149,10 +216,10 @@ function init() {
 
   // Rim: outer wall with the inner outline cut out
   const rimHole = new THREE.Path([...innerPts].reverse());
-  const rimMesh = slab(outerPts, RIM_H, Y_BOTTOM, lacquer, [rimHole]);
+  const rimMesh = slab(outerPts, RIM_H, Y_BOTTOM, lacquer, [rimHole], 0.007);
   model.add(rimMesh);
   // Bottom of the case
-  model.add(slab(outerPts, 0.06, Y_BOTTOM, lacquer));
+  model.add(slab(outerPts, 0.06, Y_BOTTOM, lacquer, [], 0.006));
   // Inner lining, soundboard, cast-iron plate
   model.add(slab(innerPts, 0.02, Y_BOTTOM + 0.08, lacquerInside));
   model.add(slab(innerPts, 0.012, Y_BOTTOM + 0.1, spruce));
@@ -250,10 +317,25 @@ function init() {
   // Instanced keys so pressing them is cheap
   const letters = "ABCDEFG";
   const hasBlackAfter = { A: true, C: true, D: true, F: true, G: true };
-  const whiteGeo = new THREE.BoxGeometry(KEY_W - 0.0016, 0.02, WHITE_L);
-  whiteGeo.translate(0, -0.01, WHITE_L / 2); // pivot at the back, top surface at 0
-  const blackGeo = new THREE.BoxGeometry(KEY_W * 0.58, 0.026, BLACK_L);
-  blackGeo.translate(0, 0.013, BLACK_L / 2);
+  // Keys with softly rounded edges; pivot at the back, extending toward the player
+  function keyGeo(width, height, length, r) {
+    const shape = new THREE.Shape();
+    shape.moveTo(-width / 2, 0);
+    shape.lineTo(width / 2, 0);
+    shape.lineTo(width / 2, length);
+    shape.lineTo(-width / 2, length);
+    shape.lineTo(-width / 2, 0);
+    const geo = new THREE.ExtrudeGeometry(shape, {
+      depth: height - r * 2, bevelEnabled: true, bevelThickness: r, bevelSize: r,
+      bevelOffset: -r, bevelSegments: 2,
+    });
+    geo.rotateX(Math.PI / 2);    // length -> +z, extrusion -> downward
+    geo.translate(0, -r, 0);     // top surface at y = 0
+    return geo;
+  }
+  const whiteGeo = keyGeo(KEY_W - 0.0016, 0.02, WHITE_L, 0.0018);
+  const blackGeo = keyGeo(KEY_W * 0.58, 0.026, BLACK_L, 0.0022);
+  blackGeo.translate(0, 0.026, 0); // black keys stand proud of the white ones
 
   const whiteKeys = [];
   const blackKeys = [];
@@ -330,9 +412,15 @@ function init() {
   const lidPivot = new THREE.Group();
   lidPivot.position.set(-W, Y_TOP, 0);
   model.add(lidPivot);
-  const lid = slab(outerPts, 0.022, 0, lacquer);
+  const lid = slab(outerPts, 0.022, 0, lacquer, [], 0.005);
   lid.position.x = W; // hinge runs along the straight spine
   lidPivot.add(lid);
+
+  // Brass piano hinge running down the straight spine
+  const hinge = new THREE.Mesh(new THREE.CylinderGeometry(0.007, 0.007, 1.82, 12), brass);
+  hinge.rotation.x = Math.PI / 2;
+  hinge.position.set(-W + 0.004, Y_TOP + 0.004, -0.96);
+  model.add(hinge);
 
   const prop = new THREE.Mesh(new THREE.CylinderGeometry(0.009, 0.009, 1, 10), lacquer);
   model.add(prop);
@@ -563,6 +651,25 @@ function init() {
   let playhead = 0;
   let fade = reduceMotion ? 1 : 0;
   let lastOpacity = "";
+
+  /* ───────── Opening moment ─────────
+     While the loading veil is up (html.is-intro) the piano waits fully
+     scattered; when the veil lifts, window.OMTPianoIntro() lets it gather
+     itself into the hero pose, turning gently as it comes together. */
+  const INTRO_MS = 2600;
+  const intro = {
+    state: !reduceMotion && document.documentElement.classList.contains("is-intro") ? "hold" : "done",
+    t0: 0,
+  };
+  let introSpin = 0;
+  window.OMTPianoIntro = () => {
+    if (intro.state !== "hold") return;
+    intro.state = "run";
+    intro.t0 = performance.now();
+  };
+  // the veil may already have lifted before the piano finished loading
+  if (intro.state === "hold" && window.__omtIntroGo) window.OMTPianoIntro();
+  let apartAgo = false; // for the "back together" chord
   let keysWereMoving = true;
   let keysBurst = -1; // the burst the key matrices were last drawn at
   const clock = new THREE.Clock();
@@ -591,17 +698,39 @@ function init() {
     piano.position.set(ox, oy + breathe, 0);
     piano.rotation.set(
       cur.rx + (reduceMotion ? 0 : pointer.y * 0.04),
-      cur.ry + (reduceMotion ? 0 : pointer.x * 0.08 + Math.sin(t * 0.25) * 0.02),
+      cur.ry + introSpin + (reduceMotion ? 0 : pointer.x * 0.08 + Math.sin(t * 0.25) * 0.02),
       0
     );
     piano.scale.setScalar(cur.s * widthScale);
     piano.quaternion.setFromEuler(piano.rotation);
+    // the key light drifts with the cursor, sliding reflections across the lacquer
+    if (!reduceMotion) keyLight.position.set(3 + pointer.x * 1.6, 5 - pointer.y * 1.2, 4);
     // Pieces drift apart slowly but gather back about twice as fast, so the
     // piano is reliably whole again even on a quick scroll through a stage.
     const want = burstTarget(scroll);
-    const rate = want < burst ? 4.6 : 1.7;
-    burst += (want - burst) * (1 - Math.exp(-dt * rate));
-    if (burst < 0.001) burst = 0;
+    if (intro.state === "hold") {
+      burst = 1;
+    } else if (intro.state === "run") {
+      const p = Math.min(1, (performance.now() - intro.t0) / INTRO_MS);
+      const e = 1 - Math.pow(1 - p, 3);
+      burst = Math.max(want, 1 - e);
+      introSpin = (1 - e) * 0.9;
+      if (p >= 1) {
+        intro.state = "done";
+        introSpin = 0;
+        if (window.OMTSound) window.OMTSound.chord("intro");
+      }
+    } else {
+      const rate = want < burst ? 4.6 : 1.7;
+      burst += (want - burst) * (1 - Math.exp(-dt * rate));
+      if (burst < 0.001) burst = 0;
+      // a soft chord as the piano settles back together after coming apart
+      if (burst > 0.6) apartAgo = true;
+      if (apartAgo && burst < 0.02) {
+        apartAgo = false;
+        if (window.OMTSound) window.OMTSound.chord("together");
+      }
+    }
     _pq.copy(piano.quaternion);
     _pqInv.copy(_pq).invert();
     fade = Math.min(1, fade + dt / 1.6);
@@ -631,8 +760,12 @@ function init() {
         // distance on the playhead's circular track, two "hands" an octave+ apart
         const d1 = Math.abs(((i - head + 78) % 52) - 26);
         const d2 = Math.abs(((i - head - 9 + 78) % 52) - 26);
-        const want = Math.max(0, 1 - Math.min(d1, d2) / 1.6) * intensity;
-        key.press += (want - key.press) * 0.35;
+        const target = Math.max(0, 1 - Math.min(d1, d2) / 1.6) * intensity;
+        const before = key.press;
+        key.press += (target - key.press) * 0.35;
+        // a key that just went down sounds its note (when sound is on and the piano is in view)
+        // (a low threshold: on quick scrolls the wave passes before keys go fully down)
+        if (before < 0.3 && key.press >= 0.3 && window.OMTSound && burst < 0.2) window.OMTSound.note(i);
       });
       let pressed = 0;
       blackKeys.forEach((key) => {
