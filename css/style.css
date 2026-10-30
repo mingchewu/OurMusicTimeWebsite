@@ -74,6 +74,8 @@ body {
 }
 
 html[lang="zh-Hant"] body { line-height: 1.95; letter-spacing: 0.02em; }
+/* JS handles in-page scrolling (with its own easing) once it's running */
+html.js { scroll-behavior: auto; }
 
 img { display: block; max-width: 100%; }
 a { color: inherit; }
@@ -129,6 +131,19 @@ em { font-style: italic; }
 }
 
 main, .footer { position: relative; z-index: 1; }
+
+/* A hairline of ember along the top that fills as you read */
+.progress {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 55;
+  height: 1px;
+  background: linear-gradient(90deg, var(--ember-lo), var(--ember), var(--ember-hi));
+  transform: scaleX(0);
+  transform-origin: left;
+  pointer-events: none;
+  will-change: transform;
+}
 
 /* "Stage" sections are transparent — the piano performs behind them.
    "Surface" sections are solid paper-dark bands that fade in over it. */
@@ -248,7 +263,7 @@ html[lang="zh-Hant"] .shelf-title { font-size: clamp(1.35rem, 1.1rem + 0.9vw, 1.
   letter-spacing: 0.03em;
   text-decoration: none;
   border-radius: 2px;
-  transition: color 0.4s var(--ease), background-color 0.4s var(--ease), box-shadow 0.4s var(--ease);
+  transition: color 0.4s var(--ease), background-color 0.4s var(--ease), box-shadow 0.4s var(--ease), translate 0.7s var(--ease);
 }
 .btn-solid {
   background: var(--ember);
@@ -362,6 +377,7 @@ html[lang="zh-Hant"] .shelf-title { font-size: clamp(1.35rem, 1.1rem + 0.9vw, 1.
   position: relative;
   display: inline-flex;
   padding: 3px;
+  transition: translate 0.7s var(--ease);
   border: 1px solid var(--line-strong);
   border-radius: 999px;
 }
@@ -485,7 +501,7 @@ html[data-lang="zh"] .lang-switch::before { transform: translateX(100%); }
   background: rgba(14, 12, 11, 0.4);
   -webkit-backdrop-filter: blur(8px);
   backdrop-filter: blur(8px);
-  transition: border-color 0.4s var(--ease), color 0.4s var(--ease);
+  transition: border-color 0.4s var(--ease), color 0.4s var(--ease), translate 0.7s var(--ease);
 }
 .notice:hover { border-color: rgba(242, 118, 58, 0.6); color: var(--paper); }
 .notice-dot {
@@ -696,7 +712,7 @@ button.frame:hover img { filter: brightness(1.08); }
 
 /* ---------- Quote interlude ---------- */
 .quote {
-  min-height: 105svh;
+  min-height: 140svh;
   display: grid;
   align-items: start;
   padding-block: calc(var(--section) * 0.9) var(--section);
@@ -749,8 +765,10 @@ html[lang="zh-Hant"] .quote p {
   color: var(--ember);
   font-family: var(--display);
 }
-html[data-lang="en"] .pillars span[lang="en"]:first-of-type::before,
-html[data-lang="zh"] .pillars span[lang="zh-Hant"]:first-of-type::before { display: none; }
+/* the languages alternate (en, zh, en, zh…): drop the separator before
+   whichever pillar comes first in the visible language */
+html[data-lang="en"] .pillars span:nth-child(1)::before,
+html[data-lang="zh"] .pillars span:nth-child(2)::before { display: none; }
 
 /* ---------- Resources ---------- */
 .shelf {
@@ -874,7 +892,7 @@ html[lang="zh-Hant"] .book h4 { font-size: 1.1rem; }
 
 /* ---------- Method interlude ---------- */
 .method {
-  min-height: 110svh;
+  min-height: 140svh;
   display: grid;
   align-items: center;
   padding-block: var(--section);
@@ -1035,7 +1053,12 @@ html[lang="zh-Hant"] .singer h3 { font-size: 1.4rem; }
 .video.is-playing::after { display: none; }
 
 /* ---------- Training ---------- */
-.training-intro { padding-block: var(--section) calc(var(--section) * 1.2); }
+.training-intro {
+  min-height: 140svh;
+  display: grid;
+  align-items: center;
+  padding-block: var(--section);
+}
 .training-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); }
 .training-copy { grid-column: 2; }
 .training-copy .prose { margin-block: clamp(1.75rem, 3vw, 2.5rem); }
@@ -1237,7 +1260,6 @@ html[lang="zh-Hant"] .coda-title { font-size: clamp(2.4rem, 1.4rem + 4vw, 5rem);
   box-shadow: 0 50px 120px -40px rgba(0, 0, 0, 0.95), 0 0 0 1px rgba(243, 235, 224, 0.06);
 }
 .lb-face img { display: block; width: 100%; height: 100%; }
-.lb-front img { object-fit: cover; }   /* matches the crop of the image on the page */
 .lb-back { transform: rotateY(180deg); }
 .lb-back img { object-fit: contain; transition: opacity 0.35s var(--ease); }
 .lb-back img.is-loading { opacity: 0.35; }
@@ -1262,7 +1284,7 @@ html[lang="zh-Hant"] .coda-title { font-size: clamp(2.4rem, 1.4rem + 4vw, 5rem);
   border-radius: 999px;
   background: rgba(14, 12, 11, 0.55);
   font-size: 0.9rem;
-  transition: opacity 0.4s var(--ease), border-color 0.3s var(--ease), color 0.3s var(--ease);
+  transition: opacity 0.4s var(--ease), border-color 0.3s var(--ease), color 0.3s var(--ease), translate 0.7s var(--ease);
 }
 .lb-close:hover,
 .lb-prev:hover,
@@ -1316,6 +1338,24 @@ html[lang="zh-Hant"] .coda-title { font-size: clamp(2.4rem, 1.4rem + 4vw, 5rem);
 }
 
 /* ---------- Reveal ---------- */
+/* Split headings: the heading itself stays put; its words rise through masks */
+.js .is-split[data-reveal] { opacity: 1; transform: none; }
+.is-split .w {
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: top;
+  /* room for ascenders, descenders and italic overhang inside the mask */
+  padding: 0.1em 0.08em 0.16em;
+  margin: -0.1em -0.08em -0.16em;
+}
+.is-split .wi {
+  display: inline-block;
+  transform: translateY(110%) rotate(5deg);
+  transform-origin: left bottom;
+  transition: transform 1.4s var(--ease);
+  transition-delay: calc(var(--d, 0s) + var(--i, 0) * 0.055s);
+}
+.is-split.is-in .wi { transform: none; }
 .js [data-reveal] {
   opacity: 0;
   transform: translateY(28px);
@@ -1353,7 +1393,7 @@ html[lang="zh-Hant"] .coda-title { font-size: clamp(2.4rem, 1.4rem + 4vw, 5rem);
 .no-piano .method,
 .no-piano .coda { min-height: 0; padding-block: var(--section); }
 .no-piano .coda { align-items: center; }
-.no-piano .training-intro { padding-bottom: calc(var(--section) * 0.5); }
+.no-piano .training-intro { min-height: 0; padding-bottom: calc(var(--section) * 0.5); }
 
 /* ---------- Responsive ---------- */
 @media (max-width: 1100px) {

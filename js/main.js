@@ -134,6 +134,110 @@
     if (target) spy.observe(target);
   });
 
+  /* ───────── Weighted scrolling ─────────
+     Wheel and trackpad input sets a target; the page eases toward it each
+     frame, so scrolling glides to a stop instead of stepping. Touch screens
+     keep their native momentum, and the keyboard or scrollbar always win. */
+  const glide = { target: window.scrollY, y: window.scrollY, active: false, last: 0 };
+  const maxScroll = () => document.documentElement.scrollHeight - window.innerHeight;
+  const clampY = (y) => Math.max(0, Math.min(maxScroll(), y));
+
+  function glideStep(now) {
+    const dt = Math.min((now - glide.last) / 1000, 0.05);
+    glide.last = now;
+    // Someone dragged the scrollbar or pressed a key mid-glide: let go
+    if (Math.abs(window.scrollY - glide.y) > 3) { glide.active = false; return; }
+    glide.y += (glide.target - glide.y) * (1 - Math.exp(-dt * 5));
+    if (Math.abs(glide.target - glide.y) < 0.5) glide.y = glide.target;
+    // keep the fractional position ourselves; the browser rounds what it shows
+    window.scrollTo({ top: glide.y, behavior: "instant" });
+    if (glide.y !== glide.target) requestAnimationFrame(glideStep);
+    else glide.active = false;
+  }
+  function glideTo(y) {
+    if (!glide.active) {
+      glide.y = window.scrollY;
+      glide.last = performance.now();
+      glide.active = true;
+      requestAnimationFrame(glideStep);
+    }
+    glide.target = clampY(y);
+  }
+
+  if (!reduceMotion && window.matchMedia("(pointer: fine)").matches) {
+    root.classList.add("has-glide");
+    window.addEventListener("wheel", (e) => {
+      if (e.ctrlKey || document.body.style.overflow === "hidden") return; // pinch-zoom, open overlays
+      if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) return;                 // sideways swipes
+      if (e.target.closest && e.target.closest("dialog, iframe, .lb-thumbs")) return;
+      e.preventDefault();
+      const unit = e.deltaMode === 1 ? 40 : e.deltaMode === 2 ? window.innerHeight : 1;
+      glideTo((glide.active ? glide.target : window.scrollY) + e.deltaY * unit);
+    }, { passive: false });
+  }
+
+  // In-page links glide to their section too
+  document.addEventListener("click", (e) => {
+    const a = e.target.closest('a[href^="#"]');
+    if (!a || a.hash.length < 2) return;
+    const el = document.querySelector(a.hash);
+    if (!el) return;
+    e.preventDefault();
+    const top = a.hash === "#top" ? 0 : el.getBoundingClientRect().top + window.scrollY - nav.offsetHeight;
+    if (reduceMotion) window.scrollTo({ top, behavior: "instant" });
+    else glideTo(top);
+    history.pushState(null, "", a.hash);
+  });
+
+  /* ───────── Headings rise in, word by word ─────────
+     Each word (each character, in Chinese) sits in its own little mask and
+     rises into place in turn when the heading is revealed. */
+  function splitWords(el) {
+    let n = 0;
+    const walk = (node) => {
+      [...node.childNodes].forEach((child) => {
+        if (child.nodeType === 1) {
+          if (child.hasAttribute("lang")) n = 0; // each language staggers on its own
+          walk(child);
+          return;
+        }
+        if (child.nodeType !== 3 || !child.textContent.trim()) return;
+        const text = child.textContent;
+        const parts = /[\u3400-\u9fff]/.test(text) ? Array.from(text) : text.split(/(\s+)/);
+        const frag = document.createDocumentFragment();
+        parts.forEach((part) => {
+          if (!part) return;
+          if (!part.trim()) { frag.appendChild(document.createTextNode(part)); return; }
+          const mask = document.createElement("span");
+          const word = document.createElement("span");
+          mask.className = "w";
+          word.className = "wi";
+          word.textContent = part;
+          word.style.setProperty("--i", n++);
+          mask.appendChild(word);
+          frag.appendChild(mask);
+        });
+        child.replaceWith(frag);
+      });
+    };
+    walk(el);
+    el.classList.add("is-split");
+  }
+  if (!reduceMotion) document.querySelectorAll(".display, .coda-title").forEach(splitWords);
+
+  /* ───────── Buttons lean toward the cursor ───────── */
+  if (!reduceMotion && window.matchMedia("(hover: hover) and (pointer: fine)").matches) {
+    document.querySelectorAll(".btn, .notice, .lang-switch, .lb-close").forEach((el) => {
+      el.addEventListener("pointermove", (e) => {
+        const r = el.getBoundingClientRect();
+        const x = (e.clientX - (r.left + r.width / 2)) / r.width;
+        const y = (e.clientY - (r.top + r.height / 2)) / r.height;
+        el.style.translate = `${(x * 10).toFixed(1)}px ${(y * 7).toFixed(1)}px`;
+      });
+      el.addEventListener("pointerleave", () => { el.style.translate = ""; });
+    });
+  }
+
   /* ───────── Reveal on scroll ───────── */
   const revealables = document.querySelectorAll("[data-reveal]");
   if (reduceMotion || !("IntersectionObserver" in window)) {
@@ -185,8 +289,11 @@
     });
   }
 
+  const progress = document.querySelector(".progress");
   function onScroll() {
     onNavScroll();
+    const max = maxScroll();
+    progress.style.transform = `scaleX(${max > 0 ? (window.scrollY / max).toFixed(4) : 0})`;
     if (!reduceMotion && !ticking) {
       ticking = true;
       requestAnimationFrame(parallax);
@@ -225,19 +332,38 @@
   });
 
   /* ───────── Lightbox ─────────
-     The clicked image flips over, like a card, into a larger view sized to
-     the picture (never the whole page) — and flips back into place on close. */
+     The clicked image turns over, like a card, into a larger view sized to
+     the picture (never the whole page). Every next/previous image arrives the
+     same way — the card turns another half-turn to reveal it — and closing
+     turns it back into its place on the page. */
   const lb = document.getElementById("lightbox");
   const card = lb.querySelector(".lb-card");
-  const frontImg = lb.querySelector(".lb-front img");
-  const backImg = lb.querySelector(".lb-back img");
+  const front = { img: lb.querySelector(".lb-front img") };
+  const back = { img: lb.querySelector(".lb-back img") };
   const lbCount = lb.querySelector(".lb-count");
   const lbThumbs = lb.querySelector(".lb-thumbs");
   let set = [];
   let idx = 0;
   let opener = null;
   let sourceImg = null;
+  let thumbSrc = "";
   let closing = false;
+  let token = 0;
+  let angle = 180; // resting rotation; odd half-turns show the back face
+
+  const FLIP_EASE = "cubic-bezier(0.45, 0, 0.12, 1)";
+  const rot = (a, s = 1) => `perspective(1800px) rotateY(${a}deg) scale(${s})`;
+  const halfTurns = (a) => ((Math.round(a / 180) % 2) + 2) % 2;
+  const shownFace = () => (halfTurns(angle) ? back : front);
+  const hiddenFace = () => (halfTurns(angle) ? front : back);
+  function setAngle(a) {
+    angle = a;
+    card.style.transform = rot(a);
+  }
+  function setFace(face, src, fit) {
+    face.img.src = src;
+    face.img.style.objectFit = fit; // "cover" matches the crop on the page
+  }
 
   const loadImage = (src) => new Promise((resolve) => {
     const img = new Image();
@@ -258,96 +384,131 @@
     const lift = set.length > 1 ? Math.min(40, vh * 0.04) : 0; // room for thumbnails
     return { left: (vw - w) / 2, top: (vh - h) / 2 - lift, width: w, height: h };
   }
+  const px = (r) => ({ left: `${r.left}px`, top: `${r.top}px`, width: `${r.width}px`, height: `${r.height}px` });
 
   function place(r, animate) {
     if (!animate) card.style.transition = "none";
-    card.style.left = `${r.left}px`;
-    card.style.top = `${r.top}px`;
-    card.style.width = `${r.width}px`;
-    card.style.height = `${r.height}px`;
+    Object.assign(card.style, px(r));
     if (!animate) { void card.offsetWidth; card.style.transition = ""; }
   }
 
-  // Animate between the image on the page and the card, turning it over
-  function flip(r, opening) {
-    const s = sourceImg && sourceImg.getBoundingClientRect();
-    if (reduceMotion || !s || !s.width) return Promise.resolve();
-    const onPage = { left: `${s.left}px`, top: `${s.top}px`, width: `${s.width}px`, height: `${s.height}px`, transform: "perspective(1800px) rotateY(0deg)" };
-    const open = { left: `${r.left}px`, top: `${r.top}px`, width: `${r.width}px`, height: `${r.height}px`, transform: "perspective(1800px) rotateY(180deg)" };
-    const anim = card.animate(opening ? [onPage, open] : [open, onPage], {
-      duration: opening ? 1000 : 750,
+  // Fly between the image on the page and the open card while turning over
+  function travel(fromRect, toRect, fromAngle, toAngle, opening) {
+    return card.animate([
+      { ...px(fromRect), transform: rot(fromAngle) },
+      { ...px(toRect), transform: rot(toAngle) },
+    ], {
+      duration: opening ? 1100 : 800,
       easing: "cubic-bezier(0.2, 0.7, 0.1, 1)",
       fill: opening ? "none" : "forwards",
-    });
-    return anim.finished.catch(() => {});
+    }).finished.catch(() => {});
   }
+  const sourceRect = () => {
+    const s = sourceImg && sourceImg.getBoundingClientRect();
+    return s && s.width && s.bottom > 0 && s.top < window.innerHeight ? s : null;
+  };
 
   function setCurrent() {
     lbCount.textContent = `${idx + 1} / ${set.length}`;
     [...lbThumbs.children].forEach((t, n) => {
       t.setAttribute("aria-current", String(n === idx));
-      if (n === idx) t.scrollIntoView({ block: "nearest", inline: "center" });
+      if (n === idx) t.scrollIntoView({ block: "nearest", inline: "center", behavior: "smooth" });
     });
   }
 
-  async function show(i) {
-    if (set.length < 2) return;
-    idx = (i + set.length) % set.length;
-    const src = set[idx];
+  async function show(i, dir) {
+    if (set.length < 2 || closing) return;
+    const next = (i + set.length) % set.length;
+    if (next === idx) return;
+    dir = dir || (next > idx ? 1 : -1);
+    idx = next;
     setCurrent();
-    backImg.classList.add("is-loading");
+    const src = set[idx];
+    const mine = ++token;
     const img = await loadImage(src);
-    if (set[idx] !== src) return; // moved on meanwhile
-    place(fitRect(aspectOf(img)), true);
-    backImg.src = src;
-    backImg.classList.remove("is-loading");
+    if (mine !== token) return; // a newer request took over
+    card.getAnimations().forEach((a) => a.finish());
+
+    // Put the new picture on the face that's turned away, then turn to it.
+    // The card changes shape while it's edge-on, so each side only ever
+    // appears at its own picture's proportions.
+    setFace(hiddenFace(), src, "contain");
+    const from = angle;
+    const was = card.getBoundingClientRect();
+    const to = fitRect(aspectOf(img));
+    setAngle(angle + 180 * dir);
+    if (reduceMotion) {
+      place(to, true);
+    } else {
+      place(to, false);
+      card.animate([
+        { ...px(was), transform: rot(from) },
+        { ...px(was), transform: rot(from + 60 * dir, 0.94), offset: 0.33 },
+        { ...px(to), transform: rot(from + 120 * dir, 0.94), offset: 0.67 },
+        { ...px(to), transform: rot(angle) },
+      ], { duration: 1000, easing: FLIP_EASE });
+    }
+    // warm the neighbours so the next turn starts immediately
+    loadImage(set[(idx + 1) % set.length]);
+    loadImage(set[(idx - 1 + set.length) % set.length]);
   }
 
   function open(images, from) {
     set = images;
     idx = 0;
+    token++;
     opener = from;
     sourceImg = [...from.querySelectorAll("img")].find((im) => im.offsetParent !== null) || null;
-    const thumb = sourceImg ? sourceImg.currentSrc || sourceImg.src : images[0];
-    frontImg.src = thumb;
-    backImg.src = thumb; // sharp version swaps in once loaded
-    backImg.alt = sourceImg ? sourceImg.alt : "";
+    thumbSrc = sourceImg ? sourceImg.currentSrc || sourceImg.src : images[0];
+    back.img.alt = sourceImg ? sourceImg.alt : "";
     lb.classList.toggle("is-single", set.length < 2);
     lbThumbs.innerHTML = set.length > 1
       ? set.map((src, n) => `<button type="button" aria-label="${n + 1}"><img src="${src.replace("media/web/", "media/web/sm/")}" alt="" loading="lazy"></button>`).join("")
       : "";
 
+    // Front face = the picture as it looks on the page; back face = the view
+    setFace(front, thumbSrc, "cover");
+    setFace(back, thumbSrc, "contain"); // sharp version swaps in once loaded
     lb.showModal();
     document.body.style.overflow = "hidden";
     const r = fitRect(aspectOf(sourceImg));
     place(r, false);
+    setAngle(180);
     requestAnimationFrame(() => lb.classList.add("is-open"));
-    flip(r, true);
+    const s = sourceRect();
+    if (s && !reduceMotion) travel(s, r, 0, 180, true);
     if (set.length > 1) setCurrent();
 
     loadImage(images[0]).then((img) => {
       if (set !== images || idx !== 0 || !img) return;
-      backImg.src = images[0];
+      back.img.src = images[0];
       // The first image of a gallery may differ in shape from its cover
       if (Math.abs(aspectOf(img) - aspectOf(sourceImg)) > 0.02) place(fitRect(aspectOf(img)), true);
+      if (set.length > 1) loadImage(set[1]);
     });
   }
 
   async function close() {
     if (closing || !lb.open) return;
     closing = true;
+    token++;
     lb.classList.remove("is-open");
+    card.getAnimations().forEach((a) => a.finish());
     const r = card.getBoundingClientRect();
-    // Only fly back to the page image when we're still showing it
-    if (idx === 0) {
-      await flip({ left: r.left, top: r.top, width: r.width, height: r.height }, false);
+    const s = sourceRect();
+    if (s && idx === 0 && !reduceMotion) {
+      // Turn back over into the picture on the page
+      setFace(hiddenFace(), thumbSrc, "cover");
+      await travel(r, s, angle, angle - 180, false);
     } else {
-      await card.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 300, fill: "forwards" }).finished;
+      await card.animate([{ opacity: 1, transform: rot(angle) }, { opacity: 0, transform: rot(angle, 0.94) }],
+        { duration: 350, easing: "ease-in", fill: "forwards" }).finished.catch(() => {});
     }
     lb.close();
     card.getAnimations().forEach((a) => a.cancel());
     document.body.style.overflow = "";
-    backImg.removeAttribute("src");
+    front.img.removeAttribute("src");
+    back.img.removeAttribute("src");
     if (opener) opener.focus({ preventScroll: true });
     closing = false;
   }
@@ -355,15 +516,15 @@
   lb.addEventListener("cancel", (e) => { e.preventDefault(); close(); });
   lb.querySelector(".lb-close").addEventListener("click", close);
   lb.querySelector(".lb-scrim").addEventListener("click", close);
-  lb.querySelector(".lb-prev").addEventListener("click", () => show(idx - 1));
-  lb.querySelector(".lb-next").addEventListener("click", () => show(idx + 1));
+  lb.querySelector(".lb-prev").addEventListener("click", () => show(idx - 1, -1));
+  lb.querySelector(".lb-next").addEventListener("click", () => show(idx + 1, 1));
   lbThumbs.addEventListener("click", (e) => {
     const b = e.target.closest("button");
     if (b) show([...lbThumbs.children].indexOf(b));
   });
   lb.addEventListener("keydown", (e) => {
-    if (e.key === "ArrowRight") show(idx + 1);
-    if (e.key === "ArrowLeft") show(idx - 1);
+    if (e.key === "ArrowRight") show(idx + 1, 1);
+    if (e.key === "ArrowLeft") show(idx - 1, -1);
   });
   window.addEventListener("resize", () => {
     if (lb.open && !closing) place(fitRect(card.offsetWidth / card.offsetHeight), false);
@@ -375,7 +536,7 @@
   card.addEventListener("pointerup", (e) => {
     if (sx === null) return;
     const dx = e.clientX - sx;
-    if (Math.abs(dx) > 50) show(idx + (dx < 0 ? 1 : -1));
+    if (Math.abs(dx) > 50) show(idx + (dx < 0 ? 1 : -1), dx < 0 ? 1 : -1);
     sx = null;
   });
 

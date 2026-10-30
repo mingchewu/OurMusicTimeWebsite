@@ -449,9 +449,11 @@ function init() {
     shadow.material.opacity = 1 - Math.min(1, burst * 1.6);
   }
 
-  // How far apart the piano should be: rises as a solid section's top climbs
-  // from the bottom of the screen to just past the middle (where the piano
-  // sits), and falls again as its bottom edge clears the screen.
+  // How far apart the piano should be. It starts coming apart while the next
+  // solid section is still just below view and is fully apart once that
+  // section's top reaches the middle (where the piano sits); it gathers itself
+  // back over the same stretch on the way out. Stage sections are tall enough
+  // (≥ 1.3 screens) for the piano to fully reassemble between two of these.
   const surfaces = [...document.querySelectorAll(".surface")];
   const clamp01 = (v) => Math.min(1, Math.max(0, v));
   function burstTarget() {
@@ -460,9 +462,9 @@ function init() {
     let b = 0;
     for (const el of surfaces) {
       const r = el.getBoundingClientRect();
-      if (r.bottom <= 0 || r.top >= vh) continue;
-      const arriving = clamp01((vh - r.top) / (vh * 0.42));
-      const leaving = clamp01(r.bottom / (vh * 0.42));
+      if (r.bottom <= -vh * 0.15 || r.top >= vh * 1.15) continue;
+      const arriving = clamp01((vh * 1.15 - r.top) / (vh * 0.65));
+      const leaving = clamp01((r.bottom + vh * 0.15) / (vh * 0.65));
       b = Math.max(b, Math.min(arriving, leaving));
     }
     return b * b * (3 - 2 * b);
@@ -561,7 +563,7 @@ function init() {
     const scroll = window.scrollY;
     const target = targetPose(scroll);
 
-    const k = reduceMotion ? 1 : 1 - Math.exp(-dt * 3.2);
+    const k = reduceMotion ? 1 : 1 - Math.exp(-dt * 2.2);
     KEYS.forEach((key) => (cur[key] += (target[key] - cur[key]) * k));
 
     pointer.x += (pointer.tx - pointer.x) * (1 - Math.exp(-dt * 2));
@@ -577,7 +579,8 @@ function init() {
     );
     piano.scale.setScalar(cur.s * widthScale);
     piano.quaternion.setFromEuler(piano.rotation);
-    burst += (burstTarget() - burst) * (1 - Math.exp(-dt * 7));
+    // pieces drift toward where they should be rather than snapping there
+    burst += (burstTarget() - burst) * (1 - Math.exp(-dt * 1.6));
     if (burst < 0.001) burst = 0;
     _pq.copy(piano.quaternion);
     _pqInv.copy(_pq).invert();
