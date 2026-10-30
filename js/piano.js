@@ -303,8 +303,14 @@ function init() {
   const _one = new THREE.Vector3(1, 1, 1);
   const _d = new THREE.Vector3();
   const _s = new THREE.Vector3();
+  // Visual spread of the pieces for a given burst: an ease-in curve with a
+  // small settle zone, so the last few percent lock every piece (the keys
+  // especially, which are tiny next to their travel) cleanly back in place.
+  const SETTLE = 0.07;
+  const spread = () => (burst <= SETTLE ? 0 : ((burst - SETTLE) / (1 - SETTLE)) ** 2);
+
   function keyMatrix(k, tilt) {
-    const b = burst * burst; // ease in: a gentle start, then away
+    const b = spread();
     const reach = b ? k.fly.length() * b : 0;
     if (reach) screenward(k.fly, _d); else _d.set(0, 0, 0);
     _v.set(k.x + _d.x * reach, KEY_TOP + _d.y * reach, KEY_Z_BACK + _d.z * reach);
@@ -428,7 +434,7 @@ function init() {
 
   const _pd = new THREE.Vector3();
   function applyBurst() {
-    const b = burst * burst;
+    const b = spread();
     const shrink = 1 - 0.5 * b;
     parts.forEach((p) => {
       const o = p.o;
@@ -449,22 +455,26 @@ function init() {
     shadow.material.opacity = 1 - Math.min(1, burst * 1.6);
   }
 
-  // How far apart the piano should be. It starts coming apart while the next
-  // solid section is still just below view and is fully apart once that
-  // section's top reaches the middle (where the piano sits); it gathers itself
-  // back over the same stretch on the way out. Stage sections are tall enough
-  // (≥ 1.3 screens) for the piano to fully reassemble between two of these.
+  // How far apart the piano should be, from where the solid sections sit:
+  //  · coming apart — from when the next section's top is just below view
+  //    (115%) until it reaches the middle (50%), where the piano sits;
+  //  · back together — as the previous section's bottom rises from 80% to
+  //    30% of the screen, so the piano is whole again early on.
+  // A 1.4-screen stage therefore keeps the piano fully assembled for about
+  // half a screen of scrolling, however quickly someone scrolls through.
   const surfaces = [...document.querySelectorAll(".surface")];
+  let surfaceSpans = []; // document-space [top, bottom], refreshed by measure()
   const clamp01 = (v) => Math.min(1, Math.max(0, v));
-  function burstTarget() {
+  function burstTarget(scroll) {
     if (reduceMotion) return 0;
     const vh = window.innerHeight;
     let b = 0;
-    for (const el of surfaces) {
-      const r = el.getBoundingClientRect();
-      if (r.bottom <= -vh * 0.15 || r.top >= vh * 1.15) continue;
-      const arriving = clamp01((vh * 1.15 - r.top) / (vh * 0.65));
-      const leaving = clamp01((r.bottom + vh * 0.15) / (vh * 0.65));
+    for (const [docTop, docBottom] of surfaceSpans) {
+      const top = docTop - scroll;
+      const bottom = docBottom - scroll;
+      if (bottom <= vh * 0.3 || top >= vh * 1.15) continue;
+      const arriving = clamp01((vh * 1.15 - top) / (vh * 0.65));
+      const leaving = clamp01((bottom - vh * 0.3) / (vh * 0.5));
       b = Math.max(b, Math.min(arriving, leaving));
     }
     return b * b * (3 - 2 * b);
@@ -490,6 +500,10 @@ function init() {
       // The scroll position at which this section's middle meets the viewport's middle
       return { at: Math.min(maxScroll, Math.max(0, top + r.height / 2 - vh / 2)), pose };
     }).sort((a, b) => a.at - b.at);
+    surfaceSpans = surfaces.map((el) => {
+      const r = el.getBoundingClientRect();
+      return [r.top + window.scrollY, r.bottom + window.scrollY];
+    });
   }
 
   const smooth = (t) => t * t * (3 - 2 * t);
@@ -548,6 +562,9 @@ function init() {
   let velocity = 0;
   let playhead = 0;
   let fade = reduceMotion ? 1 : 0;
+  let lastOpacity = "";
+  let keysWereMoving = true;
+  let keysBurst = -1; // the burst the key matrices were last drawn at
   const clock = new THREE.Clock();
 
   // Screen-space offset: convert pose x/y (roughly "half-screens") to world units
@@ -579,17 +596,27 @@ function init() {
     );
     piano.scale.setScalar(cur.s * widthScale);
     piano.quaternion.setFromEuler(piano.rotation);
-    // pieces drift toward where they should be rather than snapping there
-    burst += (burstTarget() - burst) * (1 - Math.exp(-dt * 1.6));
+    // Pieces drift apart slowly but gather back about twice as fast, so the
+    // piano is reliably whole again even on a quick scroll through a stage.
+    const want = burstTarget(scroll);
+    const rate = want < burst ? 4.6 : 1.7;
+    burst += (want - burst) * (1 - Math.exp(-dt * rate));
     if (burst < 0.001) burst = 0;
     _pq.copy(piano.quaternion);
     _pqInv.copy(_pq).invert();
-    updateLid(cur.lid);
-    applyBurst();
     fade = Math.min(1, fade + dt / 1.6);
     // pieces still in view at the very end dim away under the incoming section
     const scatterDim = 1 - smooth(clamp01((burst - 0.55) / 0.45));
-    canvas.style.opacity = (cur.o * smooth(fade) * scatterDim).toFixed(3);
+    const opacity = cur.o * smooth(fade) * scatterDim;
+    const opacityText = opacity.toFixed(3);
+    if (opacityText !== lastOpacity) canvas.style.opacity = lastOpacity = opacityText;
+    // Fully hidden (scattered under a section, or the tab is in the background):
+    // skip all the scene work until it's needed again.
+    const visible = opacity > 0.004 && !document.hidden;
+    if (visible) {
+      updateLid(cur.lid);
+      applyBurst();
+    }
 
     // Scrolling "plays" the keyboard: a soft wave of pressed keys follows the
     // scroll direction, like fingers running up and down a scale.
@@ -607,18 +634,23 @@ function init() {
         const want = Math.max(0, 1 - Math.min(d1, d2) / 1.6) * intensity;
         key.press += (want - key.press) * 0.35;
       });
+      let pressed = 0;
       blackKeys.forEach((key) => {
         const w = whiteKeys[key.white].press;
         const want = (key.white * 7) % 5 === 0 ? w : 0;
         key.press += (want - key.press) * 0.35;
       });
-      updateKeys();
-    } else if (burst > 0) {
-      updateKeys();
+      whiteKeys.forEach((key) => (pressed += key.press));
+      // Re-upload the 88 key matrices only while something is actually moving
+      const keysMoving = pressed > 0.002 || keysWereMoving || burst !== keysBurst;
+      keysWereMoving = pressed > 0.002;
+      if (visible && keysMoving) {
+        updateKeys();
+        keysBurst = burst;
+      }
     }
 
-    // Skip drawing when the piano is fully covered or the tab is hidden
-    if (cur.o > 0.01 && !document.hidden) renderer.render(scene, camera);
+    if (visible) renderer.render(scene, camera);
     requestAnimationFrame(frame);
   }
 

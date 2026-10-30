@@ -260,33 +260,40 @@
     revealables.forEach((el) => io.observe(el));
   }
 
-  /* ───────── Parallax ───────── */
-  const layers = [...document.querySelectorAll("[data-parallax]")];
-  const imgs = [...document.querySelectorAll("[data-parallax-img]")];
+  /* ───────── Parallax ─────────
+     All positions are read first, then all transforms written, so a frame
+     never forces the browser to recalculate layout more than once. Floating
+     layers are measured from their (stationary) parent, never from their own
+     already-shifted box, which would feed back into a jitter. */
+  const layers = [...document.querySelectorAll("[data-parallax]")].map((el) => ({
+    el,
+    anchor: el.parentElement,
+    speed: parseFloat(el.dataset.parallax) || 0,
+  }));
+  const imgs = [...document.querySelectorAll("[data-parallax-img]")]
+    .filter((img) => img.closest("[data-gallery], [data-gallery-set], .frame"));
   let ticking = false;
 
   function parallax() {
     ticking = false;
     const vh = window.innerHeight;
     const mid = vh / 2;
+    const writes = [];
 
-    layers.forEach((el) => {
-      const r = el.getBoundingClientRect();
-      if (r.bottom < -vh * 0.5 || r.top > vh * 1.5) return;
-      const speed = parseFloat(el.dataset.parallax) || 0;
-      const offset = (r.top + r.height / 2 - mid) * speed;
-      el.style.translate = `0 ${offset.toFixed(1)}px`;
-    });
-
-    imgs.forEach((img) => {
-      const frame = img.parentElement;
-      if (!frame.offsetParent && img.offsetParent === null) return;
-      const r = frame.getBoundingClientRect();
-      if (r.bottom < 0 || r.top > vh) return;
+    for (const l of layers) {
+      const r = l.anchor.getBoundingClientRect();
+      if (r.bottom < -vh * 0.5 || r.top > vh * 1.5) continue;
+      writes.push([l.el, "translate", `0 ${((r.top + r.height / 2 - mid) * l.speed).toFixed(1)}px`]);
+    }
+    for (const img of imgs) {
+      if (img.offsetParent === null) continue; // the other language's copy
+      const r = img.parentElement.getBoundingClientRect();
+      if (r.bottom < 0 || r.top > vh) continue;
       // -1 (entering from below) … 1 (leaving at top)
       const p = (mid - (r.top + r.height / 2)) / (vh / 2 + r.height / 2);
-      img.style.transform = `translate3d(0, ${(p * r.height * 0.055).toFixed(1)}px, 0) scale(1.12)`;
-    });
+      writes.push([img, "transform", `translate3d(0, ${(p * r.height * 0.055).toFixed(1)}px, 0) scale(1.12)`]);
+    }
+    for (const [el, prop, value] of writes) el.style[prop] = value;
   }
 
   const progress = document.querySelector(".progress");
