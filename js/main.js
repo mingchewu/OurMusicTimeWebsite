@@ -70,18 +70,22 @@
     2023: ["main.jpg", ...[1, 2, 4, 5, 6, 7].map((n) => `${n}.jpg`), "8.png", ...range(8, 9).map((n) => `${n}.jpg`)],
     2024: ["main.jpg", ...range(13).map((n) => `${n}.jpg`)],
     2025: ["main.jpg", ...range(19).map((n) => (n === 3 ? "3.png" : `${n}.jpg`))],
-    2026: [
-      "2026-english-poster-2.jpg", "2026-chinese-poster-2.jpg", "image.jpg", "image-2.jpg",
-      // Taiwan workshop flyers (1 is rendered from the PDF beside it in media/events/2026)
-      "2026-omt-taiwan-workshop-1.png", "2026-omt-taiwan-workshop-2.jpg", "2026-omt-taiwan-workshop-3.jpg",
-      ...[1972, 2662, 2663, 4497, 4499, 4503, 4511, 4515, 4517, 4518].map((n) => `img_${n}.jpg`),
-    ],
+    // 2026 is split by language below (eventImages): posters in the visitor's
+    // language, then the workshop photos, which are the same for everyone
+    2026: [],
+  };
+  const PHOTOS_2026 = [1972, 2662, 2663, 4497, 4499, 4503, 4511, 4515, 4517, 4518].map((n) => `img_${n}.jpg`);
+  const POSTERS_2026 = {
+    en: ["2026-english-poster-2.jpg", "image.jpg"],
+    // Chinese posters, then the Taiwan workshop flyers (1 is rendered from
+    // the PDF beside it in media/events/2026)
+    zh: ["2026-chinese-poster-2.jpg", "image-2.jpg", "2026-omt-taiwan-workshop-1.png",
+      "2026-omt-taiwan-workshop-2.jpg", "2026-omt-taiwan-workshop-3.jpg"],
   };
   const eventImages = (year) => {
-    let files = EVENTS[year] || [];
-    if (year === "2026" && root.dataset.lang === "zh") {
-      files = [files[1], files[0], ...files.slice(2)];
-    }
+    const files = year === "2026"
+      ? [...POSTERS_2026[root.dataset.lang === "zh" ? "zh" : "en"], ...PHOTOS_2026]
+      : EVENTS[year] || [];
     return files.map((f) => `media/web/events/${year}/${f}`);
   };
 
@@ -540,6 +544,9 @@
       fill: opening ? "none" : "forwards",
     }).finished.catch(() => {});
   }
+  // how the picture is fitted on the page (most are cropped to their frame;
+  // the event posters are shown whole), so the flip starts from the same view
+  const pageFit = () => (sourceImg && getComputedStyle(sourceImg).objectFit === "contain" ? "contain" : "cover");
   const sourceRect = () => {
     const s = sourceImg && sourceImg.getBoundingClientRect();
     return s && s.width && s.bottom > 0 && s.top < window.innerHeight ? s : null;
@@ -604,7 +611,7 @@
       : "";
 
     // Front face = the picture as it looks on the page; back face = the view
-    setFace(front, thumbSrc, "cover");
+    setFace(front, thumbSrc, pageFit());
     setFace(back, thumbSrc, "contain"); // sharp version swaps in once loaded
     lb.showModal();
     document.body.style.overflow = "hidden";
@@ -635,7 +642,7 @@
     const s = sourceRect();
     if (s && idx === 0 && !reduceMotion) {
       // Turn back over into the picture on the page
-      setFace(hiddenFace(), thumbSrc, "cover");
+      setFace(hiddenFace(), thumbSrc, pageFit());
       await travel(r, s, angle, angle - 180, false);
     } else {
       await card.animate([{ opacity: 1, transform: rot(angle) }, { opacity: 0, transform: rot(angle, 0.94) }],
