@@ -879,10 +879,10 @@ button.frame:hover img { filter: brightness(1.08); }
   color: var(--paper);
 }
 .facts dd { font-size: 0.85rem; color: var(--muted); margin-top: 0.25rem; }
-/* University marks in ivory on the dark page (Cambridge publishes a white
-   version; CUNY is tinted to match). Capital University keeps its own purple
-   for "Capital", with "University" in ivory — a version of its logo trimmed
-   to the lettering, media/badges/capital-university-on-dark.svg. */
+/* University marks in their own colours, with dark lettering turned ivory
+   for the dark page (the *-on-dark files in media/badges): Cambridge's full
+   colour crest, Capital's purple "Capital", and CUNY's wordmark from its
+   official PDF, the blue lifted a little so it reads on ink. */
 .facts dt {
   /* crests share a baseline, so the degree lines underneath line up */
   display: flex;
@@ -894,12 +894,11 @@ button.frame:hover img { filter: brightness(1.08); }
   display: block;
   width: auto;
   max-width: 100%;
-  opacity: 0.88;
+  opacity: 0.94;
 }
-.crest-cuny { filter: brightness(0) invert(0.94) sepia(0.12); }
-.crest-cambridge { height: 2.1rem; }
+.crest-cambridge { height: 2.2rem; }
 .crest-capital { height: 2.15rem; }
-.crest-cuny { height: 2.5rem; }
+.crest-cuny { height: 2.45rem; }
 
 /* ---------- Quote interlude ---------- */
 .quote {
