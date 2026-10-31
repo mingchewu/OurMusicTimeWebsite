@@ -2,7 +2,8 @@
 // until the visitor turns "Sound" on. Then scrolling plays an original theme,
 // note by note, that grows from a lone melody at the top of the page into
 // full chords by the end; gentle chords and soft thuds mark the 3D piano
-// rebuilding itself. Everything is synthesised: no audio files.
+// rebuilding itself, and the bottom of the page ends on a full cadence.
+// Everything is synthesised: no audio files.
 (function () {
   "use strict";
 
@@ -10,6 +11,12 @@
   const toggles = [...document.querySelectorAll("[data-sound-toggle]")];
   let ctx = null;
   let out = null;      // master input: everything connects here
+  let wet = null;      // reverb send: the room grows as the music builds
+  let master = null;   // overall level, which rises a little into the climax
+  // Accompaniment (lite voices, choir) stops at LITE_CAP so there is always
+  // room for the melody and bass, up to VOICE_CAP
+  const LITE_CAP = 40;
+  const VOICE_CAP = 52;
   let enabled = false;
   let voices = 0;
   let lastNote = 0;
@@ -37,15 +44,15 @@
     const AC = window.AudioContext || window.webkitAudioContext;
     if (!AC) return null;
     ctx = new AC();
-    const master = ctx.createGain();
+    master = ctx.createGain();
     master.gain.value = 0.55;
     const limiter = ctx.createDynamicsCompressor();
-    limiter.threshold.value = -14;
+    limiter.threshold.value = -11;
     limiter.ratio.value = 6;
     master.connect(limiter).connect(ctx.destination);
 
     const dry = ctx.createGain();
-    const wet = ctx.createGain();
+    wet = ctx.createGain();
     const reverb = ctx.createConvolver();
     dry.gain.value = 0.8;
     wet.gain.value = 0.32;
@@ -61,7 +68,7 @@
   // `lite` voices (chords, doublings) use two partials instead of four, so a
   // full texture near the end of the page stays light to synthesise
   function voice(freq, when, velocity, length, lite) {
-    if (!ctx || voices >= 30) return;
+    if (!ctx || voices >= (lite ? LITE_CAP : VOICE_CAP)) return;
     voices++;
     played++;
     const dur = length || 2.6 - Math.min(1.4, (freq - C3) / 600); // low notes ring longer
@@ -95,6 +102,44 @@
     });
   }
 
+  // A soft wordless choir ("aah") holding the bar's chord: two detuned saws
+  // per note through a vowel-like band, slow to swell and slow to fade.
+  // It joins as the music nears its climax.
+  function choir(notes, when, length, level) {
+    if (!ctx) return;
+    notes.forEach((m) => {
+      if (voices >= LITE_CAP) return;
+      voices++;
+      played++;
+      const freq = midi(m);
+      const env = ctx.createGain();
+      const vowel = ctx.createBiquadFilter();
+      const air = ctx.createBiquadFilter();
+      vowel.type = "bandpass";
+      vowel.frequency.value = 760; // around an open "ah"
+      vowel.Q.value = 1.1;
+      air.type = "lowpass";
+      air.frequency.value = 2400;
+      env.gain.setValueAtTime(0.0001, when);
+      env.gain.linearRampToValueAtTime(level, when + Math.min(0.6, length * 0.3));
+      env.gain.setTargetAtTime(0.0001, when + length * 0.55, length * 0.22);
+      env.connect(vowel).connect(air).connect(out);
+      let ended = 0;
+      [-7, 7].forEach((cents) => {
+        const osc = ctx.createOscillator();
+        osc.type = "sawtooth";
+        osc.frequency.value = freq;
+        osc.detune.value = cents + (Math.random() - 0.5) * 4;
+        osc.connect(env);
+        osc.start(when);
+        osc.stop(when + length * 1.4);
+        osc.onended = () => {
+          if (++ended === 2) voices--;
+        };
+      });
+    });
+  }
+
   function playable() {
     return enabled && ctx && ctx.state === "running";
   }
@@ -103,8 +148,9 @@
      An original 16-bar theme in A minor: a searching first half that turns
      home on E, then a second half that climbs higher before returning.
      Scrolling moves through it note by note. It grows as you go down the
-     page: melody alone → a bass on each bar → a walking bass → chords →
-     melody doubled in octaves; scrolling with momentum adds a little more. */
+     page: melody alone → a bass on each bar → a left hand rolling broken
+     chords, one note a beat then two → chords → deep octaves, a choir and a
+     bigger room for the climax; scrolling with momentum adds a little more. */
   //            melody (4 steps)     bass  chord
   const THEME = [
     [[69, 72, 76, 74], 45, [57, 60, 64]], // Am
@@ -138,25 +184,50 @@
   // How full the music is: mostly where you are on the page, plus momentum
   const fullness = () => Math.min(1, pageProgress() * 0.9 + pace * 0.22);
 
+  // The left hand's broken chord for a bar: up from the bass through the
+  // fifth, octave, tenth and twelfth, and back down — two notes per beat
+  function brokenChord(bass, chord) {
+    const third = chord.some((m) => m % 12 === (bass + 3) % 12) ? 3 : 4;
+    return [bass, bass + 7, bass + 12, bass + 12 + third, bass + 19, bass + 12 + third, bass + 12, bass + 7];
+  }
+
   function playStep() {
     const now = ctx.currentTime;
     const since = now - lastStep;
     pace += (Math.min(1, MIN_GAP / Math.max(since, MIN_GAP) * 1.4) - pace) * 0.3;
     lastStep = now;
+    const gap = Math.min(0.6, Math.max(MIN_GAP, since)); // time until the next note, roughly
 
     const [melody, bass, chord] = THEME[Math.floor(stepAt / 4) % THEME.length];
     const beat = stepAt % 4;
     const f = fullness();
-    const vel = 0.3 + f * 0.42;
+    const vel = 0.28 + f * 0.5;
     const tone = melody[beat];
 
+    // Right hand
     voice(midi(tone), now, vel, 1.4);                                   // melody
     if (f > 0.78) voice(midi(tone - 12), now, vel * 0.45, 1.1, true);   // octave doubling
-    if (beat === 0 && f > 0.18) voice(midi(bass), now, 0.3 + f * 0.26, 2.2);       // bass
-    if (beat === 2 && f > 0.42) voice(midi(bass + 7), now, 0.24 + f * 0.2, 1.6);   // walking fifth
     if ((beat === 0 && f > 0.62) || (beat === 2 && f > 0.86)) {
-      chord.forEach((m, n) => voice(midi(m), now + n * 0.014, 0.16 + f * 0.16, 1.1, true)); // chords
+      chord.forEach((m, n) => voice(midi(m), now + n * 0.014, 0.16 + f * 0.18, 1.1, true)); // chords
     }
+
+    // Left hand: a bass note on the bar, then a broken chord that rolls
+    // under the melody — one note a beat, then two, then from a deep octave
+    const lh = brokenChord(bass, chord);
+    const lhVel = 0.16 + f * 0.3;
+    if (beat === 0 && f > 0.12) voice(midi(bass), now, 0.3 + f * 0.3, 2.4);
+    if (beat === 0 && f > 0.7 && bass - 12 >= 31) voice(midi(bass - 12), now, 0.2 + f * 0.26, 2.6, true);
+    if (f > 0.25) {
+      if (beat !== 0) voice(midi(lh[beat * 2]), now, lhVel, 1.1, true);
+      if (f > 0.5) voice(midi(lh[beat * 2 + 1]), now + gap / 2, lhVel * 0.85, 1, true);
+    }
+
+    // Climax: the choir swells under each bar and the room opens up
+    if (beat === 0 && f > 0.7) {
+      choir(chord, now, Math.min(3.4, Math.max(1.4, gap * 4.6)), 0.03 + (f - 0.7) * 0.16);
+    }
+    wet.gain.setTargetAtTime(0.3 + f * 0.24, now, 0.6);
+    master.gain.setTargetAtTime(0.5 + f * 0.18, now, 0.8);
     stepAt++;
   }
 
@@ -232,7 +303,18 @@
     const steps = CHORDS[kind] || CHORDS.together;
     const now = ctx.currentTime + 0.02;
     const big = kind === "end";
-    steps.forEach((m, i) => voice(midi(m), now + i * (big ? 0.07 : 0.09), big ? 0.5 : 0.42, big ? 4 : undefined));
+    if (big) {
+      // The last cadence: the left hand sweeps up from the bottom of the
+      // keyboard, then the full chord lands with the choir holding it
+      const sweep = [33, 40, 45, 48, 52, 57, 60, 64];
+      sweep.forEach((m, i) => voice(midi(m), now + i * 0.045, 0.22 + i * 0.03, 1.6, true));
+      const land = now + sweep.length * 0.045 + 0.08;
+      steps.forEach((m, i) => voice(midi(m), land + i * 0.03, 0.55, 4.5, i > 2));
+      choir([57, 60, 64, 69], land, 5, 0.07);
+      if (wet) wet.gain.setTargetAtTime(0.56, land, 0.4);
+      return;
+    }
+    steps.forEach((m, i) => voice(midi(m), now + i * 0.09, 0.42));
   }
 
   function setEnabled(on, persist) {
@@ -282,5 +364,6 @@
     get enabled() { return enabled; },
     get state() { return ctx ? ctx.state : "not started"; },
     get played() { return played; },
+    get voices() { return voices; },
   };
 })();
