@@ -655,11 +655,15 @@ function init() {
     shadow.material.opacity = 1 - Math.min(1, burst * 1.6);
   }
 
-  // Whether the piano should be apart, from where the solid sections sit.
-  // The trigger is prompt — it starts drawing away the moment the next
-  // section's top enters view (95% down the screen), and starts rebuilding
-  // the moment the section above begins to clear (its bottom passes 90%) —
-  // while the movement itself is unhurried and timed (see the frame loop).
+  // How far apart the piano should be, straight from the scroll position, so
+  // it comes apart and rebuilds at exactly the pace the visitor scrolls (and
+  // holds wherever they stop). Both start early:
+  //  · apart — from when the next solid section's top enters view (95%)
+  //    until it reaches the middle of the screen (45%), where the piano sits;
+  //  · together — from when the section above starts to clear (its bottom
+  //    at 95%) until that edge passes the middle (45%).
+  // The pieces are staggered across that stretch (see "order"), so it plays
+  // out one piece after another rather than all at once.
   const surfaces = [...document.querySelectorAll(".surface")];
   let surfaceSpans = []; // document-space [top, bottom], refreshed by measure()
   const clamp01 = (v) => Math.min(1, Math.max(0, v));
@@ -668,11 +672,18 @@ function init() {
     // testing hook: force a burst level from the console (number 0–1)
     if (typeof window.__omtBurst === "number") return window.__omtBurst;
     const vh = window.innerHeight;
+    let b = 0;
     for (const [docTop, docBottom] of surfaceSpans) {
-      if (docTop - scroll < vh * 0.95 && docBottom - scroll > vh * 0.9) return 1;
+      const top = docTop - scroll;
+      const bottom = docBottom - scroll;
+      if (bottom <= vh * 0.45 || top >= vh * 0.95) continue;
+      const arriving = clamp01((vh * 0.95 - top) / (vh * 0.5));
+      const leaving = clamp01((bottom - vh * 0.45) / (vh * 0.5));
+      b = Math.max(b, Math.min(arriving, leaving));
     }
-    return 0;
+    return b;
   }
+
 
 
   // Centre the model on its own bounding box so rotations pivot nicely
@@ -860,13 +871,8 @@ function init() {
         // so it still comes apart top down rather than all at once
         burst = Math.min(1, burst + 1.7 * dt);
       } else {
-        // Unhurried and steady, once triggered: ~2.4 s to come apart and
-        // ~2 s to rebuild, each piece on its own staggered journey. (A brisk
-        // scroll hurries the rebuild a little so it lands in time.)
-        const hurry = Math.min(velocity / 20, 1);
-        const pace = want > burst ? 0.42 : 0.5 + hurry * 0.5;
-        const gap = want - burst;
-        burst += Math.sign(gap) * Math.min(Math.abs(gap), pace * dt);
+        // follow the scroll, with just enough smoothing to stay silky
+        burst += (want - burst) * (1 - Math.exp(-dt * 9));
       }
       if (burst < 0.001) burst = 0;
       // a soft chord as the piano settles back together after coming apart
