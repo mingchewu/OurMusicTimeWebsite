@@ -879,8 +879,10 @@ button.frame:hover img { filter: brightness(1.08); }
   color: var(--paper);
 }
 .facts dd { font-size: 0.85rem; color: var(--muted); margin-top: 0.25rem; }
-/* University marks, shown in one ivory tone so they sit evenly on the dark
-   page (Cambridge publishes a white version; the others are tinted to match) */
+/* University marks in ivory on the dark page (Cambridge publishes a white
+   version; CUNY is tinted to match). Capital University keeps its own purple
+   for "Capital", with "University" in ivory — a version of its logo trimmed
+   to the lettering, media/badges/capital-university-on-dark.svg. */
 .facts dt {
   /* crests share a baseline, so the degree lines underneath line up */
   display: flex;
@@ -894,10 +896,9 @@ button.frame:hover img { filter: brightness(1.08); }
   max-width: 100%;
   opacity: 0.88;
 }
-.crest-capital,
 .crest-cuny { filter: brightness(0) invert(0.94) sepia(0.12); }
 .crest-cambridge { height: 2.1rem; }
-.crest-capital { height: 2.7rem; }
+.crest-capital { height: 2.15rem; }
 .crest-cuny { height: 2.5rem; }
 
 /* ---------- Quote interlude ---------- */
@@ -1096,25 +1097,24 @@ html[lang="zh-Hant"] .book h4 { font-size: 1.1rem; }
 .steps li {
   display: grid;
   gap: 0.35rem;
-  padding-left: 6.5rem;
+  padding-left: 4.5rem;
   position: relative;
   color: var(--paper-dim);
   text-shadow: 0 2px 24px rgba(14, 12, 11, 0.9);
 }
 .steps li::before {
   counter-increment: step;
-  content: "Stage " counter(step, upper-roman);
+  content: "→";                 /* each stage leads on to the next */
   position: absolute;
   left: 0; top: 0.1em;
-  width: 5.2rem;
+  width: 3rem;
   font-family: var(--display);
-  font-style: italic;
-  font-size: 1.15rem;
+  font-size: 1.6rem;
+  line-height: 1;
   color: var(--ember);
   border-top: 1px solid var(--line-strong);
   padding-top: 0.4rem;
 }
-html[lang="zh-Hant"] .steps li::before { content: "第" counter(step, cjk-decimal) "階段"; font-style: normal; font-size: 1.05rem; }
 .steps .initial { color: var(--ember); }
 .keep-case { text-transform: none; }
 .steps b {
