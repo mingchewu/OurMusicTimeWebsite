@@ -197,6 +197,27 @@ main, .footer { position: relative; z-index: 1; }
   letter-spacing: 0.04em;
   color: var(--ember);
 }
+/* Section marks: a different note for each section, shorter and busier as
+   the page goes on (whole note → beamed sixteenths), drawn as SVG masks so
+   they look the same on every device and take the ember colour. */
+.note {
+  display: inline-block;
+  width: 1.05em;
+  height: 1.4em;
+  vertical-align: -0.35em;
+  background: currentColor;
+  -webkit-mask: var(--note) center / contain no-repeat;
+  mask: var(--note) center / contain no-repeat;
+}
+.note-eighths, .note-sixteenths { width: 1.35em; }
+.note-whole { --note: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 32%22%3E%3Cg transform=%22rotate%28-22 12 22%29%22%3E%3Cpath fill-rule=%22evenodd%22 d=%22M5.8 22a6.2 4.3 0 1 0 12.4 0a6.2 4.3 0 1 0 -12.4 0zM8.4 22a3.6 2.3 0 1 0 7.2 0a3.6 2.3 0 1 0 -7.2 0z%22/%3E%3C/g%3E%3C/svg%3E"); }
+.note-half { --note: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 32%22%3E%3Cg transform=%22rotate%28-22 9 25%29%22%3E%3Cpath fill-rule=%22evenodd%22 d=%22M2.8 25a6.2 4.3 0 1 0 12.4 0a6.2 4.3 0 1 0 -12.4 0zM5.4 25a3.6 2.3 0 1 0 7.2 0a3.6 2.3 0 1 0 -7.2 0z%22/%3E%3C/g%3E%3Crect x=%2213.9%22 y=%223%22 width=%221.7%22 height=%2221%22/%3E%3C/svg%3E"); }
+.note-quarter { --note: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 32%22%3E%3Cg transform=%22rotate%28-22 9 25%29%22%3E%3Cpath fill-rule=%22evenodd%22 d=%22M2.8 25a6.2 4.3 0 1 0 12.4 0a6.2 4.3 0 1 0 -12.4 0z%22/%3E%3C/g%3E%3Crect x=%2213.9%22 y=%223%22 width=%221.7%22 height=%2221%22/%3E%3C/svg%3E"); }
+.note-eighth { --note: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 32%22%3E%3Cg transform=%22rotate%28-22 9 25%29%22%3E%3Cpath fill-rule=%22evenodd%22 d=%22M2.8 25a6.2 4.3 0 1 0 12.4 0a6.2 4.3 0 1 0 -12.4 0z%22/%3E%3C/g%3E%3Crect x=%2213.9%22 y=%223%22 width=%221.7%22 height=%2221%22/%3E%3Cpath d=%22M15.6 3c0 4.2 6.4 5.6 5.6 11.4c-.5-3.4-2.9-5.2-5.6-5.8z%22/%3E%3C/svg%3E"); }
+.note-eighths { --note: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22%3E%3Cg transform=%22rotate%28-22 7 26%29%22%3E%3Cpath fill-rule=%22evenodd%22 d=%22M0.7999999999999998 26a6.2 4.3 0 1 0 12.4 0a6.2 4.3 0 1 0 -12.4 0z%22/%3E%3C/g%3E%3Crect x=%2211.9%22 y=%225%22 width=%221.7%22 height=%2220%22/%3E%3Cg transform=%22rotate%28-22 22 23%29%22%3E%3Cpath fill-rule=%22evenodd%22 d=%22M15.8 23a6.2 4.3 0 1 0 12.4 0a6.2 4.3 0 1 0 -12.4 0z%22/%3E%3C/g%3E%3Crect x=%2226.9%22 y=%222%22 width=%221.7%22 height=%2220%22/%3E%3Cpath d=%22M11.9 3.6L28.6 0.6V4.2L11.9 7.2z%22/%3E%3C/svg%3E"); }
+.note-sixteenth { --note: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 32%22%3E%3Cg transform=%22rotate%28-22 9 25%29%22%3E%3Cpath fill-rule=%22evenodd%22 d=%22M2.8 25a6.2 4.3 0 1 0 12.4 0a6.2 4.3 0 1 0 -12.4 0z%22/%3E%3C/g%3E%3Crect x=%2213.9%22 y=%223%22 width=%221.7%22 height=%2221%22/%3E%3Cpath d=%22M15.6 3c0 4.2 6.4 5.6 5.6 11.4c-.5-3.4-2.9-5.2-5.6-5.8z%22/%3E%3Cpath d=%22M15.6 8.5c0 4.2 6.4 5.6 5.6 11.4c-.5-3.4-2.9-5.2-5.6-5.8z%22/%3E%3C/svg%3E"); }
+.note-sixteenths { --note: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22%3E%3Cg transform=%22rotate%28-22 7 26%29%22%3E%3Cpath fill-rule=%22evenodd%22 d=%22M0.7999999999999998 26a6.2 4.3 0 1 0 12.4 0a6.2 4.3 0 1 0 -12.4 0z%22/%3E%3C/g%3E%3Crect x=%2211.9%22 y=%225%22 width=%221.7%22 height=%2220%22/%3E%3Cg transform=%22rotate%28-22 22 23%29%22%3E%3Cpath fill-rule=%22evenodd%22 d=%22M15.8 23a6.2 4.3 0 1 0 12.4 0a6.2 4.3 0 1 0 -12.4 0z%22/%3E%3C/g%3E%3Crect x=%2226.9%22 y=%222%22 width=%221.7%22 height=%2220%22/%3E%3Cpath d=%22M11.9 3.6L28.6 0.6V4.2L11.9 7.2z%22/%3E%3Cpath d=%22M11.9 9.6L28.6 6.6V10.2L11.9 13.2z%22/%3E%3C/svg%3E"); }
+.eyebrow .note { font-size: 1.1rem; }
 .eyebrow i::after {
   content: "";
   display: inline-block;
@@ -590,6 +611,8 @@ html[data-lang="zh"] .lang-switch::before { transform: translateX(100%); }
   animation: menu-in 0.7s var(--ease) forwards;
 }
 .menu a i { font-size: 0.9rem; font-family: var(--text); color: var(--ember); }
+.menu a i { flex: 0 0 2.2rem; display: inline-flex; justify-content: center; } /* labels line up whatever the note's width */
+.menu a i .note { font-size: 1.35rem; }
 .menu-sound { display: none; }
 @media (max-width: 600px) {
   .menu-sound {

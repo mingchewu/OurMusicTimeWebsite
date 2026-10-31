@@ -786,6 +786,8 @@ function init() {
   };
   // the veil may already have lifted before the piano finished loading
   if (intro.state === "hold" && window.__omtIntroGo) window.OMTPianoIntro();
+  // read-only status, for checking the choreography from the console
+  window.__omtPianoState = () => ({ burst: +burst.toFixed(3), want: +burstTarget(window.scrollY).toFixed(3), fast: root.classList.contains("is-fast") });
   let apartAgo = false; // for the "back together" chord
   let throwTarget = intro.state === "hold" ? 1 : 0;
   let keysWereMoving = true;
@@ -860,15 +862,16 @@ function init() {
       // Pulled away steadily. Thrown back at a pace that follows the scroll:
       // a leisurely scroll gets the full, readable throw; a fast one throws
       // everything home proportionally quicker so the piano is whole in time.
-      // A steady pace (not an exponential chase, which would rush the first
-      // pieces): ~2.2 s to come fully apart, ~1.6 s to rebuild when scrolling
-      // slowly, quicker when scrolling fast. Eases off near the target.
-      const hurry = Math.min(velocity / 14, 1);
-      // stepping aside for a fast scroll happens briskly (~0.6 s), still top down
-      const speed = want < burst ? 0.62 + hurry * 1.6 : fast ? 1.7 : 0.45;
-      const gap = want - burst;
-      const step = Math.min(Math.abs(gap), speed * dt * Math.min(1, 0.25 + Math.abs(gap) * 4));
-      burst += Math.sign(gap) * step;
+      if (fast) {
+        // stepping aside for a fast scroll: a brisk, steady pace (~0.6 s),
+        // so it still comes apart top down rather than all at once
+        burst = Math.min(1, burst + 1.7 * dt);
+      } else {
+        // Otherwise the piano follows the scroll itself: it comes apart and
+        // back together exactly as the page moves, with just enough smoothing
+        // to stay silky — no waiting for it to catch up on a slow scroll.
+        burst += (want - burst) * (1 - Math.exp(-dt * 10));
+      }
       if (burst < 0.001) burst = 0;
       // a soft chord as the piano settles back together after coming apart
       if (burst > 0.6) apartAgo = true;
