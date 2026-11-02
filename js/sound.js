@@ -145,14 +145,24 @@
   }
 
   /* ───────── The theme ─────────
-     An original 16-bar theme in A minor: a searching first half that turns
-     home on E, then a second half that climbs higher before returning.
+     An original 48-bar piece in A minor, about one pass down the page:
+       I    (bars 1–16)  the lyrical theme — a searching first half that
+                         turns home on E, a second half that climbs higher
+       II   (bars 17–32) a journey: out to C major, round a circle of
+                         sevenths, darkening through a diminished chord and
+                         the Neapolitan B♭ to a rising dominant
+       III  (bars 33–48) the climax — the theme an octave higher over fuller
+                         harmony, peaking on high A, then a Neapolitan
+                         cadence that leads straight back to the start
      Scrolling moves through it note by note. It grows as you go down the
      page: melody alone → a bass on each bar → a left hand rolling broken
-     chords, one note a beat then two → chords → deep octaves, a choir and a
-     bigger room for the climax; scrolling with momentum adds a little more. */
+     chords, one note a beat then two → passing notes between the melody's
+     leaps → chords and grace notes → deep octaves, a choir, cascading runs
+     at phrase ends and a bigger room for the climax; scrolling with
+     momentum adds a little more. */
   //            melody (4 steps)     bass  chord
   const THEME = [
+    // I — the theme
     [[69, 72, 76, 74], 45, [57, 60, 64]], // Am
     [[72, 69, 65, 69], 41, [53, 57, 60]], // F
     [[67, 72, 76, 79], 48, [55, 60, 64]], // C
@@ -169,8 +179,47 @@
     [[83, 79, 74, 77], 43, [55, 59, 62]], // G
     [[76, 79, 84, 83], 48, [55, 60, 64]], // C
     [[80, 76, 71, 76], 40, [52, 56, 59]], // E
+    // II — the journey
+    [[76, 79, 84, 83], 36, [55, 60, 64]],     // C
+    [[81, 79, 77, 76], 41, [57, 60, 64]],     // Fmaj7
+    [[74, 77, 81, 79], 38, [53, 57, 60]],     // Dm7
+    [[77, 76, 74, 71], 43, [53, 59, 62]],     // G7
+    [[72, 76, 79, 84], 36, [55, 60, 64]],     // C
+    [[83, 80, 76, 74], 44, [52, 56, 62]],     // E7/G♯
+    [[81, 76, 72, 76], 45, [57, 60, 64]],     // Am
+    [[79, 76, 73, 76], 43, [55, 61, 64]],     // A7/G
+    [[77, 81, 86, 84], 41, [53, 57, 62]],     // Dm/F
+    [[83, 80, 77, 74], 44, [53, 56, 59, 62]], // G♯dim7
+    [[76, 81, 84, 88], 48, [57, 60, 64]],     // Am/C
+    [[89, 88, 84, 81], 41, [57, 60, 65]],     // F
+    [[82, 81, 77, 74], 46, [58, 62, 65]],     // B♭ (Neapolitan)
+    [[80, 83, 86, 84], 40, [56, 62, 64]],     // E7
+    [[81, 84, 88, 86], 45, [57, 60, 64]],     // Am
+    [[83, 86, 88, 92], 40, [56, 59, 62, 64]], // E7, climbing
+    // III — the climax
+    [[81, 84, 88, 86], 45, [57, 60, 64]],     // Am
+    [[84, 81, 77, 81], 41, [53, 57, 60]],     // F
+    [[79, 84, 88, 91], 40, [55, 60, 64]],     // C/E
+    [[89, 88, 86, 83], 43, [53, 59, 62]],     // G7
+    [[84, 88, 93, 91], 45, [57, 60, 64]],     // Am — the peak
+    [[89, 88, 84, 81], 41, [57, 60, 64]],     // Fmaj7
+    [[86, 89, 88, 86], 38, [53, 57, 62]],     // Dm
+    [[83, 80, 83, 88], 40, [52, 56, 59]],     // E
+    [[93, 91, 89, 84], 41, [57, 60, 65]],     // F
+    [[83, 86, 91, 89], 43, [55, 59, 62]],     // G
+    [[88, 84, 81, 84], 48, [57, 60, 64]],     // Am/C
+    [[86, 89, 93, 91], 38, [53, 57, 60]],     // Dm7
+    [[89, 86, 82, 86], 46, [58, 62, 65]],     // B♭ (Neapolitan)
+    [[83, 86, 89, 88], 40, [56, 62, 64]],     // E7
+    [[88, 84, 81, 76], 45, [57, 60, 64]],     // Am
+    [[80, 76, 71, 68], 40, [56, 59, 62]],     // E7 → back to the start
   ];
-  const STEP_PX = 80;   // scroll distance per note
+  // Scroll distance per note: spread so that one scroll from the top of the
+  // page to the bottom plays the piece once, arriving at the climax
+  const stepPx = () => {
+    const max = document.documentElement.scrollHeight - window.innerHeight;
+    return Math.min(130, Math.max(60, max / (THEME.length * 4)));
+  };
   const MIN_GAP = 0.14; // the quickest it will play (seconds between notes)
   let stepAt = 0;       // position in the theme: bar * 4 + beat
   let travelled = 0;
@@ -184,11 +233,41 @@
   // How full the music is: mostly where you are on the page, plus momentum
   const fullness = () => Math.min(1, pageProgress() * 0.9 + pace * 0.22);
 
-  // The left hand's broken chord for a bar: up from the bass through the
-  // fifth, octave, tenth and twelfth, and back down — two notes per beat
+  // The left hand's broken chord for a bar, in open spacing: up from the
+  // bass through a chord tone a fifth or so above, the octave, and the next
+  // two chord tones over it, then back down — two notes per beat
   function brokenChord(bass, chord) {
-    const third = chord.some((m) => m % 12 === (bass + 3) % 12) ? 3 : 4;
-    return [bass, bass + 7, bass + 12, bass + 12 + third, bass + 19, bass + 12 + third, bass + 12, bass + 7];
+    const pcs = chord.map((m) => m % 12);
+    const above = (from) => { // lowest chord tone at or above `from`
+      for (let m = from; m < from + 12; m++) if (pcs.includes(m % 12)) return m;
+      return from;
+    };
+    const x = above(bass + 5);
+    const y = above(bass + 13);
+    const z = above(y + 1);
+    return [bass, x, bass + 12, y, z, y, bass + 12, x];
+  }
+
+  // The scale the bar's chord implies: A natural minor, with G♯ under E
+  // chords, C♯ under A7 and B♭ under the Neapolitan
+  function scaleFor(chord) {
+    const has = (pc) => chord.some((m) => m % 12 === pc);
+    return [9, has(10) ? 10 : 11, has(1) ? 1 : 0, 2, 4, 5, has(8) ? 8 : 7];
+  }
+  // A scale note between two melody notes, for leaps of a third or more
+  function passing(from, to, scale) {
+    if (Math.abs(to - from) < 3) return null;
+    const mid = (from + to) / 2;
+    let best = null;
+    for (let m = Math.min(from, to) + 1; m < Math.max(from, to); m++) {
+      if (scale.includes(m % 12) && (best === null || Math.abs(m - mid) < Math.abs(best - mid))) best = m;
+    }
+    return best;
+  }
+  // The scale note just above, for a grace note leaning onto the melody
+  function upperNeighbour(m, scale) {
+    for (let n = m + 1; n <= m + 2; n++) if (scale.includes(n % 12)) return n;
+    return m + 1;
   }
 
   function playStep() {
@@ -198,35 +277,61 @@
     lastStep = now;
     const gap = Math.min(0.6, Math.max(MIN_GAP, since)); // time until the next note, roughly
 
-    const [melody, bass, chord] = THEME[Math.floor(stepAt / 4) % THEME.length];
+    const bar = Math.floor(stepAt / 4) % THEME.length;
+    const [melody, bass, chord] = THEME[bar];
     const beat = stepAt % 4;
+    const next = beat < 3 ? melody[beat + 1] : THEME[(bar + 1) % THEME.length][0][0];
+    const scale = scaleFor(chord);
     const f = fullness();
-    const vel = 0.28 + f * 0.5;
+    // Balance: the melody always sings on top; everything else is quieter
+    // the busier it is, and notes ring only a little past the next one so
+    // their tails don't blur into each other
+    const vel = 0.34 + f * 0.4;
+    const ring = Math.min(1.4, Math.max(0.55, gap * 3)); // melody note length
+    const tail = Math.min(1, Math.max(0.4, gap * 2));    // accompaniment length
     const tone = melody[beat];
 
     // Right hand
-    voice(midi(tone), now, vel, 1.4);                                   // melody
-    if (f > 0.78) voice(midi(tone - 12), now, vel * 0.45, 1.1, true);   // octave doubling
+    if (beat === 0 && f > 0.6) {
+      // a grace note leaning onto the bar's first note
+      voice(midi(upperNeighbour(tone, scale)), now, vel * 0.22, 0.18, true);
+      voice(midi(tone), now + 0.06, vel, ring);
+    } else {
+      voice(midi(tone), now, vel, ring);                                // melody
+    }
+    if (f > 0.78) voice(midi(tone - 12), now, vel * 0.28, tail, true);  // octave doubling
+    const fill = f > 0.38 && passing(tone, next, scale);
+    if (fill) voice(midi(fill), now + gap / 2, vel * 0.3, 0.45, true);  // passing note
     if ((beat === 0 && f > 0.62) || (beat === 2 && f > 0.86)) {
-      chord.forEach((m, n) => voice(midi(m), now + n * 0.014, 0.16 + f * 0.18, 1.1, true)); // chords
+      chord.forEach((m, n) => voice(midi(m), now + n * 0.014, 0.1 + f * 0.08, tail, true)); // chords
+    }
+    // At the end of each four-bar phrase near the climax, a run cascades
+    // down the chord from the melody, two octaves in the time of one beat
+    if (beat === 3 && bar % 4 === 3 && f > 0.8) {
+      const pcs = chord.map((m) => m % 12);
+      const run = [];
+      for (let m = tone - 1; m >= tone - 24 && run.length < 10; m--) if (pcs.includes(m % 12)) run.push(m);
+      const spacing = Math.min(0.05, (gap * 0.9) / run.length);
+      run.forEach((m, i) => voice(midi(m), now + 0.04 + i * spacing, (0.1 + f * 0.08) * (1 - i / 14), 0.45, true));
     }
 
     // Left hand: a bass note on the bar, then a broken chord that rolls
     // under the melody — one note a beat, then two, then from a deep octave
     const lh = brokenChord(bass, chord);
-    const lhVel = 0.16 + f * 0.3;
-    if (beat === 0 && f > 0.12) voice(midi(bass), now, 0.3 + f * 0.3, 2.4);
-    if (beat === 0 && f > 0.7 && bass - 12 >= 31) voice(midi(bass - 12), now, 0.2 + f * 0.26, 2.6, true);
+    const lhVel = 0.11 + f * 0.13;
+    const barLen = Math.min(2.4, Math.max(1, gap * 4)); // bass holds through the bar
+    if (beat === 0 && f > 0.12) voice(midi(bass), now, 0.24 + f * 0.16, barLen);
+    if (beat === 0 && f > 0.7 && bass - 12 >= 31) voice(midi(bass - 12), now, 0.14 + f * 0.14, barLen, true);
     if (f > 0.25) {
-      if (beat !== 0) voice(midi(lh[beat * 2]), now, lhVel, 1.1, true);
-      if (f > 0.5) voice(midi(lh[beat * 2 + 1]), now + gap / 2, lhVel * 0.85, 1, true);
+      if (beat !== 0) voice(midi(lh[beat * 2]), now, lhVel, tail, true);
+      if (f > 0.5) voice(midi(lh[beat * 2 + 1]), now + gap / 2, lhVel * 0.8, tail, true);
     }
 
     // Climax: the choir swells under each bar and the room opens up
     if (beat === 0 && f > 0.7) {
-      choir(chord, now, Math.min(3.4, Math.max(1.4, gap * 4.6)), 0.03 + (f - 0.7) * 0.16);
+      choir(chord, now, Math.min(3.4, Math.max(1.4, gap * 4.6)), 0.02 + (f - 0.7) * 0.09);
     }
-    wet.gain.setTargetAtTime(0.3 + f * 0.24, now, 0.6);
+    wet.gain.setTargetAtTime(0.26 + f * 0.14, now, 0.6);
     master.gain.setTargetAtTime(0.5 + f * 0.18, now, 0.8);
     stepAt++;
   }
@@ -240,8 +345,9 @@
     travelled += Math.abs(y - lastY);
     lastY = y;
     if (!playable()) return;
-    if (travelled >= STEP_PX && ctx.currentTime - lastStep >= MIN_GAP) {
-      travelled = Math.min(travelled - STEP_PX, STEP_PX); // no backlog after a flick
+    const step = stepPx();
+    if (travelled >= step && ctx.currentTime - lastStep >= MIN_GAP) {
+      travelled = Math.min(travelled - step, step); // no backlog after a flick
       playStep();
     }
     const p = pageProgress();

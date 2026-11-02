@@ -58,8 +58,9 @@ When the loading screen is ready it offers "Enter with sound" or "Enter
 quietly" (scrolling or Escape also enters quietly); that click is what lets
 the browser start audio. The Sound button in the nav turns it on or off at any
 time. When on, scrolling plays an original theme
-(`THEME` in `js/sound.js`: 16 bars, melody + bass + chord per bar) that grows
-fuller further down the page and resolves at the bottom. All synthesised.
+(`THEME` in `js/sound.js`: 48 bars in three sections, melody + bass + chord
+per bar, spread so one scroll down the page plays it once) that grows fuller
+further down the page and resolves at the bottom. All synthesised.
 
 ## Running locally
 
