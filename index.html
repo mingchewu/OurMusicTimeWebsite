@@ -33,7 +33,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;1,6..72,300;1,6..72,400&family=Noto+Serif+TC:wght@300;400;500;600&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="css/style.css?v=20261101b" />
+  <link rel="stylesheet" href="css/style.css?v=20261101c" />
 
   <script type="importmap">
     {
@@ -268,6 +268,16 @@
           </p>
         </header>
 
+        <!-- The teaching method every resource is built on -->
+        <div class="three-ps">
+          <p class="eyebrow" data-reveal><span lang="en">The three P<span class="keep-case">s</span> of the Kodály Method</span><span lang="zh-Hant">高大宜教學法的三個 P<span class="keep-case">s</span></span></p>
+          <ol class="steps steps-row">
+            <li data-reveal><b><span class="initial">P</span>repare</b><span lang="en">Sing, move and listen until the idea lives in the body.</span><span lang="zh-Hant">準備 — 透過歌唱、律動與聆聽，讓概念先在身體裡扎根。</span></li>
+            <li data-reveal><b><span class="initial">P</span>resent</b><span lang="en">Name it, see it, and bring it to the keyboard.</span><span lang="zh-Hant">呈現 — 為它命名、看見它，並把它帶到鍵盤上。</span></li>
+            <li data-reveal><b><span class="initial">P</span>ractice</b><span lang="en">Play, create and return to it until it becomes yours.</span><span lang="zh-Hant">練習 — 反覆彈奏與創作，直到它真正成為自己的。</span></li>
+          </ol>
+        </div>
+
         <!-- Music plans -->
         <article class="shelf">
           <div class="shelf-intro">
@@ -415,18 +425,10 @@
       </div>
     </section>
 
-    <!-- ───────── Interlude: the method ───────── -->
-    <section class="method stage" aria-label="The method"
-      data-piano='{"x":1.1,"y":-0.1,"ry":-1.42,"rx":0.1,"s":1.02,"lid":0.66}'
-      data-piano-m='{"x":0,"y":-0.75,"ry":-1.42,"rx":0.14,"s":0.91,"lid":0.66,"o":0.4}'>
-      <div class="wrap">
-        <p class="eyebrow" data-reveal><span lang="en">The three P<span class="keep-case">s</span> of Kodály</span><span lang="zh-Hant">高大宜的三個 P</span></p>
-        <ol class="steps">
-          <li data-reveal><b><span class="initial">P</span>repare</b><span lang="en">Sing, move and listen until the idea lives in the body.</span><span lang="zh-Hant">準備 — 透過歌唱、律動與聆聽，讓概念先在身體裡扎根。</span></li>
-          <li data-reveal><b><span class="initial">P</span>resent</b><span lang="en">Name it, see it, and bring it to the keyboard.</span><span lang="zh-Hant">呈現 — 為它命名、看見它，並把它帶到鍵盤上。</span></li>
-          <li data-reveal><b><span class="initial">P</span>ractice</b><span lang="en">Play, create and return to it until it becomes yours.</span><span lang="zh-Hant">練習 — 反覆彈奏與創作，直到它真正成為自己的。</span></li>
-        </ol>
-      </div>
+    <!-- ───────── Interlude: the piano alone ───────── -->
+    <section class="method stage" aria-hidden="true"
+      data-piano='{"x":0,"y":-0.15,"ry":-0.95,"rx":0.16,"s":1.08,"lid":0.66}'
+      data-piano-m='{"x":0,"y":-0.1,"ry":-0.95,"rx":0.18,"s":1.05,"lid":0.66}'>
     </section>
 
     <!-- ───────── 04 Events ───────── -->
@@ -657,10 +659,10 @@
     </div>
   </dialog>
 
-  <script src="js/faq.js?v=20261101b"></script>
-  <script src="js/main.js?v=20261101b"></script>
-  <script src="js/sound.js?v=20261101b"></script>
-  <script src="js/piano.js?v=20261101b"></script>
+  <script src="js/faq.js?v=20261101c"></script>
+  <script src="js/main.js?v=20261101c"></script>
+  <script src="js/sound.js?v=20261101c"></script>
+  <script src="js/piano.js?v=20261101c"></script>
   <script type="module">
     import * as THREE from "three";
     import { RoomEnvironment } from "three/addons/environments/RoomEnvironment.js";

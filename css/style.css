@@ -1162,6 +1162,20 @@ html[lang="zh-Hant"] .book h4 { font-size: 1.1rem; }
   padding-top: 0.4rem;
 }
 .steps .initial { color: var(--ember); }
+/* In Resources, the three Ps run side by side as the method behind the
+   materials, each arrow leading on to the next */
+.three-ps {
+  margin-top: calc(clamp(3.5rem, 8vw, 6rem) * -0.45); /* closer to the heading above */
+  margin-bottom: clamp(3rem, 6vw, 5rem);
+}
+.three-ps .eyebrow { margin-bottom: clamp(1.5rem, 3vw, 2.25rem); }
+.steps-row {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(1.5rem, 3vw, 3rem);
+  max-width: none;
+}
+.steps-row li { padding-left: 0; padding-top: 3.2rem; text-shadow: none; }
+.steps-row b { font-size: clamp(2.2rem, 1.5rem + 2.2vw, 3.4rem); }
 .keep-case { text-transform: none; }
 .steps b {
   font-family: var(--display);
@@ -1652,8 +1666,8 @@ img.is-arrived { animation: img-in 0.7s var(--ease); }
 .no-piano .training-copy .prose { grid-column: 2; grid-row: 1 / span 2; margin-top: 0; }
 .no-piano .training-copy .btn { grid-column: 2; justify-self: start; }
 .no-piano .quote,
-.no-piano .method,
 .no-piano .coda { min-height: 0; padding-block: var(--section); }
+.no-piano .method { display: none; } /* only there to show the piano */
 .no-piano .coda { align-items: center; }
 .no-piano .training-intro { min-height: 0; padding-bottom: calc(var(--section) * 0.5); }
 
@@ -1668,6 +1682,8 @@ img.is-arrived { animation: img-in 0.7s var(--ease); }
 }
 
 @media (max-width: 860px) {
+  .steps-row { grid-template-columns: minmax(0, 1fr); }
+  .steps-row li { padding-top: 0; padding-left: 4.5rem; }
   .about-grid,
   .training-grid,
   .founder-grid,
