@@ -20,8 +20,10 @@
 
   /* ───────── Loading veil ─────────
      Real progress — page ready, fonts loaded, piano started — fills the
-     hairline; then the veil slides away and the piano assembles itself.
-     It never waits more than a few seconds, and shows on every visit. */
+     hairline (never more than a few seconds); then the visitor enters with
+     sound or quietly. That click is what lets the browser start audio, so
+     the theme can begin as the veil slides away and the piano assembles.
+     Scrolling or Escape enters quietly. It shows on every visit. */
   const veil = document.getElementById("veil");
   const veiled = root.classList.contains("is-loading") && veil;
   const veilParts = { dom: 0.2, fonts: 0.3, piano: 0.5 };
@@ -36,12 +38,27 @@
     veil.querySelector(".veil-bar i").style.transform = `scaleX(${Math.min(1, p)})`;
     if (veilDone.size === Object.keys(veilParts).length) {
       // let the mark finish drawing before leaving
-      setTimeout(liftVeil, Math.max(250, 1700 - (performance.now() - veilStart)));
+      setTimeout(veilReady, Math.max(250, 1700 - (performance.now() - veilStart)));
     }
+  }
+  let veilIsReady = false;
+  function veilReady() {
+    if (!veiled || veilIsReady) return;
+    veilIsReady = true;
+    veil.classList.add("is-ready");
+    veil.querySelector("[data-enter=sound]").focus({ preventScroll: true });
+  }
+  function enter(withSound) {
+    if (!veilIsReady || veilLifted) return;
+    if (window.OMTSound) window.OMTSound.enter(withSound);
+    liftVeil();
   }
   function liftVeil() {
     if (!veiled || veilLifted) return;
     veilLifted = true;
+    removeEventListener("wheel", enterQuietly);
+    removeEventListener("touchmove", enterQuietly);
+    removeEventListener("keydown", veilKeys);
     veil.querySelector(".veil-bar i").style.transform = "scaleX(1)";
     setTimeout(() => {
       root.classList.add("is-lifting");
@@ -55,12 +72,21 @@
         root.classList.remove("is-lifting", "is-intro");
         veil.remove();
       }, 1250);
-    }, 320);
+    }, 120);
   }
   if (veiled) {
     veilStep("dom");
     (document.fonts ? document.fonts.ready : Promise.resolve()).then(() => veilStep("fonts"));
-    setTimeout(liftVeil, 3200); // never hold anyone back for long
+    setTimeout(veilReady, 3200); // never hold anyone back for long
+    veil.querySelectorAll("[data-enter]").forEach((b) =>
+      b.addEventListener("click", () => enter(b.dataset.enter === "sound")));
+    addEventListener("wheel", enterQuietly, { passive: true });
+    addEventListener("touchmove", enterQuietly, { passive: true });
+    addEventListener("keydown", veilKeys);
+  }
+  function enterQuietly() { enter(false); }
+  function veilKeys(e) {
+    if (e.key === "Escape" || e.key === "PageDown" || e.key === "ArrowDown" || e.key === " " && e.target === document.body) enterQuietly();
   }
 
   /* ───────── Event galleries (web-sized copies in media/web) ───────── */

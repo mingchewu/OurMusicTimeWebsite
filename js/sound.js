@@ -358,7 +358,16 @@
     else if (enabled) ctx.resume();
   });
 
+  // The loading veil's "Enter with sound" / "Enter quietly". Called inside
+  // the click, which is what allows the audio engine to start.
+  function enter(on) {
+    setEnabled(on, true);
+    if (on && ensureContext()) ctx.resume().then(() => chord("hello"));
+    else if (ctx) ctx.suspend();
+  }
+
   window.OMTSound = {
+    enter,
     chord,
     thud,
     get enabled() { return enabled; },
